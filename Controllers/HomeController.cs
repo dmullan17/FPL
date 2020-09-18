@@ -10,30 +10,32 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using FPL.ViewModels;
+using FPL.Contracts;
+using FPL.Http;
 
 namespace FPL.Controllers
 {
     public class HomeController : Controller
     {
-        private static HttpClient _httpClient = new HttpClient();
-
-
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(ILogger<HomeController> logger)
         {
-            _httpClient.BaseAddress = new Uri("https://fantasy.premierleague.com/api/");
-            _httpClient.Timeout = new TimeSpan(0, 0, 30);
-            _httpClient.DefaultRequestHeaders.Clear();
+            //_httpClient.BaseAddress = new Uri("https://fantasy.premierleague.com/api/");
+            //_httpClient.Timeout = new TimeSpan(0, 0, 30);
+            //_httpClient.DefaultRequestHeaders.Clear();
 
             _logger = logger;
         }
 
         public async Task<IActionResult> Index()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "bootstrap-static/");
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            var response = await _httpClient.SendAsync(request);
+            var viewModel = new HomeViewModel();
+
+            var client = new FPLHttpClient();
+
+            var response = await client.GetAsync("bootstrap-static/");
 
             response.EnsureSuccessStatusCode();
 
@@ -43,10 +45,13 @@ namespace FPL.Controllers
                 .First(c => c.Type == JTokenType.Array && c.Path.Contains("events"))
                 .Children<JObject>();
 
+            List<GameWeek> gws = new List<GameWeek>();
+
             foreach (JObject result in resultObjects)
             {
-                // Copy to a static Album instance
                 GameWeek gw = result.ToObject<GameWeek>();
+
+                gws.Add(gw);
 
                 foreach (JProperty property in result.Properties())
                 {
@@ -54,7 +59,9 @@ namespace FPL.Controllers
                 }
             }
 
-            return View();
+            viewModel.Gameweeks = gws;
+
+            return View(viewModel);
         }
 
         // recursively yield all children of json

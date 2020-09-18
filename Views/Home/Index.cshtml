@@ -1,4 +1,10 @@
-﻿@{
+﻿@using Newtonsoft.Json;
+
+@model FPL.ViewModels.HomeViewModel
+
+@{ var data = JsonConvert.SerializeObject(Model); }
+
+@{
     ViewData["Title"] = "Home Page";
 }
 

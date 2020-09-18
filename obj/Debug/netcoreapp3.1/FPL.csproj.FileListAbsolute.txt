@@ -32,5 +32,5 @@ C:\Users\danny\Documents\GitHub\FPL\FPL\obj\Debug\netcoreapp3.1\FPL.Views.pdb
 C:\Users\danny\Documents\GitHub\FPL\FPL\obj\Debug\netcoreapp3.1\FPL.dll
 C:\Users\danny\Documents\GitHub\FPL\FPL\obj\Debug\netcoreapp3.1\FPL.pdb
 C:\Users\danny\Documents\GitHub\FPL\FPL\obj\Debug\netcoreapp3.1\FPL.csproj.CopyComplete
-C:\Users\danny\Documents\GitHub\FPL\FPL\obj\Debug\netcoreapp3.1\FPL.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\danny\Documents\GitHub\FPL\FPL\bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll
+C:\Users\danny\Documents\GitHub\FPL\FPL\obj\Debug\netcoreapp3.1\FPL.MvcApplicationPartsAssemblyInfo.cache

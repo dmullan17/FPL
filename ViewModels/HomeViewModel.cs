@@ -8,6 +8,6 @@ namespace FPL.ViewModels
 {
     public class HomeViewModel
     {
-        public GameWeek gameweek;
+        public List<GameWeek> Gameweeks { get; set; }
     }
 }
