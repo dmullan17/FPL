@@ -53,10 +53,10 @@ namespace FPL.Controllers
 
                 gws.Add(gw);
 
-                foreach (JProperty property in result.Properties())
-                {
-                    // do something with the property belonging to result
-                }
+                //foreach (JProperty property in result.Properties())
+                //{
+
+                //}
             }
 
             GameWeek currentGameweek = gws.FirstOrDefault(a => a.is_current);
