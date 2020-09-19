@@ -6,7 +6,8 @@ namespace FPL.Models
     public class GameWeek
     {
         public int id { get; set; }
-        public string name { get; set; }
+
+        public string Name { get; set; }
         public DateTime deadline_time { get; set; }
         public int average_entry_score { get; set; }
         public bool finished { get; set; }

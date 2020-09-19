@@ -59,7 +59,10 @@ namespace FPL.Controllers
                 }
             }
 
+            GameWeek currentGameweek = gws.FirstOrDefault(a => a.is_current);
+
             viewModel.Gameweeks = gws;
+            viewModel.CurrentGameweek = currentGameweek;
 
             return View(viewModel);
         }

@@ -6,7 +6,7 @@
     <title>@ViewData["Title"] - FPL</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
-    <script src="~/lib/knockout/knockout-3.5.1.min.js"></script>
+    <link href="~/lib/semantic-ui/semantic.css" rel="stylesheet" />
 </head>
 <body>
     <header>
@@ -34,6 +34,12 @@
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/semantic-ui/semantic.min.js"></script>
+        <script src="~/lib/knockout/knockout-3.5.1.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        @RenderSection("PageScripts", false)
     </div>
 
     <footer class="border-top footer text-muted">
@@ -41,9 +47,6 @@
             &copy; 2020 - FPL - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

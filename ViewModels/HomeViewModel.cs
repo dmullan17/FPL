@@ -9,5 +9,7 @@ namespace FPL.ViewModels
     public class HomeViewModel
     {
         public List<GameWeek> Gameweeks { get; set; }
+
+        public GameWeek CurrentGameweek { get; set; }
     }
 }
