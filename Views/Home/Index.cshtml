@@ -18,18 +18,17 @@
             <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
         </div>*@
     <h4 class="ui header">
-        <a data-bind="text: $root.CurrentGameweek().Name"></a>
+        <a data-bind="text: $root.CurrentGameweek().name"></a>
         @*<div class="sub header" data-bind="text: moment(Published_Date__c).format('MMMM D, YYYY')"></div>*@
     </h4>
-    <table class="ui very basic table">
+    @*<table class="ui very basic table">
         <tbody data-bind="foreach: $root.Gameweeks">
             <tr>
-                @*<td class="three wide" data-bind="text: moment(Published_Date__c).format('MMMM D, YYYY')"></td>*@
                 <td>
-                    <a data-bind="text: Name"></a>
+                    <a data-bind="text: name"></a>
                 </td>
             </tr>
         </tbody>
-    </table>
+    </table>*@
 </div>
 
