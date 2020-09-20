@@ -48,7 +48,7 @@ namespace FPL.Controllers
             viewModel.AllPlayers = players;
 
             //top ranked fpl player
-            viewModel.Player = players.OrderBy(item => item.ict_index_rank).First();;
+            viewModel.Player = players.OrderBy(item => item.ict_index_rank).First();
             viewModel.TotalPlayerCount = players.Count();
 
             return View(viewModel);

@@ -1,0 +1,54 @@
+@using Newtonsoft.Json;
+
+@model FPL.ViewModels.GameViewModel
+
+@{ var data = JsonConvert.SerializeObject(Model); }
+
+@section PageScripts {
+<script src="~/js/game/index.js"></script>
+<script type="text/javascript">
+    const viewModel = new GameViewModel(@Html.Raw(data));
+    ko.applyBindings(viewModel, document.getElementById("app"));
+</script>
+}
+
+<div id="app">
+    Total Games: <p data-bind="text: TotalGameCount"></p>
+    <p data-bind="using: Game">
+        code: <span data-bind="text: code"> </span>
+        Event: <span data-bind="text: Event"> </span>
+        kickoff_time: <span data-bind="text: kickoff_time"> </span>
+        team_h: <span data-bind="text: team_h"> </span>
+        team_h_score: <span data-bind="text: team_h_score"> </span>
+        team_a_score: <span data-bind="text: team_a_score"> </span>
+        team_a: <span data-bind="text: team_a"> </span>
+    </p>
+    <div data-bind="foreach: GameStats">
+        <table class="ui table">
+            <thead>
+                <tr>
+                    <th data-bind="text: identifier"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-bind="foreach: a">
+                    <td>
+                        Player Id: <a data-bind="text: element"></a>
+                    </td>
+                    <td>
+                        Count: <a data-bind="text: value"></a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <table class="ui very basic table">
+        <tbody data-bind="foreach: $root.AllGames">
+            <tr>
+                <td>
+                    <a data-bind="text: code"></a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
