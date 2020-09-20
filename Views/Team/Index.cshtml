@@ -1,0 +1,45 @@
+﻿@using Newtonsoft.Json;
+
+@model FPL.ViewModels.TeamViewModel
+
+@{ var data = JsonConvert.SerializeObject(Model); }
+
+@section PageScripts {
+<script src="~/js/team/index.js"></script>
+<script type="text/javascript">
+    const viewModel = new TeamViewModel(@Html.Raw(data));
+    ko.applyBindings(viewModel, document.getElementById("app"));
+</script>
+}
+
+<div id="app">
+    <p data-bind="using: Team">
+        code: <span data-bind="text: code"> </span>
+        id: <span data-bind="text: id"> </span>
+        name: <span data-bind="text: name"> </span>
+        position: <span data-bind="text: position"> </span>
+        strength: <span data-bind="text: strength"> </span>
+        played: <span data-bind="text: played"> </span>
+        win: <span data-bind="text: win"> </span>
+        draw: <span data-bind="text: draw"> </span>
+        loss: <span data-bind="text: loss"> </span>
+        points: <span data-bind="text: points"> </span>
+        form: <span data-bind="text: form"> </span>
+        overall strength at home: <span data-bind="text: strength_overall_home"> </span>
+        overall strength away: <span data-bind="text: strength_overall_away"> </span>
+        attacking strength home: <span data-bind="text: strength_attack_home"> </span> 
+        attacking strength away: <span data-bind="text: strength_attack_away"> </span> 
+        defensive strength home: <span data-bind="text: strength_defence_home"> </span> 
+        defensive strength away: <span data-bind="text: strength_defence_away"> </span> 
+    </p>
+    <!-- <li data-bind="foreach: $root.AllTeams"></li> -->
+    <table class="ui very basic table">
+        <tbody data-bind="foreach: $root.AllTeams">
+            <tr>
+                <td>
+                    <a data-bind="text: name"></a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
