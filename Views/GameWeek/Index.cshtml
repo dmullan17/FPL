@@ -1,0 +1,34 @@
+﻿@using Newtonsoft.Json;
+
+@model FPL.ViewModels.GameWeekViewModel
+
+@{ var data = JsonConvert.SerializeObject(Model); }
+
+@section PageScripts {
+    <script src="~/js/home/index.js"></script>
+    <script type="text/javascript">
+        const viewModel = new HomeViewModel(@Html.Raw(data));
+        ko.applyBindings(viewModel, document.getElementById("app"));
+    </script>
+}
+
+<div id="app">
+    @*<div class="text-center">
+            <h1 class="display-4">Welcome</h1>
+            <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+        </div>*@
+    <h4 class="ui header">
+        <a data-bind="text: $root.CurrentGameweek().name"></a>
+        @*<div class="sub header" data-bind="text: moment(Published_Date__c).format('MMMM D, YYYY')"></div>*@
+    </h4>
+    @*<table class="ui very basic table">
+            <tbody data-bind="foreach: $root.Gameweeks">
+                <tr>
+                    <td>
+                        <a data-bind="text: name"></a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>*@
+</div>
+
