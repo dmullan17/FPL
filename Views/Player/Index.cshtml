@@ -29,17 +29,14 @@
         ict_index: <span data-bind="text: ict_index"> </span>
         ict_index_rank: <span data-bind="text: ict_index_rank"> </span>
         selected_by_percent: <span data-bind="text: selected_by_percent"> </span>
-        <!-- win: <span data-bind="text: win"> </span>
-        draw: <span data-bind="text: draw"> </span>
-        loss: <span data-bind="text: loss"> </span>
-        points: <span data-bind="text: points"> </span>
-        form: <span data-bind="text: form"> </span>
-        overall strength at home: <span data-bind="text: strength_overall_home"> </span>
-        overall strength away: <span data-bind="text: strength_overall_away"> </span>
-        attacking strength home: <span data-bind="text: strength_attack_home"> </span> 
-        attacking strength away: <span data-bind="text: strength_attack_away"> </span> 
-        defensive strength home: <span data-bind="text: strength_defence_home"> </span> 
-        defensive strength away: <span data-bind="text: strength_defence_away"> </span>  -->
     </p>
-    <!-- <li data-bind="foreach: $root.AllTeams"></li> -->
+    <table class="ui very basic table">
+        <tbody data-bind="foreach: $root.AllPlayers">
+            <tr>
+                <td>
+                    <a data-bind="text: web_name"></a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>

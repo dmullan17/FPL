@@ -45,7 +45,7 @@ namespace FPL.Controllers
 
             // Player player = players.FirstOrDefault();
 
-            // viewModel.AllTeams = teams;
+            viewModel.AllPlayers = players;
 
             //top ranked fpl player
             viewModel.Player = players.OrderBy(item => item.ict_index_rank).First();;
