@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,11 +10,11 @@ using Newtonsoft.Json.Linq;
 
 namespace FPL.Controllers
 {
-    public class TeamController : Controller
+    public class PlayerController : Controller
     {
         public async Task<IActionResult> Index()
         {
-            var viewModel = new TeamViewModel();
+            var viewModel = new PlayerViewModel();
 
             var client = new FPLHttpClient();
 
@@ -24,17 +24,18 @@ namespace FPL.Controllers
 
             var content = await response.Content.ReadAsStringAsync();
 
+            //elements = players
             var resultObjects = AllChildren(JObject.Parse(content))
-                .First(c => c.Type == JTokenType.Array && c.Path.Contains("teams"))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("elements"))
                 .Children<JObject>();
 
-            List<Team> teams = new List<Team>();
+            List<Player> players = new List<Player>();
 
             foreach (JObject result in resultObjects)
             {
-                Team t = result.ToObject<Team>();
+                Player p = result.ToObject<Player>();
 
-                teams.Add(t);
+                players.Add(p);
 
                 //foreach (JProperty property in result.Properties())
                 //{
@@ -42,10 +43,13 @@ namespace FPL.Controllers
                 //}
             }
 
-            Team team = teams.FirstOrDefault();
+            // Player player = players.FirstOrDefault();
 
-            viewModel.AllTeams = teams;
-            viewModel.Team = team;
+            // viewModel.AllTeams = teams;
+
+            //top ranked fpl player
+            viewModel.Player = players.OrderBy(item => item.ict_index_rank).First();;
+            viewModel.TotalPlayerCount = players.Count();
 
             return View(viewModel);
         }
@@ -61,5 +65,6 @@ namespace FPL.Controllers
                 }
             }
         }
+
     }
 }

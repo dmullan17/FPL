@@ -1,0 +1,45 @@
+@using Newtonsoft.Json;
+
+@model FPL.ViewModels.PlayerViewModel
+
+@{ var data = JsonConvert.SerializeObject(Model); }
+
+@section PageScripts {
+<script src="~/js/player/index.js"></script>
+<script type="text/javascript">
+    const viewModel = new PlayerViewModel(@Html.Raw(data));
+    ko.applyBindings(viewModel, document.getElementById("app"));
+</script>
+}
+
+<div id="app">
+    Total Players: <p data-bind="text: TotalPlayerCount"></p>
+    <p data-bind="using: Player">
+        web_name: <span data-bind="text: web_name"> </span>
+        team: <span data-bind="text: team"> </span>
+        now_cost: <span data-bind="text: now_cost"> </span>
+        total_points: <span data-bind="text: total_points"> </span>
+        bonus: <span data-bind="text: bonus"> </span>
+        points_per_game: <span data-bind="text: points_per_game"> </span>
+        minutes: <span data-bind="text: minutes"> </span>
+        goals_scored: <span data-bind="text: goals_scored"> </span>
+        goals_conceded: <span data-bind="text: goals_conceded"> </span>
+        assists: <span data-bind="text: assists"> </span>
+        clean_sheets: <span data-bind="text: clean_sheets"> </span>
+        ict_index: <span data-bind="text: ict_index"> </span>
+        ict_index_rank: <span data-bind="text: ict_index_rank"> </span>
+        selected_by_percent: <span data-bind="text: selected_by_percent"> </span>
+        <!-- win: <span data-bind="text: win"> </span>
+        draw: <span data-bind="text: draw"> </span>
+        loss: <span data-bind="text: loss"> </span>
+        points: <span data-bind="text: points"> </span>
+        form: <span data-bind="text: form"> </span>
+        overall strength at home: <span data-bind="text: strength_overall_home"> </span>
+        overall strength away: <span data-bind="text: strength_overall_away"> </span>
+        attacking strength home: <span data-bind="text: strength_attack_home"> </span> 
+        attacking strength away: <span data-bind="text: strength_attack_away"> </span> 
+        defensive strength home: <span data-bind="text: strength_defence_home"> </span> 
+        defensive strength away: <span data-bind="text: strength_defence_away"> </span>  -->
+    </p>
+    <!-- <li data-bind="foreach: $root.AllTeams"></li> -->
+</div>
