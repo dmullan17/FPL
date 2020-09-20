@@ -27,33 +27,61 @@ namespace FPL.Controllers
 
             List<Game> games = JsonConvert.DeserializeObject<List<Game>>(content);
 
-            // var resultObjects = AllChildren(JObject.Parse(content))
-            //     .First(c => c.Type == JTokenType.Array && c.Path.Contains("stats"))
-            //     .Children<JObject>();
+            List<Stat> stats = games.FirstOrDefault(item => item.finished).stats;
 
-            // List<Stat> stats = new List<Stat>();
-
-            // foreach (JObject result in resultObjects)
+            // for (var i = 0; i < stats.Count; i++)
             // {
-            //     Stat s = result.ToObject<Stat>();
+            //     for (var j = 0; j < stats[i].a.Count; j++)
+            //     {
+            //         var teamElement = stats[i].a[j].element;
+            //     }
+            // }  
 
-            //     stats.Add(s);
+            Game firstFinishedGame = games.FirstOrDefault(item => item.finished);
 
-            //     //foreach (JProperty property in result.Properties())
-            //     //{
-
-            //     //}
-            // }
-
-            // var test = games[2].stats[0].home[0].value;
+            firstFinishedGame = await AddTeamNames(firstFinishedGame);
+            // firstFinishedGame = await AddPlayerNamesToStats(firstFinishedGame);
 
             viewModel.AllGames = games;
-            viewModel.Game = games.FirstOrDefault(item => item.finished);
-            viewModel.GameStats = games.FirstOrDefault(item => item.finished).stats;
+            viewModel.Game = firstFinishedGame;
+            viewModel.GameStats = firstFinishedGame.stats;
             viewModel.TotalGameCount = games.Count();
 
             return View(viewModel);
         }
+
+        private async Task<Game> AddTeamNames(Game game)
+        {
+            var client = new FPLHttpClient();
+
+            var response = await client.GetAsync("bootstrap-static/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var resultObjects = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("teams"))
+                .Children<JObject>();
+
+            List<Team> teams = new List<Team>();
+
+            foreach (JObject result in resultObjects)
+            {
+                Team t = result.ToObject<Team>();
+
+                teams.Add(t);
+            }
+
+            var homeTeamId = game.team_h;
+            var awayTeamId = game.team_a;
+
+            game.team_h_name = teams.Find(x => x.id == homeTeamId).name;
+            game.team_a_name = teams.Find(x => x.id == awayTeamId).name;
+
+            return game;
+        }
+
 
         private static IEnumerable<JToken> AllChildren(JToken json)
         {

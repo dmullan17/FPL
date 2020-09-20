@@ -15,8 +15,10 @@ namespace FPL.Models
         public bool provisional_start_time { get; set; } 
         public bool? started { get; set; } 
         public int team_a { get; set; } 
+        public string team_a_name { get; set; } 
         public int? team_a_score { get; set; } 
         public int team_h { get; set; } 
+        public string team_h_name { get; set; } 
         public int? team_h_score { get; set; } 
         public List<Stat> stats { get; set; } 
         public int team_h_difficulty { get; set; } 

@@ -18,10 +18,10 @@
         code: <span data-bind="text: code"> </span>
         Event: <span data-bind="text: Event"> </span>
         kickoff_time: <span data-bind="text: kickoff_time"> </span>
-        team_h: <span data-bind="text: team_h"> </span>
+        team_h_name: <span data-bind="text: team_h_name"> </span>
         team_h_score: <span data-bind="text: team_h_score"> </span>
         team_a_score: <span data-bind="text: team_a_score"> </span>
-        team_a: <span data-bind="text: team_a"> </span>
+        team_a_name: <span data-bind="text: team_a_name"> </span>
     </p>
     <div data-bind="foreach: GameStats">
         <table class="ui table">
@@ -31,7 +31,21 @@
                 </tr>
             </thead>
             <tbody>
+                <tr data-bind="foreach: h">
+                    <td>
+                        home team
+                    </td>
+                    <td>
+                        Player Id: <a data-bind="text: element"></a>
+                    </td>
+                    <td>
+                        Count: <a data-bind="text: value"></a>
+                    </td>
+                </tr>
                 <tr data-bind="foreach: a">
+                    <td>
+                        away team
+                    </td>
                     <td>
                         Player Id: <a data-bind="text: element"></a>
                     </td>

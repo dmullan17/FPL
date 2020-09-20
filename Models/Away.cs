@@ -4,5 +4,6 @@ namespace FPL.Models
     {
         public int value { get; set; }
         public int element { get; set; }
+        public string name { get; set; }
     }
 }
