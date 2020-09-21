@@ -5,6 +5,8 @@ namespace FPL.Models
 {
     public class Game
     {
+        public Team HomeTeam { get; set; }
+        public Team AwayTeam { get; set; }
         public int code { get; set; } 
         public int? Event { get; set; } 
         public bool finished { get; set; } 

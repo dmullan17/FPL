@@ -23,45 +23,39 @@
         team_a_score: <span data-bind="text: team_a_score"> </span>
         team_a_name: <span data-bind="text: team_a_name"> </span>
     </p>
-    <div data-bind="foreach: GameStats">
+    <div>
         <table class="ui table">
             <thead>
-                <tr>
-                    <th data-bind="text: identifier"></th>
-                </tr>
+                <th></th>
+                <th data-bind="text: $root.Game().HomeTeam.name"></th>
+                <th data-bind="text: $root.Game().AwayTeam.name"></th>
             </thead>
-            <tbody>
-                <tr data-bind="foreach: h">
-                    <td>
-                        home team
+            <tbody data-bind="foreach: GameStats">
+                <tr>
+                    <td data-bind="text: identifier"></td>
+                    <td data-bind="foreach: h">
+                        <span data-bind="text: Player.web_name"></span> 
+                        <span data-bind="text: value"></span>
                     </td>
-                    <td>
-                        Player Id: <a data-bind="text: element"></a>
-                    </td>
-                    <td>
-                        Count: <a data-bind="text: value"></a>
-                    </td>
-                </tr>
-                <tr data-bind="foreach: a">
-                    <td>
-                        away team
-                    </td>
-                    <td>
-                        Player Id: <a data-bind="text: element"></a>
-                    </td>
-                    <td>
-                        Count: <a data-bind="text: value"></a>
+                    <td data-bind="foreach: a">
+                        <span data-bind="text: Player.web_name"></span> 
+                        <span data-bind="text: value"></span>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <table class="ui very basic table">
+    <table class="ui table">
+        <thead>
+            <th>Date</th>
+            <th>Home Team</th>
+            <th>Away team</th>
+        </thead>
         <tbody data-bind="foreach: $root.AllGames">
             <tr>
-                <td>
-                    <a data-bind="text: code"></a>
-                </td>
+                <td data-bind="text: kickoff_time"></td>
+                <td data-bind="text: team_h"></td>
+                <td data-bind="text: team_a"></td>
             </tr>
         </tbody>
     </table>
