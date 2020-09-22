@@ -49,13 +49,17 @@
         <thead>
             <th>Date</th>
             <th>Home Team</th>
+            <th>Score</th>
             <th>Away team</th>
         </thead>
         <tbody data-bind="foreach: $root.AllGames">
             <tr>
                 <td data-bind="text: kickoff_time"></td>
-                <td data-bind="text: team_h"></td>
-                <td data-bind="text: team_a"></td>
+                <td data-bind="text: HomeTeam.name"></td>
+                <td>
+                    <span data-bind="visible: started, text: team_h_score + ' - ' + team_a_score"></span>
+                </td>
+                <td data-bind="text: AwayTeam.name"></td>
             </tr>
         </tbody>
     </table>

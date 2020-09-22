@@ -33,7 +33,11 @@ namespace FPL.Controllers
             firstFinishedGame.stats = await AddPlayerInfoToStats(firstFinishedGame.stats);
             firstFinishedGame = await AddTeamInfo(firstFinishedGame);
 
-            viewModel.AllGames = games;
+            int liverpoolId = 11;
+            List<Game> liverpoolFixtures = games.FindAll(item => item.team_h == liverpoolId || item.team_a == liverpoolId);
+            liverpoolFixtures = await PopulateFixtureListByTeamId(liverpoolFixtures, liverpoolId);
+
+            viewModel.AllGames = liverpoolFixtures;
             viewModel.Game = firstFinishedGame;
             viewModel.GameStats = firstFinishedGame.stats;
             viewModel.TotalGameCount = games.Count();
@@ -106,9 +110,11 @@ namespace FPL.Controllers
                 {
                     int playerId = stats[i].h[j].element;
 
-                    for (var k = 0; k < players.Count; k++){
-                        
-                        if (players[k].id == playerId){
+                    for (var k = 0; k < players.Count; k++)
+                    {
+
+                        if (players[k].id == playerId)
+                        {
                             stats[i].h[j].Player = players[k];
                         }
                     }
@@ -132,15 +138,100 @@ namespace FPL.Controllers
                 }
             }
 
-            // players.
-
-            // var homeTeamId = game.team_h;
-            // var awayTeamId = game.team_a;
-
-            // game.team_h_name = teams.Find(x => x.id == homeTeamId).name;
-            // game.team_a_name = teams.Find(x => x.id == awayTeamId).name;
-
             return stats;
+        }
+
+        private async Task<List<Game>> PopulateFixtureListByTeamId(List<Game> games, int teamId)
+        {
+            var client = new FPLHttpClient();
+
+            var response = await client.GetAsync("bootstrap-static/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var allTeams = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("teams"))
+                .Children<JObject>();
+
+            List<Team> teams = new List<Team>();
+
+            foreach (JObject result in allTeams)
+            {
+                Team t = result.ToObject<Team>();
+
+                teams.Add(t);
+            }
+
+            //populate games with Home and Away Teams
+            for (var i = 0; i < games.Count; i++)
+            {
+                var homeTeamId = games[i].team_h;
+                var awayTeamId = games[i].team_a;
+
+                games[i].HomeTeam = teams.Find(x => x.id == homeTeamId);
+                games[i].AwayTeam = teams.Find(x => x.id == awayTeamId);
+
+            }
+
+            var allPlayers = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("elements"))
+                .Children<JObject>();
+
+            List<Player> liverpoolPlayers = new List<Player>();
+
+            foreach (JObject result in allPlayers)
+            {
+                Player p = result.ToObject<Player>();
+
+                if (p.team == teamId){
+                    liverpoolPlayers.Add(p);
+                }
+
+            }
+
+            //populate home stats
+            for (var h = 0; h < games.Count; h++)
+            {
+                for (var i = 0; i < games[h].stats.Count; i++)
+                {
+                    for (var j = 0; j < games[h].stats[i].h.Count; j++)
+                    {
+                        int playerId = games[h].stats[i].h[j].element;
+
+                        for (var k = 0; k < liverpoolPlayers.Count; k++)
+                        {
+                            if (liverpoolPlayers[k].id == playerId)
+                            {
+                                games[h].stats[i].h[j].Player = liverpoolPlayers[k];
+                            }
+                        }
+                    }
+                }
+            }
+
+            //populate away stats
+            for (var h = 0; h < games.Count; h++)
+            {
+                for (var i = 0; i < games[h].stats.Count; i++)
+                {
+                    for (var j = 0; j < games[h].stats[i].a.Count; j++)
+                    {
+                        int playerId = games[h].stats[i].a[j].element;
+
+                        for (var k = 0; k < liverpoolPlayers.Count; k++)
+                        {
+                            if (liverpoolPlayers[k].id == playerId)
+                            {
+                                games[h].stats[i].a[j].Player = liverpoolPlayers[k];
+                            }
+                        }
+                    }
+                }
+            }
+
+            return games;
         }
 
 
