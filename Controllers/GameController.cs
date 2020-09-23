@@ -141,6 +141,7 @@ namespace FPL.Controllers
             return stats;
         }
 
+        //populates a specified team's fixtures and results
         private async Task<List<Game>> PopulateFixtureListByTeamId(List<Game> games, int teamId)
         {
             var client = new FPLHttpClient();
@@ -164,7 +165,7 @@ namespace FPL.Controllers
                 teams.Add(t);
             }
 
-            //populate games with Home and Away Teams
+            //populate games with Home and Away Team deets
             for (var i = 0; i < games.Count; i++)
             {
                 var homeTeamId = games[i].team_h;
@@ -181,14 +182,41 @@ namespace FPL.Controllers
 
             List<Player> liverpoolPlayers = new List<Player>();
 
+            List<Player> nonLiverpoolPlayers = new List<Player>();
+            List<int> nonLiverpoolTeamIds = new List<int>();
+
+            foreach (Game g in games)
+            {
+                if (g.finished)
+                {
+                    if (g.team_a != teamId)
+                    {
+                        nonLiverpoolTeamIds.Add(g.AwayTeam.id);
+                    }
+
+                    if (g.team_h != teamId)
+                    {
+                        nonLiverpoolTeamIds.Add(g.HomeTeam.id);
+                    }
+                }
+            }
+
             foreach (JObject result in allPlayers)
             {
                 Player p = result.ToObject<Player>();
 
-                if (p.team == teamId){
+                if (p.team == teamId)
+                {
                     liverpoolPlayers.Add(p);
                 }
 
+                foreach (int id in nonLiverpoolTeamIds)
+                {
+                    if (p.team == id)
+                    {
+                        nonLiverpoolPlayers.Add(p);
+                    }
+                }
             }
 
             //populate home stats
@@ -205,6 +233,14 @@ namespace FPL.Controllers
                             if (liverpoolPlayers[k].id == playerId)
                             {
                                 games[h].stats[i].h[j].Player = liverpoolPlayers[k];
+                            }
+                        }
+
+                        for (var k = 0; k < nonLiverpoolPlayers.Count; k++)
+                        {
+                            if (nonLiverpoolPlayers[k].id == playerId)
+                            {
+                                games[h].stats[i].h[j].Player = nonLiverpoolPlayers[k];
                             }
                         }
                     }
@@ -225,6 +261,14 @@ namespace FPL.Controllers
                             if (liverpoolPlayers[k].id == playerId)
                             {
                                 games[h].stats[i].a[j].Player = liverpoolPlayers[k];
+                            }
+                        }
+
+                        for (var k = 0; k < nonLiverpoolPlayers.Count; k++)
+                        {
+                            if (nonLiverpoolPlayers[k].id == playerId)
+                            {
+                                games[h].stats[i].a[j].Player = nonLiverpoolPlayers[k];
                             }
                         }
                     }
