@@ -7,6 +7,8 @@ namespace FPL.ViewModels
     {
         public List<Game> Fixtures { get; set; }
 
+        public int CurrentGameweekId { get; set; }
+
         public Game Game { get; set; }
     }
 }

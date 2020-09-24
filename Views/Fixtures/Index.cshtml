@@ -13,6 +13,19 @@
 }
 
 <div id="app">
+    <!-- <h2 class="ui header">
+        <span data-bind="text: $root.GameWeekName()"></span>
+    </h2> -->
+    <!-- <h4 class="ui header">
+        <a data-bind="text: $root.CurrentGameweek().name"></a>
+        <div class="sub header" data-bind="text: moment(Published_Date__c).format('MMMM D, YYYY')"></div>
+    </h4> -->
+    <!-- <h1 class="ui header">
+        <span data-bind="text: Feature().Title__c"></span>
+        <div class="ui label" data-bind="text: Feature().Type__c"></div>
+    </h1> -->
+    <button class="ui left attached button" data-bind="click: previous">Previous</button>
+    <button class="ui right attached button" data-bind="click: next">Next</button>
     <table class="ui table">
         <thead>
             <th>Date</th>

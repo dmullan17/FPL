@@ -52,9 +52,44 @@ namespace FPL.Controllers
             // liverpoolFixtures = await PopulateFixtureListByTeamId(liverpoolFixtures, liverpoolId);
 
             viewModel.Fixtures = currentGameWeekGames;
+            viewModel.CurrentGameweekId = currentGameWeek.id;
 
             return View(viewModel);
         }
+
+        [HttpGet]
+        [Route("fixtures/{id}")]
+        public async Task<IActionResult> Index(int id)
+        {
+            var viewModel = new FixturesViewModel();
+
+            var client = new FPLHttpClient();
+
+            var response = await client.GetAsync("fixtures/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            List<Game> games = JsonConvert.DeserializeObject<List<Game>>(content);
+            List<Game> currentGameWeekGames = new List<Game>();
+
+            foreach (Game g in games)
+            {
+                if (g.Event == id)
+                {
+                    currentGameWeekGames.Add(g);
+                }
+            }
+
+            currentGameWeekGames = await PopulateFixtureListByGameWeekId(currentGameWeekGames, id);
+
+            viewModel.Fixtures = currentGameWeekGames;
+            viewModel.CurrentGameweekId = id;
+
+            return View(viewModel);
+        }
+
 
         //populates a specified team's fixtures and results
         private async Task<List<Game>> PopulateFixtureListByGameWeekId(List<Game> games, int gameWeekId)
@@ -90,6 +125,31 @@ namespace FPL.Controllers
                 games[i].AwayTeam = teams.Find(x => x.id == awayTeamId);
 
             }
+
+            // var allPlayers = AllChildren(JObject.Parse(content))
+            //     .First(c => c.Type == JTokenType.Array && c.Path.Contains("elements"))
+            //     .Children<JObject>();
+
+            // List<Player> liverpoolPlayers = new List<Player>();
+
+            // List<Player> nonLiverpoolPlayers = new List<Player>();
+            // List<int> nonLiverpoolTeamIds = new List<int>();
+
+            // foreach (Game g in games)
+            // {
+            //     if (g.finished)
+            //     {
+            //         if (g.team_a != teamId)
+            //         {
+            //             nonLiverpoolTeamIds.Add(g.AwayTeam.id);
+            //         }
+
+            //         if (g.team_h != teamId)
+            //         {
+            //             nonLiverpoolTeamIds.Add(g.HomeTeam.id);
+            //         }
+            //     }
+            // }
 
             return games;
         }
