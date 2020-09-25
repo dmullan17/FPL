@@ -13,6 +13,7 @@
 }
 
 <div id="app">
+
     <!-- <h2 class="ui header">
         <span data-bind="text: $root.GameWeekName()"></span>
     </h2> -->
@@ -38,11 +39,49 @@
                 <td data-bind="text: kickoff_time"></td>
                 <td data-bind="text: HomeTeam.name"></td>
                 <td>
-                    <span data-bind="visible: started, text: team_h_score + ' - ' + team_a_score"></span>
+                    <a data-bind="click: $root.viewGame, visible: started, text: team_h_score + ' - ' + team_a_score"></a>
                 </td>
                 <td data-bind="text: AwayTeam.name"></td>
             </tr>
         </tbody>
     </table>
 
+    <div class="ui modal">
+        <i class="close icon"></i>
+        <div class="header">
+            <!-- <span data-bind="text: $root.SelectedGame().team_a_score"> -->
+            <!-- <span data-bind="text: $root.SelectedGame().team_h_score + ' - ' + $root.SelectedGame().team_a_score"> -->
+        </div>
+        <div class="image content">
+            <table class="ui table">
+                <thead data-bind="with: $root.Game()">
+                    <th></th>
+                    <th data-bind="text: HomeTeam.name"></th>
+                    <th data-bind="text: AwayTeam.name"></th>
+                </thead>
+                <tbody data-bind="foreach: $root.GameStats">
+                    <tr>
+                        <td data-bind="text: identifier"></td>
+                        <td data-bind="foreach: h">
+                            <span data-bind="text: Player.web_name"></span> 
+                            <span data-bind="text: value"></span>
+                        </td>
+                        <td data-bind="foreach: a">
+                            <span data-bind="text: Player.web_name"></span> 
+                            <span data-bind="text: value"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="actions">
+            <div class="ui black deny button">
+                Nope
+            </div>
+            <div class="ui positive right labeled icon button">
+                Yep, that's me
+                <i class="checkmark icon"></i>
+            </div>
+        </div>
+    </div>
 </div>

@@ -46,11 +46,6 @@ namespace FPL.Controllers
 
             currentGameWeekGames = await PopulateFixtureListByGameWeekId(currentGameWeekGames, currentGameWeek.id);
 
-
-            // int liverpoolId = 11;
-            // List<Game> liverpoolFixtures = games.FindAll(item => item.team_h == liverpoolId || item.team_a == liverpoolId);
-            // liverpoolFixtures = await PopulateFixtureListByTeamId(liverpoolFixtures, liverpoolId);
-
             viewModel.Fixtures = currentGameWeekGames;
             viewModel.CurrentGameweekId = currentGameWeek.id;
 
@@ -86,6 +81,7 @@ namespace FPL.Controllers
 
             viewModel.Fixtures = currentGameWeekGames;
             viewModel.CurrentGameweekId = id;
+            viewModel.Game = new Game();
 
             return View(viewModel);
         }
@@ -126,30 +122,62 @@ namespace FPL.Controllers
 
             }
 
-            // var allPlayers = AllChildren(JObject.Parse(content))
-            //     .First(c => c.Type == JTokenType.Array && c.Path.Contains("elements"))
-            //     .Children<JObject>();
+            var allPlayers = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("elements"))
+                .Children<JObject>();
 
-            // List<Player> liverpoolPlayers = new List<Player>();
+            List<Player> allPlayers1 = new List<Player>();
 
-            // List<Player> nonLiverpoolPlayers = new List<Player>();
-            // List<int> nonLiverpoolTeamIds = new List<int>();
+            foreach (JObject result in allPlayers)
+            {
+                Player p = result.ToObject<Player>();
+                allPlayers1.Add(p);
+            }
 
-            // foreach (Game g in games)
-            // {
-            //     if (g.finished)
-            //     {
-            //         if (g.team_a != teamId)
-            //         {
-            //             nonLiverpoolTeamIds.Add(g.AwayTeam.id);
-            //         }
+            List<Game> finishedGames = games.FindAll(item => item.finished);
 
-            //         if (g.team_h != teamId)
-            //         {
-            //             nonLiverpoolTeamIds.Add(g.HomeTeam.id);
-            //         }
-            //     }
-            // }
+            if (finishedGames.Count != 0)
+            {
+                //populate home stats
+                for (var h = 0; h < finishedGames.Count; h++)
+                {
+                    for (var i = 0; i < finishedGames[h].stats.Count; i++)
+                    {
+                        for (var j = 0; j < finishedGames[h].stats[i].h.Count; j++)
+                        {
+                            int playerId = finishedGames[h].stats[i].h[j].element;
+
+                            for (var k = 0; k < allPlayers1.Count; k++)
+                            {
+                                if (allPlayers1[k].id == playerId)
+                                {
+                                    games[h].stats[i].h[j].Player = allPlayers1[k];
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //populate away stats
+                for (var h = 0; h < games.Count; h++)
+                {
+                    for (var i = 0; i < games[h].stats.Count; i++)
+                    {
+                        for (var j = 0; j < games[h].stats[i].a.Count; j++)
+                        {
+                            int playerId = games[h].stats[i].a[j].element;
+
+                            for (var k = 0; k < allPlayers1.Count; k++)
+                            {
+                                if (allPlayers1[k].id == playerId)
+                                {
+                                    games[h].stats[i].a[j].Player = allPlayers1[k];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             return games;
         }
