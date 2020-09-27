@@ -27,7 +27,7 @@
     </h1> -->
     <button id="button-previous" class="ui left attached button" data-bind="click: previous">Previous</button>
     <button id="button-next" class="ui right attached button" data-bind="click: next">Next</button>
-    <table class="ui table">
+    <table class="ui unstackable table">
         <thead>
             <th>Date</th>
             <th></th>
@@ -38,14 +38,21 @@
         <tbody data-bind="foreach: $root.Fixtures">
             <tr>
                 <td data-bind="text: new Date(kickoff_time).toLocaleString()"></td>
-                <td data-bind="visible: started && !is_half_time, text: minutes"></td>
                 <td data-bind="visible: !started"></td>
-                <td data-bind="visible: is_half_time">HT</td>
-                <td data-bind="text: HomeTeam.name"></td>
+                <td data-bind="visible: started && !is_half_time">
+                    <div class="ui green right pointing label" data-bind="visible: !finished"> Live</div>
+                    <span data-bind="text: minutes">FT</span>
+                </td>
+                <td data-bind="visible: is_half_time">
+                    <div class="ui green right pointing label">Live</div>
+                      <span>HT</span>
+                </td>
+                <td data-bind="text: HomeTeam.name, style: {'font-weight': did_team_h_win ? 'bold' : ''}"></td>
+                <!-- <div data-bind="style: { color: currentProfit() < 0 ? 'red' : 'black', 'font-weight': isSevere() ? 'bold' : '' }">...</div> -->
                 <td>
                     <a data-bind="click: $root.viewGame, visible: started, text: team_h_score + ' - ' + team_a_score"></a>
                 </td>
-                <td data-bind="text: AwayTeam.name"></td>
+                <td data-bind="text: AwayTeam.name, style: {'font-weight': did_team_a_win ? 'bold' : ''}"></td>
             </tr>
         </tbody>
     </table>

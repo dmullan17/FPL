@@ -37,8 +37,6 @@ namespace FPL.Controllers
             List<Game> currentGameWeekGames = new List<Game>();     
             List<Game> liveGames = new List<Game>();
 
-            // bool check = chkDisplay.IsChecked ?? false;
-
             foreach (Game g in games)
             {
                 if (g.Event == currentGameWeek.id)
@@ -53,6 +51,18 @@ namespace FPL.Controllers
                         if (!g.finished_provisional){
                             liveGames.Add(g);
                         }
+                    }
+                }
+
+                if (g.finished)
+                {
+                    if (g.team_h_score > g.team_a_score)
+                    {
+                        g.did_team_h_win = true;
+                    }
+                    else if (g.team_a_score > g.team_h_score)
+                    {
+                        g.did_team_a_win = true;
                     }
                 }
             }
@@ -85,17 +95,44 @@ namespace FPL.Controllers
 
             List<Game> games = JsonConvert.DeserializeObject<List<Game>>(content);
             List<Game> currentGameWeekGames = new List<Game>();
+            List<Game> liveGames = new List<Game>();
 
+            
             foreach (Game g in games)
             {
                 if (g.Event == id)
                 {
                     currentGameWeekGames.Add(g);
                 }
+
+                
+                if (g.started ?? false)
+                {
+                    if (!g.finished || !g.finished_provisional)
+                    {
+                        if (!g.finished_provisional){
+                            liveGames.Add(g);
+                        }
+                    }
+                }
+
+                if (g.finished)
+                {
+                    if (g.team_h_score > g.team_a_score)
+                    {
+                        g.did_team_h_win = true;
+                    }
+                    else if (g.team_a_score > g.team_h_score)
+                    {
+                        g.did_team_a_win = true;
+                    }
+                }
             }
 
+            liveGames = await PopulateFixtureListByGameWeekId(liveGames, id);
             currentGameWeekGames = await PopulateFixtureListByGameWeekId(currentGameWeekGames, id);
 
+            viewModel.LiveGames = liveGames;
             viewModel.Fixtures = currentGameWeekGames;
             viewModel.CurrentGameweekId = id;
 

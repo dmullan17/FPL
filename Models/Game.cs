@@ -26,5 +26,7 @@ namespace FPL.Models
         public int team_h_difficulty { get; set; } 
         public int team_a_difficulty { get; set; }
         public bool? is_half_time { get; set; }
+        public bool? did_team_h_win { get; set; }
+        public bool? did_team_a_win { get; set; }
     }
 }

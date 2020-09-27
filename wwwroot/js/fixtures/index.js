@@ -67,31 +67,20 @@ FixturesViewModel = function (data) {
 
                 for (var j = 0; j <= self.Fixtures().length - 1; j++)
                 {
-                    if (self.Fixtures()[j].id == game.id)
+                    if (self.Fixtures()[j].id == game.id && game.minutes == 0)
                     {
-                        if (game.minutes == 0)
-                        {
-                            var diff =(Date.now() - milliseconds) / 1000;
-                            diff /= 60;
-                            diff = Math.abs(Math.round(diff));
+                        var diff = (Date.now() - milliseconds) / 1000;
+                        diff /= 60;
+                        diff = Math.abs(Math.round(diff));
 
-                            if (diff >= 48 && diff <= 63)
-                            {
-                                self.Fixtures()[j].minutes = diff;
-                                self.Fixtures()[j].is_half_time = true;
-                            }
+                        if (diff >= 48 && diff <= 63) {
+                            self.Fixtures()[j].minutes = diff;
+                            self.Fixtures()[j].is_half_time = true;
+                        }
 
-                            if (diff > 63)
-                            {
-                                self.Fixtures()[j].minutes = diff - 15;
-                                self.Fixtures()[j].is_half_time = false;
-                            }
-
-                            if (diff >= 108)
-                            {
-                                self.Fixtures()[j].minutes = 90;
-                            }
-                            // self.Fixtures()[j].minutes = diff;
+                        if (diff > 63) {
+                            self.Fixtures()[j].minutes = diff - 15;
+                            self.Fixtures()[j].is_half_time = false;
                         }
                     }
                 }
