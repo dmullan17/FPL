@@ -25,18 +25,22 @@
         <span data-bind="text: Feature().Title__c"></span>
         <div class="ui label" data-bind="text: Feature().Type__c"></div>
     </h1> -->
-    <button class="ui left attached button" data-bind="click: previous">Previous</button>
-    <button class="ui right attached button" data-bind="click: next">Next</button>
+    <button id="button-previous" class="ui left attached button" data-bind="click: previous">Previous</button>
+    <button id="button-next" class="ui right attached button" data-bind="click: next">Next</button>
     <table class="ui table">
         <thead>
             <th>Date</th>
+            <th></th>
             <th>Home Team</th>
             <th>Score</th>
             <th>Away team</th>
         </thead>
         <tbody data-bind="foreach: $root.Fixtures">
             <tr>
-                <td data-bind="text: kickoff_time"></td>
+                <td data-bind="text: new Date(kickoff_time).toLocaleString()"></td>
+                <td data-bind="visible: started && !is_half_time, text: minutes"></td>
+                <td data-bind="visible: !started"></td>
+                <td data-bind="visible: is_half_time">HT</td>
                 <td data-bind="text: HomeTeam.name"></td>
                 <td>
                     <a data-bind="click: $root.viewGame, visible: started, text: team_h_score + ' - ' + team_a_score"></a>

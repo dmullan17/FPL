@@ -34,7 +34,10 @@ namespace FPL.Controllers
                 currentGameWeek = gameWeeks.FirstOrDefault(a => a.is_next);
             }
 
-            List<Game> currentGameWeekGames = new List<Game>();
+            List<Game> currentGameWeekGames = new List<Game>();     
+            List<Game> liveGames = new List<Game>();
+
+            // bool check = chkDisplay.IsChecked ?? false;
 
             foreach (Game g in games)
             {
@@ -42,10 +45,24 @@ namespace FPL.Controllers
                 {
                     currentGameWeekGames.Add(g);
                 }
+
+                if (g.started ?? false)
+                {
+                    if (!g.finished || !g.finished_provisional)
+                    {
+                        if (!g.finished_provisional){
+                            liveGames.Add(g);
+                        }
+                    }
+                }
             }
 
             currentGameWeekGames = await PopulateFixtureListByGameWeekId(currentGameWeekGames, currentGameWeek.id);
 
+            liveGames = await PopulateFixtureListByGameWeekId(liveGames, currentGameWeek.id);
+
+            viewModel.LiveGames = liveGames;
+            viewModel.CurrentGameweek = currentGameWeek;
             viewModel.Fixtures = currentGameWeekGames;
             viewModel.CurrentGameweekId = currentGameWeek.id;
 
@@ -81,7 +98,6 @@ namespace FPL.Controllers
 
             viewModel.Fixtures = currentGameWeekGames;
             viewModel.CurrentGameweekId = id;
-            viewModel.Game = new Game();
 
             return View(viewModel);
         }
@@ -121,7 +137,6 @@ namespace FPL.Controllers
                 games[i].AwayTeam = teams.Find(x => x.id == awayTeamId);
 
             }
-
             var allPlayers = AllChildren(JObject.Parse(content))
                 .First(c => c.Type == JTokenType.Array && c.Path.Contains("elements"))
                 .Children<JObject>();
@@ -134,45 +149,40 @@ namespace FPL.Controllers
                 allPlayers1.Add(p);
             }
 
-            List<Game> finishedGames = games.FindAll(item => item.finished);
-
-            if (finishedGames.Count != 0)
+            //populate home stats
+            for (var h = 0; h < games.Count; h++)
             {
-                //populate home stats
-                for (var h = 0; h < finishedGames.Count; h++)
+                for (var i = 0; i < games[h].stats.Count; i++)
                 {
-                    for (var i = 0; i < finishedGames[h].stats.Count; i++)
+                    for (var j = 0; j < games[h].stats[i].h.Count; j++)
                     {
-                        for (var j = 0; j < finishedGames[h].stats[i].h.Count; j++)
-                        {
-                            int playerId = finishedGames[h].stats[i].h[j].element;
+                        int playerId = games[h].stats[i].h[j].element;
 
-                            for (var k = 0; k < allPlayers1.Count; k++)
+                        for (var k = 0; k < allPlayers1.Count; k++)
+                        {
+                            if (allPlayers1[k].id == playerId)
                             {
-                                if (allPlayers1[k].id == playerId)
-                                {
-                                    games[h].stats[i].h[j].Player = allPlayers1[k];
-                                }
+                                games[h].stats[i].h[j].Player = allPlayers1[k];
                             }
                         }
                     }
                 }
+            }
 
-                //populate away stats
-                for (var h = 0; h < games.Count; h++)
+            //populate away stats
+            for (var h = 0; h < games.Count; h++)
+            {
+                for (var i = 0; i < games[h].stats.Count; i++)
                 {
-                    for (var i = 0; i < games[h].stats.Count; i++)
+                    for (var j = 0; j < games[h].stats[i].a.Count; j++)
                     {
-                        for (var j = 0; j < games[h].stats[i].a.Count; j++)
-                        {
-                            int playerId = games[h].stats[i].a[j].element;
+                        int playerId = games[h].stats[i].a[j].element;
 
-                            for (var k = 0; k < allPlayers1.Count; k++)
+                        for (var k = 0; k < allPlayers1.Count; k++)
+                        {
+                            if (allPlayers1[k].id == playerId)
                             {
-                                if (allPlayers1[k].id == playerId)
-                                {
-                                    games[h].stats[i].a[j].Player = allPlayers1[k];
-                                }
+                                games[h].stats[i].a[j].Player = allPlayers1[k];
                             }
                         }
                     }
