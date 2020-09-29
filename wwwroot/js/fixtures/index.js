@@ -63,7 +63,7 @@ FixturesViewModel = function (data) {
             {
                 var game = self.LiveGames()[i];
                 var date = new Date(game.kickoff_time);
-                var milliseconds = date.getTime(); 
+                var milliseconds = date.getTime();
 
                 for (var j = 0; j <= self.Fixtures().length - 1; j++)
                 {
@@ -83,6 +83,7 @@ FixturesViewModel = function (data) {
                             self.Fixtures()[j].is_half_time = false;
                         }
                     }
+
                 }
             }
         }

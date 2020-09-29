@@ -5,11 +5,11 @@
 @{ var data = JsonConvert.SerializeObject(Model); }
 
 @section PageScripts {
-<script src="~/js/fixtures/index.js"></script>
-<script type="text/javascript">
+    <script src="~/js/fixtures/index.js"></script>
+    <script type="text/javascript">
     const viewModel = new FixturesViewModel(@Html.Raw(data));
     ko.applyBindings(viewModel, document.getElementById("app"));
-</script>
+    </script>
 }
 
 <div id="app">
@@ -29,26 +29,23 @@
     <button id="button-next" class="ui right attached button" data-bind="click: next">Next</button>
     <table class="ui unstackable table">
         <thead>
-            <th>Date</th>
-            <th></th>
-            <th>Home Team</th>
-            <th>Score</th>
-            <th>Away team</th>
+        <th>Date</th>
+        <th></th>
+        <th>Home Team</th>
+        <th>Score</th>
+        <th>Away team</th>
         </thead>
         <tbody data-bind="foreach: $root.Fixtures">
             <tr>
                 <td data-bind="text: new Date(kickoff_time).toLocaleString()"></td>
                 <td data-bind="visible: !started"></td>
-                <td data-bind="visible: started && !is_half_time">
-                    <div class="ui green right pointing label" data-bind="visible: !finished"> Live</div>
-                    <span data-bind="text: minutes">FT</span>
-                </td>
-                <td data-bind="visible: is_half_time">
-                    <div class="ui green right pointing label">Live</div>
-                      <span>HT</span>
+                <td data-bind="visible: started">
+                    <span data-bind="visible: !finished && !finished_provisional && !is_half_time, text: minutes"></span>
+                    <span data-bind="visible: finished || finished_provisional && !is_half_time">FT</span>
+                    <span data-bind="visible: is_half_time">HT</span>
+                    <div data-bind="visible: !finished && !finished_provisional" class="ui green left pointing label">Live</div>
                 </td>
                 <td data-bind="text: HomeTeam.name, style: {'font-weight': did_team_h_win ? 'bold' : ''}"></td>
-                <!-- <div data-bind="style: { color: currentProfit() < 0 ? 'red' : 'black', 'font-weight': isSevere() ? 'bold' : '' }">...</div> -->
                 <td>
                     <a data-bind="click: $root.viewGame, visible: started, text: team_h_score + ' - ' + team_a_score"></a>
                 </td>
@@ -66,19 +63,19 @@
         <div class="image content">
             <table class="ui table">
                 <thead data-bind="with: $root.Game()">
-                    <th></th>
-                    <th data-bind="text: HomeTeam.name"></th>
-                    <th data-bind="text: AwayTeam.name"></th>
+                <th></th>
+                <th data-bind="text: HomeTeam.name"></th>
+                <th data-bind="text: AwayTeam.name"></th>
                 </thead>
                 <tbody data-bind="foreach: $root.GameStats">
                     <tr>
                         <td data-bind="text: identifier"></td>
                         <td data-bind="foreach: h">
-                            <span data-bind="text: Player.web_name"></span> 
+                            <span data-bind="text: Player.web_name"></span>
                             <span data-bind="text: value"></span>
                         </td>
                         <td data-bind="foreach: a">
-                            <span data-bind="text: Player.web_name"></span> 
+                            <span data-bind="text: Player.web_name"></span>
                             <span data-bind="text: value"></span>
                         </td>
                     </tr>
