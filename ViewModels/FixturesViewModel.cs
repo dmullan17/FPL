@@ -1,4 +1,5 @@
 using FPL.Models;
+using FPL.Models.GWPlayerStats;
 using System.Collections.Generic;
 
 namespace FPL.ViewModels
@@ -14,5 +15,9 @@ namespace FPL.ViewModels
         public GameWeek CurrentGameweek { get; set; }
 
         public Game Game { get; set; }
+
+        public Game LiveGame { get; set; }
+
+        public List<GWPlayer> GWPlayersStats { get; set; }
     }
 }

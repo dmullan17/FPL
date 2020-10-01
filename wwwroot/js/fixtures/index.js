@@ -11,6 +11,10 @@ FixturesViewModel = function (data) {
     self.LiveGames = ko.observableArray(data.LiveGames);
     self.Game = ko.observable();
     self.GameStats = ko.observableArray();
+    self.GWPlayerStats = ko.observableArray(data.GWPlayersStats);
+    self.SelectedHomeGWPlayerStats = ko.observableArray();
+    self.SelectedAwayGWPlayerStats = ko.observableArray();
+
 
     // self.GameweekName =  ko.computed(function () {
     //     return "GameWeek " + self.CurrentGameweekId();
@@ -39,14 +43,38 @@ FixturesViewModel = function (data) {
         window.location = "/fixtures/" + self.CurrentGameweekId();
     };
 
-    self.viewGame = function (data) {
-        self.Game(data);
-        self.GameStats(data.stats);
+    self.viewGame = function (game) {
+        self.Game(game);
+        self.GameStats(game.stats);
+
+        self.SelectedHomeGWPlayerStats(self.getTeamGwPlayerStats(game.HomeTeam.id));
+        self.SelectedAwayGWPlayerStats(self.getTeamGwPlayerStats(game.AwayTeam.id));
+
+
         $('.ui.modal').modal().modal('show');
+    };
+
+    self.getTeamGwPlayerStats = function (teamId) {
+
+        var teamPlayerStats = [];
+
+        for (var i = 0; i < self.GWPlayerStats().length; i++) {
+
+            if (self.GWPlayerStats()[i].team.id == teamId)
+            {
+                teamPlayerStats.push(self.GWPlayerStats()[i]);
+            }
+        }
+
+        teamPlayerStats = teamPlayerStats.sort((a, b) => parseFloat(a.player.element_type) - parseFloat(b.player.element_type));
+
+        return teamPlayerStats;
     };
 
 
     self.init = function (data) {
+        $('.menu .item').tab();
+
         // $('.ui.modal').modal();
         if (self.CurrentGameweekId() == 1)
         {

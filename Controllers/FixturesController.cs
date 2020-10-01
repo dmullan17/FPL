@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FPL.Http;
 using FPL.Models;
+using FPL.Models.GWPlayerStats;
 using FPL.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -54,7 +55,7 @@ namespace FPL.Controllers
                     }
                 }
 
-                if (g.finished)
+                if (g.finished || g.finished_provisional)
                 {
                     if (g.team_h_score > g.team_a_score)
                     {
@@ -67,9 +68,11 @@ namespace FPL.Controllers
                 }
             }
 
-            currentGameWeekGames = await PopulateFixtureListByGameWeekId(currentGameWeekGames, currentGameWeek.id);
+            List<GWPlayer> gwPlayerStatsLive = new List<GWPlayer>();
+            List<GWPlayer> gwPlayerStatsCurrent = new List<GWPlayer>();
 
-            liveGames = await PopulateFixtureListByGameWeekId(liveGames, currentGameWeek.id);
+            (gwPlayerStatsLive, liveGames) = await PopulateFixtureListByGameWeekId(liveGames, currentGameWeek.id);
+            (gwPlayerStatsCurrent, currentGameWeekGames) = await PopulateFixtureListByGameWeekId(currentGameWeekGames, currentGameWeek.id);
 
             viewModel.LiveGames = liveGames;
             viewModel.CurrentGameweek = currentGameWeek;
@@ -116,7 +119,7 @@ namespace FPL.Controllers
                     }
                 }
 
-                if (g.finished)
+                if (g.finished || g.finished_provisional)
                 {
                     if (g.team_h_score > g.team_a_score)
                     {
@@ -129,19 +132,73 @@ namespace FPL.Controllers
                 }
             }
 
-            liveGames = await PopulateFixtureListByGameWeekId(liveGames, id);
-            currentGameWeekGames = await PopulateFixtureListByGameWeekId(currentGameWeekGames, id);
+            List<GWPlayer> gwPlayerStatsLive = new List<GWPlayer>();
+            List<GWPlayer> gwPlayerStatsCurrent = new List<GWPlayer>();
+
+            (gwPlayerStatsLive, liveGames) = await PopulateFixtureListByGameWeekId(liveGames, id);
+            (gwPlayerStatsCurrent, currentGameWeekGames) = await PopulateFixtureListByGameWeekId(currentGameWeekGames, id);
+            // currentGameWeekGames = await AddGameweekDataToFixtureListByGameWeekId(currentGameWeekGames, id);
 
             viewModel.LiveGames = liveGames;
             viewModel.Fixtures = currentGameWeekGames;
             viewModel.CurrentGameweekId = id;
+            viewModel.GWPlayersStats = gwPlayerStatsCurrent;
 
             return View(viewModel);
         }
 
+        private async Task<List<GWPlayer>> AddGameweekDataToPlayerListByGameWeekId(List<Player> players, List<Team> teams, int gameWeekId)
+        {
+            var client = new FPLHttpClient();
+
+            //get player stats specific to the gameweek
+            var response = await client.GetAsync("event/" + gameWeekId + "/live/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var allLiveGwPlayers = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("elements"))
+                .Children<JObject>();
+
+            List<GWPlayer> allLiveGwPlayers1 = new List<GWPlayer>();
+
+            foreach (JObject result in allLiveGwPlayers)
+            {
+                GWPlayer p = result.ToObject<GWPlayer>();
+                
+                if (p.stats.minutes != 0)
+                {
+                    allLiveGwPlayers1.Add(p);
+                }
+            }
+
+            foreach (GWPlayer gwplayer in allLiveGwPlayers1)
+            {
+                foreach (Player player in players)
+                {
+                    if (gwplayer.id == player.id)
+                    {
+                        gwplayer.player = player;
+                    }
+                }
+                foreach (Team team in teams)
+                {
+                    if (gwplayer.player.team == team.id)
+                    {
+                        gwplayer.team = team;
+                    }
+                }
+            }
+
+            return allLiveGwPlayers1;
+
+        }
+
 
         //populates a specified team's fixtures and results
-        private async Task<List<Game>> PopulateFixtureListByGameWeekId(List<Game> games, int gameWeekId)
+        private async Task<(List<GWPlayer>, List<Game>)> PopulateFixtureListByGameWeekId(List<Game> games, int gameWeekId)
         {
             var client = new FPLHttpClient();
 
@@ -186,6 +243,8 @@ namespace FPL.Controllers
                 allPlayers1.Add(p);
             }
 
+            List<GWPlayer> gwPlayerStats = await AddGameweekDataToPlayerListByGameWeekId(allPlayers1, teams, gameWeekId);
+
             //populate home stats
             for (var h = 0; h < games.Count; h++)
             {
@@ -202,6 +261,14 @@ namespace FPL.Controllers
                                 games[h].stats[i].h[j].Player = allPlayers1[k];
                             }
                         }
+
+                        // for (var l = 0; l < allLiveGwPlayers1.Count; l++)
+                        // {
+                        //     if (allLiveGwPlayers1[l].id == playerId)
+                        //     {
+                        //         games[h].stats[i].h[j].Player.minutes = allLiveGwPlayers1[l].minutes;
+                        //     }
+                        // }
                     }
                 }
             }
@@ -226,7 +293,8 @@ namespace FPL.Controllers
                 }
             }
 
-            return games;
+            return (gwPlayerStats, games);
+            // return games;
         }
 
     }
