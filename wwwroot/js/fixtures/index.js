@@ -66,7 +66,7 @@ FixturesViewModel = function (data) {
             }
         }
 
-        teamPlayerStats = teamPlayerStats.sort((a, b) => parseFloat(a.player.element_type) - parseFloat(b.player.element_type));
+        teamPlayerStats = teamPlayerStats.sort((a, b) => a.player.element_type - b.player.element_type);
 
         return teamPlayerStats;
     };
