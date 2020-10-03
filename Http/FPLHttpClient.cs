@@ -75,6 +75,34 @@ namespace FPL.Http
             }
         }
 
+        public async Task<HttpResponseMessage> GetAuthAsync(HttpClientHandler handler, string resource)
+        {
+            using (var client = new HttpClient(handler) { BaseAddress = new Uri(GetBaseUrl()) })
+            {
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.Timeout = DefaultTimeout;
+
+                foreach (var kvp in _headers)
+                {
+                    client.DefaultRequestHeaders.Add(kvp.Key, kvp.Value);
+                }
+
+                HttpResponseMessage response;
+
+                try
+                {
+                    response = await client.GetAsync(resource).ConfigureAwait(false);
+                }
+                catch (HttpRequestException)
+                {
+                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                }
+
+                return response;
+            }
+        }
+
         public async Task<HttpResponseMessage> GetAsync(string resource, IDictionary<string, string> parameters)
         {
             using (var client = new HttpClient { BaseAddress = new Uri(GetBaseUrl()) })

@@ -1,0 +1,25 @@
+﻿@using Newtonsoft.Json;
+
+@model FPL.ViewModels.FPLViewModel
+
+@{ var data = JsonConvert.SerializeObject(Model); }
+
+@section PageScripts {
+    <script src="~/js/fpl/index.js"></script>
+    <script type="text/javascript">
+    const viewModel = new FPLViewModel(@Html.Raw(data));
+    ko.applyBindings(viewModel, document.getElementById("app"));
+    </script>
+}
+
+<div id="app">
+    <table class="ui very basic table">
+        <tbody data-bind="foreach: $root.Picks">
+            <tr>
+                <td>
+                    <a data-bind="text: player.web_name"></a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

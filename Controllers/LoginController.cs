@@ -56,7 +56,7 @@ namespace FPL.Controllers
 
             return Json(new LoginViewModel
             {
-                Redirect = "/home"
+                Redirect = "/fpl"
             });
         }
     }
