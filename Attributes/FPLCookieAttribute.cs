@@ -18,7 +18,7 @@ namespace FPL.Attributes
                 filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new
                 {
                     action = "Index",
-                    controller = "Home"
+                    controller = "Login"
                 }));
 
                 return;
@@ -32,7 +32,7 @@ namespace FPL.Attributes
                     filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new
                     {
                         action = "Index",
-                        controller = "Home"
+                        controller = "Login"
                     }));
 
                     return;
