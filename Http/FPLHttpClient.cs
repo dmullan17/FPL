@@ -1,4 +1,7 @@
 ﻿using FPL.Contracts;
+using FPL.Models;
+using Microsoft.Net.Http.Headers;
+using Microsoft.VisualStudio.Web.CodeGeneration.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +10,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace FPL.Http
 {
@@ -24,6 +28,11 @@ namespace FPL.Http
         public string GetBaseUrl()
         {
             return "https://fantasy.premierleague.com/api/";
+        }
+
+        public string GetLoginUrl()
+        {
+            return "https://users.premierleague.com/accounts/login/";
         }
 
         public void SetHeader(string key, string value)
@@ -128,6 +137,44 @@ namespace FPL.Http
             }
         }
 
+        public async Task<HttpResponseMessage> PostLoginAsync(HttpClientHandler handler, string resource, LoginAttempt body)
+        {
+            using (var client = new HttpClient(handler) { BaseAddress = new Uri(GetLoginUrl()) })
+            {
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.Timeout = DefaultTimeout;
+
+                IList<KeyValuePair<string, string>> nameValueCollection = new List<KeyValuePair<string, string>> {
+                    { new KeyValuePair<string, string>("login", body.Login) },
+                    { new KeyValuePair<string, string>("password", body.Password) },
+                    { new KeyValuePair<string, string>("redirect_uri", "https://fantasy.premierleague.com/") },
+                    { new KeyValuePair<string, string>("app", "plfpl-web") },
+                };
+
+                foreach (var kvp in _headers)
+                {
+                    client.DefaultRequestHeaders.Add(kvp.Key, kvp.Value);
+                }
+
+                HttpResponseMessage response;
+
+                try
+                {
+                    response = await client
+                        .PostAsync(resource, new FormUrlEncodedContent(nameValueCollection))
+                        .ConfigureAwait(false);
+
+                }
+                catch (HttpRequestException)
+                {
+                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                }
+
+                return response;
+            }
+        }
+
         public async Task<HttpResponseMessage> PutAsync(string resource, string body)
         {
             using (var client = new HttpClient { BaseAddress = new Uri(GetBaseUrl()) })
@@ -210,5 +257,6 @@ namespace FPL.Http
 
             return result.EndsWith("&") ? result.Substring(0, result.Length - 1) : result;
         }
+
     }
 }

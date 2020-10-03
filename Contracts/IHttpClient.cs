@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FPL.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -17,6 +18,8 @@ namespace FPL.Contracts
         Task<HttpResponseMessage> GetAsync(string resource, IDictionary<string, string> parameters);
 
         Task<HttpResponseMessage> PostAsync(string resource, string body);
+
+        Task<HttpResponseMessage> PostLoginAsync(HttpClientHandler handler, string resource, LoginAttempt body);
 
         Task<HttpResponseMessage> PutAsync(string resource, string body);
 

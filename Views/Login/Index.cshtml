@@ -1,0 +1,50 @@
+﻿@using Newtonsoft.Json;
+
+@model FPL.ViewModels.LoginViewModel
+
+@{ var data = JsonConvert.SerializeObject(Model); }
+
+@section PageScripts {
+    <script src="~/js/login/index.js"></script>
+    <script type="text/javascript">
+    const viewModel = new LoginViewModel(@Html.Raw(data));
+    ko.applyBindings(viewModel, document.getElementById("app"));
+    </script>
+}
+
+<div id="app">
+    <div id="div-login" class="ui middle aligned center aligned grid">
+        <div class="column">
+            <form class="ui large form" id="form-login">
+                @*<a href="@Url.Action("Index", "Home")"><img src="~/Images/PCU/serveprotect.jpg" class="ui image" alt="Serve and Protect CU"></a>
+                <h3 class="ui top left aligned attached pcu header">
+                    Serve and Protect Credit Union
+                </h3>*@
+                <div class="ui attached segment">
+                    <h4 class="ui left aligned header">
+                        Login
+                        @*<div class="sub header">Sign in to continue</div>*@
+                    </h4>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="user icon"></i>
+                            <input type="text" data-bind="textInput: $root.Email">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="lock icon"></i>
+                            <input type="password" data-bind="textInput: $root.Password">
+                        </div>
+                    </div>
+                    <div class="ui error message"></div>
+                    <button class="ui right floated right labeled large icon blue button" id="button-login" data-bind="click: login">
+                        <i class="right arrow icon"></i>
+                        Login
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
