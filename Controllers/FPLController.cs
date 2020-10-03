@@ -1,4 +1,5 @@
-﻿using FPL.Http;
+﻿using FPL.Attributes;
+using FPL.Http;
 using FPL.Models;
 using FPL.Models.FPL;
 using FPL.Models.GWPlayerStats;
@@ -15,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace FPL.Controllers
 {
-    [Authorize]
+    [FPLCookie]
     public class FPLController : BaseController
     {
         private static int TeamId = 2675560;
