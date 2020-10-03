@@ -165,7 +165,7 @@ namespace FPL.Http
             }
         }
 
-        public async Task<HttpResponseMessage> PostLoginAsync(HttpClientHandler handler, string resource, LoginAttempt body)
+        public async Task<HttpResponseMessage> PostLoginAsync(HttpClientHandler handler, LoginAttempt body)
         {
             using (var client = new HttpClient(handler) { BaseAddress = new Uri(GetLoginUrl()) })
             {
@@ -173,7 +173,7 @@ namespace FPL.Http
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.Timeout = DefaultTimeout;
 
-                IList<KeyValuePair<string, string>> nameValueCollection = new List<KeyValuePair<string, string>> {
+                IList<KeyValuePair<string, string>> fplLoginRequest = new List<KeyValuePair<string, string>> {
                     { new KeyValuePair<string, string>("login", body.Login) },
                     { new KeyValuePair<string, string>("password", body.Password) },
                     { new KeyValuePair<string, string>("redirect_uri", "https://fantasy.premierleague.com/") },
@@ -190,7 +190,7 @@ namespace FPL.Http
                 try
                 {
                     response = await client
-                        .PostAsync(resource, new FormUrlEncodedContent(nameValueCollection))
+                        .PostAsync(GetLoginUrl(), new FormUrlEncodedContent(fplLoginRequest))
                         .ConfigureAwait(false);
 
                 }

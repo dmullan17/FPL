@@ -27,7 +27,7 @@ namespace FPL.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(LoginAttempt loginAttempt)
+        public async Task<IActionResult> Index([FromBody] LoginViewModel model)
         {
             var client = new FPLHttpClient();
 
@@ -35,19 +35,17 @@ namespace FPL.Controllers
             HttpClientHandler handler = new HttpClientHandler();
             handler.CookieContainer = cookies;
 
-            var loginAttempt2 = new LoginAttempt
+            var loginAttempt = new LoginAttempt
             {
-                Login = "dannymullan17@gmail.com",
-                Password = "eRx%90zVSWQo"
+                Login = model.Email,
+                Password = model.Password
             };
 
-            var response = await client.PostLoginAsync(handler, GetFplLoginUrl(), loginAttempt2);
+            var response = await client.PostLoginAsync(handler, loginAttempt);
 
             response.EnsureSuccessStatusCode();
 
-            var uri = new Uri(GetFplLoginUrl());
-
-            var responseCookies = cookies.GetCookies(uri).Cast<Cookie>();
+            var responseCookies = cookies.GetCookies(new Uri(GetFplLoginUrl())).Cast<Cookie>();
 
             foreach (Cookie cookie in responseCookies)
             {

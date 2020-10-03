@@ -19,7 +19,7 @@ namespace FPL.Contracts
 
         Task<HttpResponseMessage> PostAsync(string resource, string body);
 
-        Task<HttpResponseMessage> PostLoginAsync(HttpClientHandler handler, string resource, LoginAttempt body);
+        Task<HttpResponseMessage> PostLoginAsync(HttpClientHandler handler, LoginAttempt body);
 
         Task<HttpResponseMessage> PutAsync(string resource, string body);
 
