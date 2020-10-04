@@ -21,5 +21,6 @@ namespace FPL.Models.GWPlayerStats
         public string ict_index { get; set; }
         public int total_points { get; set; }
         public bool in_dreamteam { get; set; }
+        public int gw_points { get; set; }
     }
 }

@@ -11,5 +11,9 @@ namespace FPL.ViewModels
         public List<Pick> picks { get; set; }
         public List<Chip> chips { get; set; }
         public Transfers transfers { get; set; }
+
+        public Team Team { get; set; }
+        public int GWPoints { get; set; }
+        public int TotalPoints { get; set; }
     }
 }

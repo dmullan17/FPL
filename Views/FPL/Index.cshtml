@@ -13,13 +13,57 @@
 }
 
 <div id="app">
-    <table class="ui very basic table">
-        <tbody data-bind="foreach: $root.Picks">
-            <tr>
-                <td>
-                    <a data-bind="text: player.web_name"></a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="ui container">
+        <h3 class="ui header" data-bind="with: $root.Team()">
+            <span data-bind="text: name"></span>
+        </h3>
+        <h4 class="ui header">
+            Total Points: <span data-bind="text: $root.TotalPoints()"></span>
+        </h4>
+        <h4 class="ui header">
+            GW Points: <span data-bind="text: $root.GWPoints()"></span>
+        </h4>
+        <table class="ui table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Minutes</th>
+                    <th>Goals</th>
+                    <th>Goals Conceded</th>
+                    <th>Assists</th>
+                    <th>Bonus</th>
+                    <th>GW Points</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: $root.Picks">
+                <tr>
+                    <td>
+                        <span data-bind="text: player.web_name"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: player.element_type"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: GWPlayer.stats.minutes"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: GWPlayer.stats.goals_scored"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: GWPlayer.stats.goals_conceded"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: GWPlayer.stats.assists"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: GWPlayer.stats.bonus"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: GWPlayer.stats.gw_points"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

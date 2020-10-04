@@ -6,6 +6,7 @@ using FPL.Models.GWPlayerStats;
 using FPL.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Team = FPL.Models.FPL.Team;
 
 namespace FPL.Controllers
 {
@@ -20,7 +22,6 @@ namespace FPL.Controllers
     public class FPLController : BaseController
     {
         private static int TeamId = 2675560;
-        private static int GameWeekId = 4;
 
         [HttpGet]
         public async Task<IActionResult> Index()
@@ -61,10 +62,67 @@ namespace FPL.Controllers
 
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
             teamPicks = await AddPlayerGameweekDataToTeam(teamPicks);
+            int gwpoints = GetGameWeekPoints(teamPicks);
+            Team teamDetails = await GetTeamInfo();
 
             viewModel.picks = teamPicks;
+            viewModel.Team = teamDetails;
+            viewModel.GWPoints = gwpoints;
+            viewModel.TotalPoints = (teamDetails.summary_overall_points - teamDetails.summary_event_points) + gwpoints;
 
             return View(viewModel);
+        }
+
+        private int GetGameWeekPoints(List<Pick> teamPicks)
+        {
+            int gwpoints = 0;
+
+            foreach (Pick pick in teamPicks)
+            {
+                while (pick.position < 12)
+                {
+                    if (pick.is_captain)
+                    {
+                        gwpoints += pick.GWPlayer.stats.gw_points * 2;
+                    }
+                    else
+                    {
+                        gwpoints += pick.GWPlayer.stats.gw_points;
+                    }
+
+                    break;
+                }
+            }
+
+            return gwpoints;
+        }
+
+        private async Task<Team> GetTeamInfo()
+        {
+            CookieContainer cookies = new CookieContainer();
+            HttpClientHandler handler = new HttpClientHandler();
+            handler.CookieContainer = cookies;
+
+            Uri target = new Uri("https://fantasy.premierleague.com/api/");
+
+            foreach (string s in Request.Cookies.Keys)
+            {
+                string cookieValue = Request.Cookies[s];
+                cookies.Add(new Cookie(s, cookieValue) { Domain = target.Host });
+            }
+
+            var client = new FPLHttpClient();
+
+            var response = await client.GetAuthAsync(handler, $"entry/{TeamId}/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            Team teamDetails = JsonConvert.DeserializeObject<Team>(content);
+
+            return teamDetails;
+
         }
 
         private async Task<List<Pick>> AddPlayerSummaryDataToTeam(List<Pick> teamPicks)
@@ -103,8 +161,10 @@ namespace FPL.Controllers
         {
             var client = new FPLHttpClient();
 
+            int currentGW = await GetCurrentGameWeek();
+
             //get player stats specific to the gameweek
-            var response = await client.GetAsync("event/" + GameWeekId + "/live/");
+            var response = await client.GetAsync("event/" + currentGW + "/live/");
 
             response.EnsureSuccessStatusCode();
 
@@ -129,6 +189,21 @@ namespace FPL.Controllers
                     if (pick.element == gwplayer.id)
                     {
                         pick.GWPlayer = gwplayer;
+                    }
+                }
+            }
+
+            //totalling a players total gw stats
+            for (var i = 0; i < teamPicks.Count; i++)
+            {
+                for (var j = 0; j < teamPicks[i].GWPlayer.explain.Count; j++)
+                {
+                    for (var k = 0; k < teamPicks[i].GWPlayer.explain[j].stats.Count; k++)
+                    {
+                        if (teamPicks[i].GWPlayer.explain[j].stats[k].points != 0)
+                        {
+                            teamPicks[i].GWPlayer.stats.gw_points += teamPicks[i].GWPlayer.explain[j].stats[k].points;
+                        }
                     }
                 }
             }
