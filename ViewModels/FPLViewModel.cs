@@ -8,7 +8,7 @@ namespace FPL.ViewModels
 {
     public class FPLViewModel
     {
-        public List<Pick> picks { get; set; }
+        public GWTeam GWTeam { get; set; }
         public List<Chip> chips { get; set; }
         public Transfers transfers { get; set; }
 

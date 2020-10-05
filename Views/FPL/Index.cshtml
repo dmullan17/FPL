@@ -27,20 +27,25 @@
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th data-bind="visible: $root.GWTeam().automatic_subs.length > 0"></th>
                     <th>Position</th>
-                    <th>Minutes</th>
-                    <th>Goals</th>
-                    <th>Goals Conceded</th>
+                    <th>Mins</th>
+                    <th>GF</th>
+                    <th>GA</th>
                     <th>Assists</th>
                     <th>Bonus</th>
                     <th>GW Points</th>
                 </tr>
             </thead>
-            <tbody data-bind="foreach: $root.Picks">
-                <tr>
+            <tbody data-bind="foreach: $root.GWTeam().picks">
+                <tr data-bind="style: { 'background-color': $root.getColor($data.multiplier) }">
                     <td>
                         <span data-bind="text: player.web_name"></span>
                         <span data-bind="visible: is_captain"><i class="copyright icon"></i></span>
+                    </td>
+                    <td data-bind="visible: $root.GWTeam().automatic_subs.length > 0">
+                        <span data-bind="visible: $root.SubOn($data)">On</span>
+                        <span data-bind="visible: $root.SubOff($data)">Off</span>
                     </td>
                     <td>
                         <span data-bind="text: player.element_type"></span>

@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace FPL.Models.FPL
 {
-    public class Pick
+    public class Pick : BasePick
     {
-        public Player player { get; set; }
-        public GWPlayer GWPlayer { get; set; }
         public int element { get; set; }
         public int position { get; set; }
         public int selling_price { get; set; }

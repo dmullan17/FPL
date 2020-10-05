@@ -54,12 +54,28 @@ namespace FPL.Controllers
                 teamPicks.Add(p);
             }
 
+            var teamAutoSubsJSON = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("automatic_subs"))
+                .Children<JObject>();
+
+            List<AutomaticSub> autoSubs = new List<AutomaticSub>();
+
+            foreach (JObject result in teamAutoSubsJSON)
+            {
+                AutomaticSub sub = result.ToObject<AutomaticSub>();
+                autoSubs.Add(sub);
+            }
+
+            GWTeam gwTeam = new GWTeam();
+            gwTeam.picks = teamPicks;
+            gwTeam.automatic_subs = autoSubs;
+
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
             teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, currentGwId);
             int gwpoints = GetGameWeekPoints(teamPicks);
             Team teamDetails = await GetTeamInfo();
 
-            viewModel.picks = teamPicks;
+            viewModel.GWTeam = gwTeam;
             viewModel.Team = teamDetails;
             viewModel.GWPoints = gwpoints;
             viewModel.TotalPoints = (teamDetails.summary_overall_points - teamDetails.summary_event_points) + gwpoints;
@@ -98,12 +114,28 @@ namespace FPL.Controllers
                 teamPicks.Add(p);
             }
 
+            var teamAutoSubsJSON = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("automatic_subs"))
+                .Children<JObject>();
+
+            List<AutomaticSub> autoSubs = new List<AutomaticSub>();
+
+            foreach (JObject result in teamAutoSubsJSON)
+            {
+                AutomaticSub sub = result.ToObject<AutomaticSub>();
+                autoSubs.Add(sub);
+            }
+
+            GWTeam gwTeam = new GWTeam();
+            gwTeam.picks = teamPicks;
+            gwTeam.automatic_subs = autoSubs;
+
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
             teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, id);
             int gwpoints = GetGameWeekPoints(teamPicks);
             Team teamDetails = await GetTeamInfo();
 
-            viewModel.picks = teamPicks;
+            viewModel.GWTeam = gwTeam;
             viewModel.Team = teamDetails;
             viewModel.GWPoints = gwpoints;
             viewModel.TotalPoints = teamDetails.summary_overall_points;
