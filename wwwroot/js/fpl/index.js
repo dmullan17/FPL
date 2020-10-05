@@ -7,6 +7,7 @@
     self.Team = ko.observable(data.Team);
     self.TotalPoints = ko.observable(data.TotalPoints);
     self.GWPoints = ko.observable(data.GWPoints);
+    self.GameweekId = ko.observable(data.GameweekId);
 
     self.OnBench = ko.pureComputed(function (entry) {
         return this;

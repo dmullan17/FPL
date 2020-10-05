@@ -34,7 +34,9 @@ namespace FPL.Controllers
 
             var client = new FPLHttpClient();
 
-            var response = await client.GetAuthAsync(handler, $"my-team/{TeamId}/");
+            int currentGwId = await GetCurrentGameWeekId();
+
+            var response = await client.GetAuthAsync(handler, $"entry/{TeamId}/event/{currentGwId}/picks/");
 
             response.EnsureSuccessStatusCode();
 
@@ -53,7 +55,7 @@ namespace FPL.Controllers
             }
 
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
-            teamPicks = await AddPlayerGameweekDataToTeam(teamPicks);
+            teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, currentGwId);
             int gwpoints = GetGameWeekPoints(teamPicks);
             Team teamDetails = await GetTeamInfo();
 
@@ -61,8 +63,54 @@ namespace FPL.Controllers
             viewModel.Team = teamDetails;
             viewModel.GWPoints = gwpoints;
             viewModel.TotalPoints = (teamDetails.summary_overall_points - teamDetails.summary_event_points) + gwpoints;
+            viewModel.GameweekId = currentGwId;
 
             return View(viewModel);
+        }
+
+        [HttpGet]
+        [Route("fpl/{id}")]
+        public async Task<IActionResult> Index(int id)
+        {
+            var viewModel = new FPLViewModel();
+
+            HttpClientHandler handler = new HttpClientHandler();
+
+            handler = CreateHandler(handler);
+
+            var client = new FPLHttpClient();
+
+            var response = await client.GetAuthAsync(handler, $"entry/{TeamId}/event/{id}/picks/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var teamPicksJSON = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("picks"))
+                .Children<JObject>();
+
+            List<Pick> teamPicks = new List<Pick>();
+
+            foreach (JObject result in teamPicksJSON)
+            {
+                Pick p = result.ToObject<Pick>();
+                teamPicks.Add(p);
+            }
+
+            teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
+            teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, id);
+            int gwpoints = GetGameWeekPoints(teamPicks);
+            Team teamDetails = await GetTeamInfo();
+
+            viewModel.picks = teamPicks;
+            viewModel.Team = teamDetails;
+            viewModel.GWPoints = gwpoints;
+            viewModel.TotalPoints = teamDetails.summary_overall_points;
+            viewModel.GameweekId = id;
+
+            return View(viewModel);
+
         }
 
         private int GetGameWeekPoints(List<Pick> teamPicks)
@@ -133,14 +181,12 @@ namespace FPL.Controllers
             return teamPicks;
         }
 
-        private async Task<List<Pick>> AddPlayerGameweekDataToTeam(List<Pick> teamPicks)
+        private async Task<List<Pick>> AddPlayerGameweekDataToTeam(List<Pick> teamPicks, int gameweekId)
         {
             var client = new FPLHttpClient();
 
-            int currentGW = await GetCurrentGameWeek();
-
             //get player stats specific to the gameweek
-            var response = await client.GetAsync("event/" + currentGW + "/live/");
+            var response = await client.GetAsync("event/" + gameweekId + "/live/");
 
             response.EnsureSuccessStatusCode();
 

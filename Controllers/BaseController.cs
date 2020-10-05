@@ -20,7 +20,7 @@ namespace FPL.Controllers
             return "https://fantasy.premierleague.com/api/";
         }
 
-        public async Task<int> GetCurrentGameWeek()
+        public async Task<int> GetCurrentGameWeekId()
         {
             var client = new FPLHttpClient();
 

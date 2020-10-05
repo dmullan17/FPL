@@ -15,5 +15,6 @@ namespace FPL.ViewModels
         public Team Team { get; set; }
         public int GWPoints { get; set; }
         public int TotalPoints { get; set; }
+        public int GameweekId { get; set;  } 
     }
 }
