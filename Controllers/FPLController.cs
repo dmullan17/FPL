@@ -28,17 +28,9 @@ namespace FPL.Controllers
         {
             var viewModel = new FPLViewModel();
 
-            CookieContainer cookies = new CookieContainer();
             HttpClientHandler handler = new HttpClientHandler();
-            handler.CookieContainer = cookies;
 
-            Uri target = new Uri("https://fantasy.premierleague.com/api/");
-
-            foreach (string s in Request.Cookies.Keys)
-            {
-                string cookieValue = Request.Cookies[s];
-                cookies.Add(new Cookie(s, cookieValue) { Domain = target.Host } );
-            }
+            handler = CreateHandler(handler);
 
             var client = new FPLHttpClient();
 
@@ -81,15 +73,7 @@ namespace FPL.Controllers
             {
                 while (pick.position < 12)
                 {
-                    if (pick.is_captain)
-                    {
-                        gwpoints += pick.GWPlayer.stats.gw_points * 2;
-                    }
-                    else
-                    {
-                        gwpoints += pick.GWPlayer.stats.gw_points;
-                    }
-
+                    gwpoints += pick.GWPlayer.stats.gw_points;
                     break;
                 }
             }
@@ -99,17 +83,9 @@ namespace FPL.Controllers
 
         private async Task<Team> GetTeamInfo()
         {
-            CookieContainer cookies = new CookieContainer();
             HttpClientHandler handler = new HttpClientHandler();
-            handler.CookieContainer = cookies;
 
-            Uri target = new Uri("https://fantasy.premierleague.com/api/");
-
-            foreach (string s in Request.Cookies.Keys)
-            {
-                string cookieValue = Request.Cookies[s];
-                cookies.Add(new Cookie(s, cookieValue) { Domain = target.Host });
-            }
+            handler = CreateHandler(handler);
 
             var client = new FPLHttpClient();
 
@@ -202,7 +178,14 @@ namespace FPL.Controllers
                     {
                         if (teamPicks[i].GWPlayer.explain[j].stats[k].points != 0)
                         {
-                            teamPicks[i].GWPlayer.stats.gw_points += teamPicks[i].GWPlayer.explain[j].stats[k].points;
+                            if (teamPicks[i].is_captain)
+                            {
+                                teamPicks[i].GWPlayer.stats.gw_points += teamPicks[i].GWPlayer.explain[j].stats[k].points * teamPicks[i].multiplier;
+                            }
+                            else
+                            {
+                                teamPicks[i].GWPlayer.stats.gw_points += teamPicks[i].GWPlayer.explain[j].stats[k].points;
+                            }
                         }
                     }
                 }

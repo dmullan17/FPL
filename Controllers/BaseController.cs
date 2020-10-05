@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using FPL.Http;
 using FPL.Models;
@@ -13,6 +15,11 @@ namespace FPL.Controllers
 {
     public class BaseController : Controller
     {
+        public string GetBaseUrl()
+        {
+            return "https://fantasy.premierleague.com/api/";
+        }
+
         public async Task<int> GetCurrentGameWeek()
         {
             var client = new FPLHttpClient();
@@ -90,6 +97,21 @@ namespace FPL.Controllers
                     yield return cc;
                 }
             }
+        }
+
+        public HttpClientHandler CreateHandler(HttpClientHandler handler)
+        {
+            CookieContainer cookies = new CookieContainer();
+            handler.CookieContainer = cookies;
+            Uri target = new Uri(GetBaseUrl());
+
+            foreach (string s in Request.Cookies.Keys)
+            {
+                string cookieValue = Request.Cookies[s];
+                cookies.Add(new Cookie(s, cookieValue) { Domain = target.Host });
+            }
+
+            return handler;
         }
 
     }

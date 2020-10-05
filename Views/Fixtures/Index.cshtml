@@ -29,11 +29,13 @@
     <button id="button-next" class="ui right attached button" data-bind="click: next">Next</button>
     <table class="ui unstackable table">
         <thead>
-            <th>Date</th>
-            <th></th>
-            <th>Home Team</th>
-            <th>Score</th>
-            <th>Away team</th>
+            <tr>
+                <th>Date</th>
+                <th></th>
+                <th>Home Team</th>
+                <th>Score</th>
+                <th>Away team</th>
+            </tr>
         </thead>
         <tbody data-bind="foreach: $root.Fixtures">
             <tr>

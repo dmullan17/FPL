@@ -8,6 +8,15 @@
     self.TotalPoints = ko.observable(data.TotalPoints);
     self.GWPoints = ko.observable(data.GWPoints);
 
+    self.OnBench = ko.pureComputed(function (entry) {
+        return this;
+    });
+
+    //self.OnBench = function (entry) {
+    //    //return entry.type === 'file' ? 'icon-file' : 'icon-filder';
+    //    return;
+    //};
+
     self.init = function () {
         //totalling a players total gw stats
         //for (var i = 0; i < self.Picks().length; i++) {
