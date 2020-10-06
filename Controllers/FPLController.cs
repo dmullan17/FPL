@@ -30,13 +30,11 @@ namespace FPL.Controllers
 
             HttpClientHandler handler = new HttpClientHandler();
 
-            handler = CreateHandler(handler);
-
             var client = new FPLHttpClient();
 
             int currentGwId = await GetCurrentGameWeekId();
 
-            var response = await client.GetAuthAsync(handler, $"entry/{TeamId}/event/{currentGwId}/picks/");
+            var response = await client.GetAuthAsync(CreateHandler(handler), $"entry/{TeamId}/event/{currentGwId}/picks/");
 
             response.EnsureSuccessStatusCode();
 
@@ -92,11 +90,16 @@ namespace FPL.Controllers
 
             HttpClientHandler handler = new HttpClientHandler();
 
-            handler = CreateHandler(handler);
-
             var client = new FPLHttpClient();
 
-            var response = await client.GetAuthAsync(handler, $"entry/{TeamId}/event/{id}/picks/");
+            int currentGwId = await GetCurrentGameWeekId();
+
+            if (id > currentGwId)
+            {
+                id = currentGwId;
+            }
+
+            var response = await client.GetAuthAsync(CreateHandler(handler), $"entry/{TeamId}/event/{id}/picks/");
 
             response.EnsureSuccessStatusCode();
 
