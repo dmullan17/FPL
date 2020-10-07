@@ -28,5 +28,7 @@ namespace FPL.Models
         public int strength_defence_home { get; set; }
         public int strength_defence_away { get; set; }
         public int pulse_id { get; set; }
+        public List<Game> Fixtures { get; set; }
+        public List<Game> Results { get; set; }
     }
 }

@@ -5,7 +5,7 @@
 @{ var data = JsonConvert.SerializeObject(Model); }
 
 @section PageScripts {
-    <script src="~/js/fpl/index.js"></script>
+    <script src="~/js/fpl/myteam.js"></script>
     <script type="text/javascript">
     const viewModel = new FPLViewModel(@Html.Raw(data));
     ko.applyBindings(viewModel, document.getElementById("app"));
@@ -20,34 +20,30 @@
         <h4 class="ui header">
             Total Points: <span data-bind="text: $root.TotalPoints()"></span>
         </h4>
-        <h4 class="ui header">
-            GW<span data-bind="text: $root.GameweekId()"></span> Points: <span data-bind="text: $root.GWPoints()"></span>
-        </h4>
         <table class="ui table">
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th data-bind="visible: $root.GWTeam().automatic_subs.length > 0"></th>
+                    <th>Team</th>
                     <th>Position</th>
                     <th>Value</th>
-                    <th>Mins</th>
-                    <th>GF</th>
-                    <th>GA</th>
-                    <th>Assists</th>
-                    <th>Bonus</th>
-                    <th>GW Points</th>
+                    <th>Points</th>
+                    <th>PPG</th>
+                    <th>% Selected by</th>
+                    @*<th>Form</th>
+                    <th>Points achieved</th>
+                    <th>Next Game</th>*@
                 </tr>
             </thead>
             <tbody data-bind="foreach: $root.GWTeam().picks">
-                <tr data-bind="style: { 'background-color': $root.getColor($data.multiplier) }">
+                <tr>
                     <td>
                         <span data-bind="text: player.web_name"></span>
                         <span data-bind="visible: is_captain"><i class="copyright icon"></i></span>
-                        @*<span data-bind="visible: player.in_dreamteam"><i class="star icon"></i></span>*@
+                        <span data-bind="visible: player.in_dreamteam"><i class="star icon"></i></span>
                     </td>
-                    <td data-bind="visible: $root.GWTeam().automatic_subs.length > 0">
-                        <span data-bind="visible: $root.SubOn($data)">On</span>
-                        <span data-bind="visible: $root.SubOff($data)">Off</span>
+                    <td>
+                        <span data-bind="text: player.Team.short_name"></span>
                     </td>
                     <td>
                         <span data-bind="text: $root.GetPosition(player.element_type)"></span>
@@ -56,22 +52,13 @@
                         <span data-bind="text: player.now_cost"></span>
                     </td>
                     <td>
-                        <span data-bind="text: GWPlayer.stats.minutes"></span>
+                        <span data-bind="text: player.total_points"></span>
                     </td>
                     <td>
-                        <span data-bind="text: GWPlayer.stats.goals_scored"></span>
+                        <span data-bind="text: player.points_per_game"></span>
                     </td>
                     <td>
-                        <span data-bind="text: GWPlayer.stats.goals_conceded"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: GWPlayer.stats.assists"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: GWPlayer.stats.bonus"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: GWPlayer.stats.gw_points"></span>
+                        <span data-bind="text: player.selected_by_percent"></span>
                     </td>
                 </tr>
             </tbody>

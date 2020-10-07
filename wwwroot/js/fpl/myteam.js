@@ -6,8 +6,7 @@
     self.GWTeam = ko.observable(data.GWTeam);
     self.Team = ko.observable(data.Team);
     self.TotalPoints = ko.observable(data.TotalPoints);
-    self.GWPoints = ko.observable(data.GWPoints);
-    self.GameweekId = ko.observable(data.GameweekId);
+
 
     //self.getColor = ko.pureComputed(function (data) {
     //    return this;
@@ -22,33 +21,35 @@
         }
     };
 
-    self.SubOn = function (player) {
-        for (var i = 0; i < self.GWTeam().automatic_subs.length; i++) {
-            if (self.GWTeam().automatic_subs[i].element_in == player.element) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-    };
+    //self.SubOn = function (player) {
+    //    for (var i = 0; i < self.GWTeam().automatic_subs.length; i++) {
+    //        if (self.GWTeam().automatic_subs[i].element_in == player.element) {
+    //            return true;
+    //        }
+    //        else {
+    //            return false;
+    //        }
+    //    }
+    //};
 
-    self.SubOff = function (player) {
-        for (var i = 0; i < self.GWTeam().automatic_subs.length; i++) {
-            if (self.GWTeam().automatic_subs[i].element_out == player.element) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-    };
+    //self.SubOff = function (player) {
+    //    for (var i = 0; i < self.GWTeam().automatic_subs.length; i++) {
+    //        if (self.GWTeam().automatic_subs[i].element_out == player.element) {
+    //            return true;
+    //        }
+    //        else {
+    //            return false;
+    //        }
+    //    }
+    //};
 
     self.GetPosition = function (position) {
-        if (position == 1) {
+        if (position == 1)
+        {
             return "GK";
         }
-        else if (position == 2) {
+        else if (position == 2)
+        {
             return "DEF";
         }
         else if (position == 3) {
