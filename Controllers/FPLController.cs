@@ -272,6 +272,7 @@ namespace FPL.Controllers
             foreach (JObject result in allTeamsJSON)
             {
                 Team1 t = result.ToObject<Team1>();
+                allTeams.Add(t);
 
                 foreach (Pick pick in teamPicks)
                 {
@@ -306,11 +307,47 @@ namespace FPL.Controllers
                     }
                 }
 
+                foreach (Game playerFixture in pick.player.Team.Fixtures)
+                {
+                    foreach (Team1 t in allTeams)
+                    {
+                        if (playerFixture.team_h == t.id)
+                        {
+                            playerFixture.team_h_name = t.name;
+                            //playerFixture.HomeTeam = t;
+                        }
+                        
+                        if (playerFixture.team_a == t.id)
+                        {
+                            playerFixture.team_a_name = t.name;
+                            //playerFixture.AwayTeam = t;
+                        }
+                    }
+                }
+
                 foreach (Game result in results)
                 {
                     if (pick.player.team == result.team_h || pick.player.team == result.team_a)
                     {
                         pick.player.Team.Results.Add(result);
+                    }
+                }
+
+                foreach (Game playerResult in pick.player.Team.Results)
+                {
+                    foreach (Team1 t in allTeams)
+                    {
+                        if (playerResult.team_h == t.id)
+                        {
+                            playerResult.team_h_name = t.name;
+                            //playerResult.HomeTeam = t;
+                        }
+                        
+                        if (playerResult.team_a == t.id)
+                        {
+                            playerResult.team_a_name = t.name;
+                            //playerResult.AwayTeam = t;
+                        }
                     }
                 }
 

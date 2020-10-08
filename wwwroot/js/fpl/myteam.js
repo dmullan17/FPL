@@ -21,6 +21,19 @@
         }
     };
 
+
+    self.GetPlayersNextFixture = function (team) {
+
+        var firstFixture = team.Fixtures[0];
+
+        if (team.id == firstFixture.team_h) {
+            return firstFixture.team_a_name;
+        }
+        else if (team.id == firstFixture.team_a) {
+            return firstFixture.team_h_name;
+        }
+    };
+
     //self.SubOn = function (player) {
     //    for (var i = 0; i < self.GWTeam().automatic_subs.length; i++) {
     //        if (self.GWTeam().automatic_subs[i].element_in == player.element) {

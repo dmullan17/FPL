@@ -30,6 +30,7 @@
                     <th>Points</th>
                     <th>PPG</th>
                     <th>% Selected by</th>
+                    <th>Next Game</th>
                     @*<th>Form</th>
                     <th>Points achieved</th>
                     <th>Next Game</th>*@
@@ -59,6 +60,9 @@
                     </td>
                     <td>
                         <span data-bind="text: player.selected_by_percent"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: $root.GetPlayersNextFixture(player.Team)"></span>
                     </td>
                 </tr>
             </tbody>
