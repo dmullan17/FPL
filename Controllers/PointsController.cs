@@ -1,41 +1,38 @@
-﻿using FPL.Attributes;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using FPL.Attributes;
 using FPL.Http;
 using FPL.Models;
 using FPL.Models.FPL;
-using FPL.Models.GWPlayerStats;
 using FPL.ViewModels;
-using Microsoft.AspNetCore.Authorization;
+using FPL.ViewModels.FPL;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Team = FPL.Models.FPL.Team;
-using Team1 = FPL.Models.Team;
+using Team = FPL.Models.Team;
+using FPLTeam = FPL.Models.FPL.Team;
+using FPL.Models.GWPlayerStats;
 
 namespace FPL.Controllers
 {
     [FPLCookie]
-    public class FPLController : BaseController
+    public class PointsController : BaseController
     {
-        private static readonly int TeamId = 2675560;
-
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var viewModel = new FPLViewModel();
+            var currentGameweekId = await GetCurrentGameWeekId();
+
+            var viewModel = new GameweekPointsViewModel();
 
             HttpClientHandler handler = new HttpClientHandler();
 
             var client = new FPLHttpClient();
 
-            int currentGwId = await GetCurrentGameWeekId();
-
-            var response = await client.GetAuthAsync(CreateHandler(handler), $"entry/{TeamId}/event/{currentGwId}/picks/");
+            var response = await client.GetAuthAsync(CreateHandler(handler), $"entry/{TeamId}/event/{currentGameweekId}/picks/");
 
             response.EnsureSuccessStatusCode();
 
@@ -72,24 +69,24 @@ namespace FPL.Controllers
             };
 
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
-            teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, currentGwId);
+            teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, currentGameweekId);
             int gwpoints = GetGameWeekPoints(teamPicks);
-            Team teamDetails = await GetTeamInfo();
+            FPLTeam teamDetails = await GetTeamInfo();
 
             viewModel.GWTeam = gwTeam;
             viewModel.Team = teamDetails;
             viewModel.GWPoints = gwpoints;
             viewModel.TotalPoints = (teamDetails.summary_overall_points - teamDetails.summary_event_points) + gwpoints;
-            viewModel.GameweekId = currentGwId;
+            viewModel.GameweekId = currentGameweekId;
 
             return View(viewModel);
         }
 
         [HttpGet]
-        [Route("fpl/{id}")]
+        [Route("points/{id}")]
         public async Task<IActionResult> Index(int id)
         {
-            var viewModel = new FPLViewModel();
+            var viewModel = new GameweekPointsViewModel();
 
             HttpClientHandler handler = new HttpClientHandler();
 
@@ -99,7 +96,7 @@ namespace FPL.Controllers
 
             if (id > currentGwId)
             {
-                id = currentGwId;
+                return RedirectToAction("Index", new { id = currentGwId });
             }
 
             var response = await client.GetAuthAsync(CreateHandler(handler), $"entry/{TeamId}/event/{id}/picks/");
@@ -141,58 +138,13 @@ namespace FPL.Controllers
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
             teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, id);
             int gwpoints = GetGameWeekPoints(teamPicks);
-            Team teamDetails = await GetTeamInfo();
+            FPLTeam teamDetails = await GetTeamInfo();
 
             viewModel.GWTeam = gwTeam;
             viewModel.Team = teamDetails;
             viewModel.GWPoints = gwpoints;
             viewModel.TotalPoints = teamDetails.summary_overall_points;
             viewModel.GameweekId = id;
-
-            return View(viewModel);
-
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> MyTeam()
-        {
-            var viewModel = new FPLViewModel();
-
-            HttpClientHandler handler = new HttpClientHandler();
-
-            var client = new FPLHttpClient();
-
-            int currentGwId = await GetCurrentGameWeekId();
-
-            var response = await client.GetAuthAsync(CreateHandler(handler), $"my-team/{TeamId}");
-
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-
-            var teamPicksJSON = AllChildren(JObject.Parse(content))
-                .First(c => c.Type == JTokenType.Array && c.Path.Contains("picks"))
-                .Children<JObject>();
-
-            List<Pick> teamPicks = new List<Pick>();
-
-            foreach (JObject result in teamPicksJSON)
-            {
-                Pick p = result.ToObject<Pick>();
-                teamPicks.Add(p);
-            }
-
-            GWTeam gwTeam = new GWTeam
-            {
-                picks = teamPicks
-            };
-
-            teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
-            Team teamDetails = await GetTeamInfo();
-
-            viewModel.GWTeam = gwTeam;
-            viewModel.Team = teamDetails;
-            viewModel.TotalPoints = teamDetails.summary_overall_points;
 
             return View(viewModel);
 
@@ -214,7 +166,7 @@ namespace FPL.Controllers
             return gwpoints;
         }
 
-        private async Task<Team> GetTeamInfo()
+        private async Task<FPLTeam> GetTeamInfo()
         {
             HttpClientHandler handler = new HttpClientHandler();
 
@@ -228,7 +180,7 @@ namespace FPL.Controllers
 
             var content = await response.Content.ReadAsStringAsync();
 
-            Team teamDetails = JsonConvert.DeserializeObject<Team>(content);
+            FPLTeam teamDetails = JsonConvert.DeserializeObject<FPLTeam>(content);
 
             return teamDetails;
 
@@ -260,18 +212,18 @@ namespace FPL.Controllers
                     {
                         pick.player = p;
                     }
-                }           
+                }
             }
 
             var allTeamsJSON = AllChildren(JObject.Parse(content))
                 .First(c => c.Type == JTokenType.Array && c.Path.Contains("teams"))
                 .Children<JObject>();
 
-            List<Team1> allTeams = new List<Team1>();
+            List<Team> allTeams = new List<Team>();
 
             foreach (JObject result in allTeamsJSON)
             {
-                Team1 t = result.ToObject<Team1>();
+                Team t = result.ToObject<Team>();
                 allTeams.Add(t);
 
                 foreach (Pick pick in teamPicks)
@@ -309,18 +261,16 @@ namespace FPL.Controllers
 
                 foreach (Game playerFixture in pick.player.Team.Fixtures)
                 {
-                    foreach (Team1 t in allTeams)
+                    foreach (Team t in allTeams)
                     {
                         if (playerFixture.team_h == t.id)
                         {
                             playerFixture.team_h_name = t.name;
-                            //playerFixture.HomeTeam = t;
                         }
-                        
+
                         if (playerFixture.team_a == t.id)
                         {
                             playerFixture.team_a_name = t.name;
-                            //playerFixture.AwayTeam = t;
                         }
                     }
                 }
@@ -335,25 +285,28 @@ namespace FPL.Controllers
 
                 foreach (Game playerResult in pick.player.Team.Results)
                 {
-                    foreach (Team1 t in allTeams)
+                    foreach (Team t in allTeams)
                     {
                         if (playerResult.team_h == t.id)
                         {
                             playerResult.team_h_name = t.name;
-                            //playerResult.HomeTeam = t;
                         }
-                        
+
                         if (playerResult.team_a == t.id)
                         {
                             playerResult.team_a_name = t.name;
-                            //playerResult.AwayTeam = t;
                         }
                     }
                 }
-
             }
 
-            //List<Game> liverpoolFixtures = games.FindAll(item => item.team_h == liverpoolId || item.team_a == liverpoolId);
+            var response2 = await client.GetAsync($"entry/{TeamId}/transfers/");
+
+            response2.EnsureSuccessStatusCode();
+
+            var content2 = await response2.Content.ReadAsStringAsync();
+
+            List<Transfer> transfers = JsonConvert.DeserializeObject<List<Transfer>>(content2);
 
             return teamPicks;
         }

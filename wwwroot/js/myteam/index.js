@@ -1,9 +1,9 @@
-﻿FPLViewModel = function (data) {
+﻿MyTeamViewModel = function (data) {
     "use strict";
 
     var self = this;
 
-    self.GWTeam = ko.observable(data.GWTeam);
+    self.Picks = ko.observable(data.Picks);
     self.Team = ko.observable(data.Team);
     self.TotalPoints = ko.observable(data.TotalPoints);
 
@@ -27,11 +27,16 @@
         var firstFixture = team.Fixtures[0];
 
         if (team.id == firstFixture.team_h) {
-            return firstFixture.team_a_name;
+            return firstFixture.team_a_name + " (H)";
         }
         else if (team.id == firstFixture.team_a) {
-            return firstFixture.team_h_name;
+            return firstFixture.team_h_name + " (A)";
         }
+    };
+
+    self.FormatValue = function (value) {
+        var value = parseFloat(value) / 10;
+        return value.toFixed(1);
     };
 
     //self.SubOn = function (player) {
@@ -57,12 +62,10 @@
     //};
 
     self.GetPosition = function (position) {
-        if (position == 1)
-        {
+        if (position == 1) {
             return "GK";
         }
-        else if (position == 2)
-        {
+        else if (position == 2) {
             return "DEF";
         }
         else if (position == 3) {

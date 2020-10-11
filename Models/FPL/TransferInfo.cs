@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace FPL.Models.FPL
 {
-    public class Transfers
+    public class TransferInfo
     {
         public int cost { get; set; }
         public string status { get; set; }

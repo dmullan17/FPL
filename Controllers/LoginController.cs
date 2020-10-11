@@ -52,10 +52,22 @@ namespace FPL.Controllers
                 Response.Cookies.Append(cookie.Name, cookie.Value);
             }
 
-            return Json(new LoginViewModel
+            var currentGameweek = await GetCurrentGameWeek();
+
+            if (currentGameweek.finished)
             {
-                Redirect = "/fpl"
-            });
+                return Json(new LoginViewModel
+                {
+                    Redirect = "/myteam"
+                });
+            }
+            else
+            {
+                return Json(new LoginViewModel
+                {
+                    Redirect = "/points"
+                });
+            }
         }
     }
 }

@@ -10,5 +10,7 @@ namespace FPL.Models.FPL
     {
         public Player player { get; set; }
         public GWPlayer GWPlayer { get; set; }
+
+        public List<Transfer> Transfer { get; set; }
     }
 }

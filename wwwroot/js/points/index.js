@@ -1,4 +1,4 @@
-﻿FPLViewModel = function (data) {
+﻿GameweekPointsViewModel = function (data) {
     "use strict";
 
     var self = this;

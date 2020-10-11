@@ -1,13 +1,13 @@
 ﻿@using Newtonsoft.Json;
 
-@model FPL.ViewModels.FPLViewModel
+@model FPL.ViewModels.FPL.GameweekPointsViewModel
 
 @{ var data = JsonConvert.SerializeObject(Model); }
 
 @section PageScripts {
-    <script src="~/js/fpl/index.js"></script>
+    <script src="~/js/points/index.js"></script>
     <script type="text/javascript">
-    const viewModel = new FPLViewModel(@Html.Raw(data));
+    const viewModel = new GameweekPointsViewModel(@Html.Raw(data));
     ko.applyBindings(viewModel, document.getElementById("app"));
     </script>
 }

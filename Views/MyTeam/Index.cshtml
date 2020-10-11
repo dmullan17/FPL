@@ -1,13 +1,13 @@
 ﻿@using Newtonsoft.Json;
 
-@model FPL.ViewModels.FPLViewModel
+@model FPL.ViewModels.FPL.MyTeamViewModel
 
 @{ var data = JsonConvert.SerializeObject(Model); }
 
 @section PageScripts {
-    <script src="~/js/fpl/myteam.js"></script>
+    <script src="~/js/myteam/index.js"></script>
     <script type="text/javascript">
-    const viewModel = new FPLViewModel(@Html.Raw(data));
+    const viewModel = new MyTeamViewModel(@Html.Raw(data));
     ko.applyBindings(viewModel, document.getElementById("app"));
     </script>
 }
@@ -29,14 +29,15 @@
                     <th>Value</th>
                     <th>Points</th>
                     <th>PPG</th>
+                    <th>Position Ranking</th>
                     <th>% Selected by</th>
                     <th>Next Game</th>
                     @*<th>Form</th>
-                    <th>Points achieved</th>
-                    <th>Next Game</th>*@
+                        <th>Points achieved</th>
+                        <th>Next Game</th>*@
                 </tr>
             </thead>
-            <tbody data-bind="foreach: $root.GWTeam().picks">
+            <tbody data-bind="foreach: $root.Picks">
                 <tr>
                     <td>
                         <span data-bind="text: player.web_name"></span>
@@ -50,13 +51,16 @@
                         <span data-bind="text: $root.GetPosition(player.element_type)"></span>
                     </td>
                     <td>
-                        <span data-bind="text: player.now_cost"></span>
+                        <span data-bind="text: $root.FormatValue(player.now_cost)"></span>
                     </td>
                     <td>
                         <span data-bind="text: player.total_points"></span>
                     </td>
                     <td>
                         <span data-bind="text: player.points_per_game"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: player.ict_index_rank_type"></span>
                     </td>
                     <td>
                         <span data-bind="text: player.selected_by_percent"></span>

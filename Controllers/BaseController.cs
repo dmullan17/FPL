@@ -15,9 +15,39 @@ namespace FPL.Controllers
 {
     public class BaseController : Controller
     {
+        public static readonly int TeamId = 2675560;
+
         public string GetBaseUrl()
         {
             return "https://fantasy.premierleague.com/api/";
+        }
+
+        public async Task<GameWeek> GetCurrentGameWeek()
+        {
+            var client = new FPLHttpClient();
+
+            var response = await client.GetAsync("bootstrap-static/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            //events = gameweeks
+            var resultObjects = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("events"))
+                .Children<JObject>();
+
+            List<GameWeek> gws = new List<GameWeek>();
+
+            foreach (JObject result in resultObjects)
+            {
+                GameWeek gw = result.ToObject<GameWeek>();
+                gws.Add(gw);
+            }
+
+            GameWeek currentGameweek = gws.FirstOrDefault(a => a.is_current);
+
+            return currentGameweek;
         }
 
         public async Task<int> GetCurrentGameWeekId()
