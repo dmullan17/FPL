@@ -5,6 +5,7 @@
 
     self.Picks = ko.observable(data.Picks);
     self.Team = ko.observable(data.Team);
+    self.Positions = ko.observableArray(data.Positions);
     self.TotalPoints = ko.observable(data.TotalPoints);
 
 
@@ -37,6 +38,19 @@
     self.FormatValue = function (value) {
         var value = parseFloat(value) / 10;
         return value.toFixed(1);
+    };
+
+    self.FormatOverallRank = function (value) {
+        var totalPlayerCount = 0;
+        for (var i = 0; i < self.Positions().length; i++) {
+            totalPlayerCount += self.Positions()[i].element_count;
+        }
+        return value + " / " + totalPlayerCount;
+    };
+
+    self.FormatPositionRankType = function (postionId, value) {
+        var pos = self.Positions().find(x => x.id == postionId);
+        return value + " / " + pos.element_count;
     };
 
     //self.SubOn = function (player) {

@@ -42,6 +42,7 @@ namespace FPL.Controllers
 
             List<Pick> teamPicks = new List<Pick>();
             List<Transfer> transfers = new List<Transfer>();
+            List<PlayerPosition> positions = new List<PlayerPosition>();
 
             foreach (JObject result in teamPicksJSON)
             {
@@ -50,12 +51,14 @@ namespace FPL.Controllers
             }
 
             transfers = await GetTeamTransfers();
+            positions = await GetPlayerPositionInfo();
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
             teamPicks = await CalculateTotalPointsContributed(teamPicks, transfers);
             FPLTeam teamDetails = await GetTeamInfo();
 
             viewModel.Picks = teamPicks;
             viewModel.Team = teamDetails;
+            viewModel.Positions = positions;
             viewModel.TotalPoints = teamDetails.summary_overall_points;
 
             return View(viewModel);
@@ -226,18 +229,13 @@ namespace FPL.Controllers
                     playerHistory.Add(ph);
                 }
 
-                List<int> playerGwPoints = new List<int>();
-
                 foreach (PlayerHistory playerGwHistory in playerHistory)
                 {
                     if (pick.HadSinceGW <= playerGwHistory.round)
                     {
                         pick.TotalPointsAccumulatedForTeam += playerGwHistory.total_points;
                     }
-
-                    //playerGwPoints.Add(playerGwHistory.total_points);
                 }
-
             }
 
             return teamPicks;

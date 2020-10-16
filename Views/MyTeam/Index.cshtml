@@ -33,7 +33,8 @@
                     <th>Points</th>
                     <th>Points while on Team</th>
                     <th>PPG</th>
-                    <th>Position Ranking</th>
+                    <th>Overall ICT Ranking</th>
+                    <th>Position ICT Ranking</th>
                     <th>% Selected by</th>
                     <th>Next Game</th>
                     @*<th>Form</th>
@@ -67,7 +68,10 @@
                         <span data-bind="text: player.points_per_game"></span>
                     </td>
                     <td>
-                        <span data-bind="text: player.ict_index_rank_type"></span>
+                        <span data-bind="text: $root.FormatOverallRank(player.ict_index_rank)"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: $root.FormatPositionRankType(player.element_type, player.ict_index_rank_type)"></span>
                     </td>
                     <td>
                         <span data-bind="text: player.selected_by_percent"></span>

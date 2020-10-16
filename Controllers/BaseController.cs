@@ -22,6 +22,31 @@ namespace FPL.Controllers
             return "https://fantasy.premierleague.com/api/";
         }
 
+        public async Task<List<PlayerPosition>> GetPlayerPositionInfo()
+        {
+            var client = new FPLHttpClient();
+
+            var response = await client.GetAsync("bootstrap-static/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var resultObjects = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("element_types"))
+                .Children<JObject>();
+
+            List<PlayerPosition> playerPositions = new List<PlayerPosition>();
+
+            foreach (JObject result in resultObjects)
+            {
+                PlayerPosition pp = result.ToObject<PlayerPosition>();
+                playerPositions.Add(pp);
+            }
+
+            return playerPositions;
+        }
+
         public async Task<GameWeek> GetCurrentGameWeek()
         {
             var client = new FPLHttpClient();

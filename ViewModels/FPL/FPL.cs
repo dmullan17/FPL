@@ -11,6 +11,8 @@ namespace FPL.ViewModels.FPL
     {
         public FPLTeam Team { get; set; }
 
+        public List<PlayerPosition> Positions { get; set; }
+
         public int TotalPoints { get; set; }
     }
 }
