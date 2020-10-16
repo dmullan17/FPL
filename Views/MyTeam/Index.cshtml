@@ -20,6 +20,9 @@
         <h4 class="ui header">
             Total Points: <span data-bind="text: $root.TotalPoints()"></span>
         </h4>
+        <h4 class="ui header">
+            Team Value: <span data-bind="text: $root.TotalPoints()"></span>
+        </h4>
         <table class="ui table">
             <thead>
                 <tr>
@@ -28,13 +31,14 @@
                     <th>Position</th>
                     <th>Value</th>
                     <th>Points</th>
+                    <th>Points while on Team</th>
                     <th>PPG</th>
                     <th>Position Ranking</th>
                     <th>% Selected by</th>
                     <th>Next Game</th>
                     @*<th>Form</th>
-                        <th>Points achieved</th>
-                        <th>Next Game</th>*@
+        <th>Points achieved</th>
+        <th>Next Game</th>*@
                 </tr>
             </thead>
             <tbody data-bind="foreach: $root.Picks">
@@ -55,6 +59,9 @@
                     </td>
                     <td>
                         <span data-bind="text: player.total_points"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: TotalPointsAccumulatedForTeam"></span>
                     </td>
                     <td>
                         <span data-bind="text: player.points_per_game"></span>

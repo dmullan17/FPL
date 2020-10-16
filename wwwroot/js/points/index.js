@@ -59,6 +59,11 @@
         }
     };
 
+    self.FormatValue = function (value) {
+        var value = parseFloat(value) / 10;
+        return value.toFixed(1);
+    };
+
     //self.OnBench = function (entry) {
     //    //return entry.type === 'file' ? 'icon-file' : 'icon-filder';
     //    return;

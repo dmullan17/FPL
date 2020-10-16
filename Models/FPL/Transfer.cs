@@ -8,6 +8,8 @@ namespace FPL.Models.FPL
 {
     public class Transfer
     {
+        public Player PlayerIn { get; set; }
+        public Player PlayerOut { get; set; }
         public int element_in { get; set; }
         public int element_in_cost { get; set; }
         public int element_out { get; set; }

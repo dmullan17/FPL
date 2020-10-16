@@ -41,6 +41,7 @@ namespace FPL.Controllers
                 .Children<JObject>();
 
             List<Pick> teamPicks = new List<Pick>();
+            List<Transfer> transfers = new List<Transfer>();
 
             foreach (JObject result in teamPicksJSON)
             {
@@ -48,7 +49,9 @@ namespace FPL.Controllers
                 teamPicks.Add(p);
             }
 
+            transfers = await GetTeamTransfers();
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
+            teamPicks = await CalculateTotalPointsContributed(teamPicks, transfers);
             FPLTeam teamDetails = await GetTeamInfo();
 
             viewModel.Picks = teamPicks;
@@ -77,6 +80,7 @@ namespace FPL.Controllers
             foreach (JObject result in allPlayersJSON)
             {
                 Player p = result.ToObject<Player>();
+                allPlayers.Add(p);
 
                 foreach (Pick pick in teamPicks)
                 {
@@ -172,15 +176,116 @@ namespace FPL.Controllers
                 }
             }
 
-            var response2 = await client.GetAsync($"entry/{TeamId}/transfers/");
+            //List<Pick> test = pick.FindAll(x => x.HadSinceGW == false);
 
-            response2.EnsureSuccessStatusCode();
+            //var response2 = await client.GetAsync($"entry/{TeamId}/transfers/");
 
-            var content2 = await response2.Content.ReadAsStringAsync();
+            //response2.EnsureSuccessStatusCode();
 
-            List<Transfer> transfers = JsonConvert.DeserializeObject<List<Transfer>>(content2);
+            //var content2 = await response2.Content.ReadAsStringAsync();
+
+            //List<Transfer> transfers = JsonConvert.DeserializeObject<List<Transfer>>(content2);
 
             return teamPicks;
+        }
+
+        private async Task<List<Pick>> CalculateTotalPointsContributed(List<Pick> teamPicks, List<Transfer> teamTransfers)
+        {
+            var client = new FPLHttpClient();
+
+            foreach (Pick pick in teamPicks)
+            {
+                foreach (Transfer transfer in teamTransfers)
+                {
+                    if (pick.element == transfer.element_in)
+                    {
+                        pick.HadSinceGW = transfer.@event;
+                    }
+                }
+            }
+
+            //calculate how many points a player has gained for the team, taking into account how long they have actually been on it 
+
+            foreach (Pick pick in teamPicks)
+            {
+                var response = await client.GetAsync($"element-summary/" + pick.element + "/");
+
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                var playerHistoryJSON = AllChildren(JObject.Parse(content))
+                    .First(c => c.Type == JTokenType.Array && c.Path.Contains("history"))
+                    .Children<JObject>();
+
+                List<PlayerHistory> playerHistory = new List<PlayerHistory>();
+
+                foreach (JObject result in playerHistoryJSON)
+                {
+                    PlayerHistory ph = result.ToObject<PlayerHistory>();
+                    playerHistory.Add(ph);
+                }
+
+                List<int> playerGwPoints = new List<int>();
+
+                foreach (PlayerHistory playerGwHistory in playerHistory)
+                {
+                    if (pick.HadSinceGW <= playerGwHistory.round)
+                    {
+                        pick.TotalPointsAccumulatedForTeam += playerGwHistory.total_points;
+                    }
+
+                    //playerGwPoints.Add(playerGwHistory.total_points);
+                }
+
+            }
+
+            return teamPicks;
+        }
+
+        private async Task<List<Transfer>> GetTeamTransfers()
+        {
+            var client = new FPLHttpClient();
+
+            var response = await client.GetAsync($"entry/{TeamId}/transfers/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            List<Transfer> transfers = JsonConvert.DeserializeObject<List<Transfer>>(content);
+
+            var response1 = await client.GetAsync("bootstrap-static/");
+
+            response1.EnsureSuccessStatusCode();
+
+            var content1 = await response1.Content.ReadAsStringAsync();
+
+            var allPlayersJSON = AllChildren(JObject.Parse(content1))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("elements"))
+                .Children<JObject>();
+
+            List<Player> allPlayers = new List<Player>();
+
+            foreach (JObject result in allPlayersJSON)
+            {
+                Player p = result.ToObject<Player>();
+
+                foreach (Transfer transfer in transfers)
+                {
+                    if (transfer.element_in == p.id)
+                    {
+                        transfer.PlayerIn = p;
+                    }
+
+                    if (transfer.element_out == p.id)
+                    {
+                        transfer.PlayerOut = p;
+                    }
+                }
+            }
+
+            return transfers;
         }
 
         private async Task<FPLTeam> GetTeamInfo()
