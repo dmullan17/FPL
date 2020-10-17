@@ -32,8 +32,12 @@
                     <th>Value</th>
                     <th>Mins</th>
                     <th>GF</th>
+                    <th>CS</th>
                     <th>GA</th>
                     <th>Assists</th>
+                    <th>Yellow C</th>
+                    <th>Red C</th>
+                    <th>Saves</th>
                     <th>Bonus</th>
                     <th>GW Points</th>
                 </tr>
@@ -62,10 +66,22 @@
                         <span data-bind="text: GWPlayer.stats.goals_scored"></span>
                     </td>
                     <td>
+                        <span data-bind="text: GWPlayer.stats.clean_sheets"></span>
+                    </td>
+                    <td>
                         <span data-bind="text: GWPlayer.stats.goals_conceded"></span>
                     </td>
                     <td>
                         <span data-bind="text: GWPlayer.stats.assists"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: GWPlayer.stats.yellow_cards"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: GWPlayer.stats.red_cards"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: GWPlayer.stats.saves"></span>
                     </td>
                     <td>
                         <span data-bind="text: GWPlayer.stats.bonus"></span>
