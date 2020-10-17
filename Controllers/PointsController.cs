@@ -362,10 +362,12 @@ namespace FPL.Controllers
                     if (pick.player.team == g.team_h)
                     {
                         pick.GWOppositionName = g.AwayTeam.short_name;
+                        pick.GWGame = g;
                     }
                     else if (pick.player.team == g.team_a)
                     {
                         pick.GWOppositionName = g.HomeTeam.short_name;
+                        pick.GWGame = g;
                     }
                 }
             }

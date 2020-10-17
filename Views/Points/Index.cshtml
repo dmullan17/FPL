@@ -40,6 +40,7 @@
                     <th>Saves</th>
                     <th>Bonus</th>
                     <th>GW Points</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody data-bind="foreach: $root.GWTeam().picks">
@@ -88,6 +89,10 @@
                     </td>
                     <td>
                         <span data-bind="text: GWPlayer.stats.gw_points"></span>
+                    </td>
+                    <td>
+                        <span data-bind="visible: GWGame.finished_provisional"><i class="check icon"></i></span>
+                        <span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>
                     </td>
                 </tr>
             </tbody>
