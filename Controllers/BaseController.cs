@@ -22,6 +22,46 @@ namespace FPL.Controllers
             return "https://fantasy.premierleague.com/api/";
         }
 
+        public async Task<List<Game>> PopulateGameListWithTeams(List<Game> games)
+        {
+            var client = new FPLHttpClient();
+
+            var response = await client.GetAsync("bootstrap-static/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var allTeamsJSON = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("teams"))
+                .Children<JObject>();
+
+            List<Team> allTeams = new List<Team>();
+
+            foreach (JObject result in allTeamsJSON)
+            {
+                Team t = result.ToObject<Team>();
+                allTeams.Add(t);
+            }
+
+            foreach (Game game in games)
+            {
+                foreach (Team team in allTeams)
+                {
+                    if (team.id == game.team_h)
+                    {
+                        game.HomeTeam = team;
+                    }
+                    else if (team.id == game.team_a)
+                    {
+                        game.AwayTeam = team;
+                    }
+                }
+            }
+
+            return games;
+        }
+
         public async Task<List<PlayerPosition>> GetPlayerPositionInfo()
         {
             var client = new FPLHttpClient();

@@ -235,70 +235,70 @@ namespace FPL.Controllers
                 }
             }
 
-            var response1 = await client.GetAsync("fixtures/");
+            //var response1 = await client.GetAsync("fixtures/");
 
-            response1.EnsureSuccessStatusCode();
+            //response1.EnsureSuccessStatusCode();
 
-            var content1 = await response1.Content.ReadAsStringAsync();
+            //var content1 = await response1.Content.ReadAsStringAsync();
 
-            List<Game> games = JsonConvert.DeserializeObject<List<Game>>(content1);
+            //List<Game> games = JsonConvert.DeserializeObject<List<Game>>(content1);
 
-            List<Game> fixtures = games.FindAll(x => x.started == false);
-            List<Game> results = games.FindAll(x => x.finished == true);
+            //List<Game> fixtures = games.FindAll(x => x.started == false);
+            //List<Game> results = games.FindAll(x => x.finished == true);
 
-            foreach (Pick pick in teamPicks)
-            {
-                pick.player.Team.Fixtures = new List<Game>();
-                pick.player.Team.Results = new List<Game>();
+            //foreach (Pick pick in teamPicks)
+            //{
+            //    pick.player.Team.Fixtures = new List<Game>();
+            //    pick.player.Team.Results = new List<Game>();
 
-                foreach (Game fixture in fixtures)
-                {
-                    if (pick.player.team == fixture.team_h || pick.player.team == fixture.team_a)
-                    {
-                        pick.player.Team.Fixtures.Add(fixture);
-                    }
-                }
+            //    foreach (Game fixture in fixtures)
+            //    {
+            //        if (pick.player.team == fixture.team_h || pick.player.team == fixture.team_a)
+            //        {
+            //            pick.player.Team.Fixtures.Add(fixture);
+            //        }
+            //    }
 
-                foreach (Game playerFixture in pick.player.Team.Fixtures)
-                {
-                    foreach (Team t in allTeams)
-                    {
-                        if (playerFixture.team_h == t.id)
-                        {
-                            playerFixture.team_h_name = t.name;
-                        }
+            //    foreach (Game playerFixture in pick.player.Team.Fixtures)
+            //    {
+            //        foreach (Team t in allTeams)
+            //        {
+            //            if (playerFixture.team_h == t.id)
+            //            {
+            //                playerFixture.team_h_name = t.name;
+            //            }
 
-                        if (playerFixture.team_a == t.id)
-                        {
-                            playerFixture.team_a_name = t.name;
-                        }
-                    }
-                }
+            //            if (playerFixture.team_a == t.id)
+            //            {
+            //                playerFixture.team_a_name = t.name;
+            //            }
+            //        }
+            //    }
 
-                foreach (Game result in results)
-                {
-                    if (pick.player.team == result.team_h || pick.player.team == result.team_a)
-                    {
-                        pick.player.Team.Results.Add(result);
-                    }
-                }
+            //    foreach (Game result in results)
+            //    {
+            //        if (pick.player.team == result.team_h || pick.player.team == result.team_a)
+            //        {
+            //            pick.player.Team.Results.Add(result);
+            //        }
+            //    }
 
-                foreach (Game playerResult in pick.player.Team.Results)
-                {
-                    foreach (Team t in allTeams)
-                    {
-                        if (playerResult.team_h == t.id)
-                        {
-                            playerResult.team_h_name = t.name;
-                        }
+            //    foreach (Game playerResult in pick.player.Team.Results)
+            //    {
+            //        foreach (Team t in allTeams)
+            //        {
+            //            if (playerResult.team_h == t.id)
+            //            {
+            //                playerResult.team_h_name = t.name;
+            //            }
 
-                        if (playerResult.team_a == t.id)
-                        {
-                            playerResult.team_a_name = t.name;
-                        }
-                    }
-                }
-            }
+            //            if (playerResult.team_a == t.id)
+            //            {
+            //                playerResult.team_a_name = t.name;
+            //            }
+            //        }
+            //    }
+            //}
 
             var response2 = await client.GetAsync($"entry/{TeamId}/transfers/");
 
@@ -345,6 +345,41 @@ namespace FPL.Controllers
                 }
             }
 
+            var response1 = await client.GetAsync("fixtures/?event=" + gameweekId);
+
+            response1.EnsureSuccessStatusCode();
+
+            var content1 = await response1.Content.ReadAsStringAsync();
+
+            List<Game> gwGames = JsonConvert.DeserializeObject<List<Game>>(content1);
+
+            gwGames = await PopulateGameListWithTeams(gwGames);
+
+            foreach (Pick pick in teamPicks)
+            {
+                foreach (Game g in gwGames)
+                {
+                    if (pick.player.team == g.team_h)
+                    {
+                        pick.GWOppositionName = g.AwayTeam.short_name;
+                    }
+                    else if (pick.player.team == g.team_a)
+                    {
+                        pick.GWOppositionName = g.HomeTeam.short_name;
+                    }
+                }
+            }
+            //get gameweek dreamteam data
+            //var response1 = await client.GetAsync("dream-team/" + gameweekId + "/");
+
+            //response1.EnsureSuccessStatusCode();
+
+            //var content1 = await response1.Content.ReadAsStringAsync();
+
+            //RootGWDreamTeam gwDreamTeam = JsonConvert.DeserializeObject<RootGWDreamTeam>(content1);
+
+            //RootGWDreamTeam gwDreamTeam = JsonConvert.DeserializeObject<RootGWDreamTeam>(content1);
+
             //totalling a players total gw stats
             for (var i = 0; i < teamPicks.Count; i++)
             {
@@ -366,7 +401,6 @@ namespace FPL.Controllers
                     }
                 }
             }
-
             return teamPicks;
         }
     }

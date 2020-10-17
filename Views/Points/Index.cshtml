@@ -29,7 +29,7 @@
                     <th>Name</th>
                     <th data-bind="visible: $root.GWTeam().automatic_subs.length > 0"></th>
                     <th>Position</th>
-                    <th>Value</th>
+                    <th>Opp</th>
                     <th>Mins</th>
                     <th>GF</th>
                     <th>CS</th>
@@ -47,7 +47,7 @@
                     <td>
                         <span data-bind="text: player.web_name"></span>
                         <span data-bind="visible: is_captain"><i class="copyright icon"></i></span>
-                        @*<span data-bind="visible: player.in_dreamteam"><i class="star icon"></i></span>*@
+                        <span data-bind="visible: GWPlayer.stats.in_dreamteam"><i class="star icon"></i></span>
                     </td>
                     <td data-bind="visible: $root.GWTeam().automatic_subs.length > 0">
                         <span data-bind="visible: $root.SubOn($data)">On</span>
@@ -57,7 +57,7 @@
                         <span data-bind="text: $root.GetPosition(player.element_type)"></span>
                     </td>
                     <td>
-                        <span data-bind="text: $root.FormatValue(player.now_cost)"></span>
+                        <span data-bind="text: GWOppositionName"></span>
                     </td>
                     <td>
                         <span data-bind="text: GWPlayer.stats.minutes"></span>
