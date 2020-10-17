@@ -14,8 +14,8 @@ namespace FPL.Models
         public int total_points { get; set; }
         public bool was_home { get; set; }
         public DateTime kickoff_time { get; set; }
-        public int team_h_score { get; set; }
-        public int team_a_score { get; set; }
+        public int? team_h_score { get; set; }
+        public int? team_a_score { get; set; }
         public int round { get; set; }
         public int minutes { get; set; }
         public int goals_scored { get; set; }

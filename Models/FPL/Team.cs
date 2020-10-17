@@ -20,7 +20,7 @@ namespace FPL.Models.FPL
         public int summary_overall_points { get; set; }
         public int summary_overall_rank { get; set; }
         public int summary_event_points { get; set; }
-        public int summary_event_rank { get; set; }
+        public int? summary_event_rank { get; set; }
         public int current_event { get; set; }
         public Leagues leagues { get; set; }
         public string name { get; set; }
