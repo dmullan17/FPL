@@ -14,6 +14,7 @@ namespace FPL.Models.GWPlayerStats
         public int red_cards { get; set; }
         public int saves { get; set; }
         public int bonus { get; set; }
+        public int EstimatedBonus { get; set; }
         public int bps { get; set; }
         public string influence { get; set; }
         public string creativity { get; set; }

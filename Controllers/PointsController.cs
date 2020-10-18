@@ -72,8 +72,10 @@ namespace FPL.Controllers
             teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, currentGameweekId);
             int gwpoints = GetGameWeekPoints(teamPicks);
             FPLTeam teamDetails = await GetTeamInfo();
+            EventStatus eventStatus = await GetEventStatus();
 
             viewModel.GWTeam = gwTeam;
+            viewModel.EventStatus = eventStatus;
             viewModel.Team = teamDetails;
             viewModel.GWPoints = gwpoints;
             viewModel.TotalPoints = (teamDetails.summary_overall_points - teamDetails.summary_event_points) + gwpoints;
@@ -139,8 +141,10 @@ namespace FPL.Controllers
             teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, id);
             int gwpoints = GetGameWeekPoints(teamPicks);
             FPLTeam teamDetails = await GetTeamInfo();
+            EventStatus eventStatus = await GetEventStatus();
 
             viewModel.GWTeam = gwTeam;
+            viewModel.EventStatus = eventStatus;
             viewModel.Team = teamDetails;
             viewModel.GWPoints = gwpoints;
             viewModel.TotalPoints = teamDetails.summary_overall_points;
@@ -354,6 +358,7 @@ namespace FPL.Controllers
             List<Game> gwGames = JsonConvert.DeserializeObject<List<Game>>(content1);
 
             gwGames = await PopulateGameListWithTeams(gwGames);
+            List<Game> startedGames = gwGames.FindAll(x => x.started == true);
 
             foreach (Pick pick in teamPicks)
             {
@@ -368,6 +373,40 @@ namespace FPL.Controllers
                     {
                         pick.GWOppositionName = g.HomeTeam.short_name;
                         pick.GWGame = g;
+                    }
+                }
+
+                foreach (Game g in startedGames)
+                {
+                    //if (g.kickoff_time > DateTime.Today && (g.kickoff_time < DateTime.Today.AddDays(1)))
+                    //{
+
+                    //}
+                    Stat totalBps = g.stats[9];
+
+                    List<PlayerStat> homeBps = totalBps.h;
+                    List<PlayerStat> awayBps = totalBps.a;
+                    List<PlayerStat> allPlayersInGameBps = homeBps.Concat(awayBps).ToList();
+                    allPlayersInGameBps = allPlayersInGameBps.OrderByDescending(x => x.value).ToList();
+                    List<PlayerStat> topPlayersByBps = allPlayersInGameBps.Take(3).ToList();
+
+                    for (var i = 0; i < topPlayersByBps.Count; i++)
+                    {
+                        if (topPlayersByBps[i].element == pick.element)
+                        {
+                            if (i == 0)
+                            {
+                                pick.GWPlayer.stats.EstimatedBonus = 3;
+                            }
+                            else if (i == 1)
+                            {
+                                pick.GWPlayer.stats.EstimatedBonus = 2;
+                            }
+                            else if (i == 2)
+                            {
+                                pick.GWPlayer.stats.EstimatedBonus = 1;
+                            }
+                        }
                     }
                 }
             }

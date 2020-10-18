@@ -1,4 +1,5 @@
-﻿using FPL.Models.FPL;
+﻿using FPL.Models;
+using FPL.Models.FPL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,6 @@ namespace FPL.ViewModels.FPL
         public GWTeam GWTeam { get; set; }
         public int GWPoints { get; set; }
         public int GameweekId { get; set; }
+        public EventStatus EventStatus { get; set; }
     }
 }

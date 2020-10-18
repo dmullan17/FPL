@@ -8,6 +8,7 @@
     self.TotalPoints = ko.observable(data.TotalPoints);
     self.GWPoints = ko.observable(data.GWPoints);
     self.GameweekId = ko.observable(data.GameweekId);
+    self.EventStatus = ko.observable(data.EventStatus);
 
     //self.getColor = ko.pureComputed(function (data) {
     //    return this;
@@ -42,6 +43,108 @@
                 return false;
             }
         }
+    };
+
+    self.GetBonus = function (player) {
+
+        var kickoffDate = new Date(player.GWGame.kickoff_time);
+        kickoffDate.setUTCHours(0, 0, 0, 0);
+
+        if (self.EventStatus().status[0].event == self.GameweekId() && player.GWGame.started) {
+            for (var i = 0; i < self.EventStatus().status.length; i++) {
+
+                var eventStatusDate = new Date(self.EventStatus().status[i].date);
+                eventStatusDate.setUTCHours(0, 0, 0, 0);
+
+                if (kickoffDate.getTime() == eventStatusDate.getTime()) {
+
+                    if (self.EventStatus().status[i].bonus_added) {
+                        return player.GWPlayer.stats.bonus;
+                    }
+                    else if (!self.EventStatus().status[i].bonus_added) {
+                        return player.GWPlayer.stats.EstimatedBonus + "*";
+                    }
+                }
+            }
+        } else {
+            return player.GWPlayer.stats.bonus;
+        }
+
+    };
+
+    self.GetPoints = function (player) {
+
+        var kickoffDate = new Date(player.GWGame.kickoff_time);
+        kickoffDate.setUTCHours(0, 0, 0, 0);
+
+        if (self.EventStatus().status[0].event == self.GameweekId() && player.GWGame.started) {
+            for (var i = 0; i < self.EventStatus().status.length; i++) {
+
+                var eventStatusDate = new Date(self.EventStatus().status[i].date);
+                eventStatusDate.setUTCHours(0, 0, 0, 0);
+
+                if (kickoffDate.getTime() == eventStatusDate.getTime()) {
+
+                    if (self.EventStatus().status[i].bonus_added) {
+                        return player.GWPlayer.stats.gw_points;
+                    }
+                    else if (!self.EventStatus().status[i].bonus_added) {
+                        if (player.is_captain) {
+                            return player.GWPlayer.stats.gw_points + (player.GWPlayer.stats.EstimatedBonus * 2) + "*";
+                        }
+                        else {
+                            return player.GWPlayer.stats.gw_points + player.GWPlayer.stats.EstimatedBonus + "*";
+                        }
+                    }
+                }
+            }
+        } else {
+            return player.GWPlayer.stats.gw_points;
+        }
+
+    };
+
+
+    self.GetGWPoints = function (points) {
+
+        var today = new Date();
+        today.setUTCHours(0, 0, 0, 0);
+
+        if (self.EventStatus().status[0].event == self.GameweekId()) {
+            for (var i = 0; i < self.EventStatus().status.length; i++) {
+
+                var eventStatusDate = new Date(self.EventStatus().status[i].date);
+                eventStatusDate.setUTCHours(0, 0, 0, 0);
+
+                if (today.getTime() == eventStatusDate.getTime()) {
+
+                    if (self.EventStatus().status[i].bonus_added) {
+                        return self.GWPoints();
+                    }
+                    else if (!self.EventStatus().status[i].bonus_added) {
+
+                        for (var j = 0; j < self.GWTeam().picks.length; j++) {
+
+                            var kickoffDate = new Date(self.GWTeam().picks[j].GWGame.kickoff_time);
+                            kickoffDate.setUTCHours(0, 0, 0, 0);
+
+                            if (kickoffDate.getTime() == eventStatusDate.getTime()) {
+                                if (self.GWTeam().picks[j].is_captain) {
+                                    points = points + (self.GWTeam().picks[j].GWPlayer.stats.EstimatedBonus * 2);
+                                }
+                                else {
+                                    points = points + self.GWTeam().picks[j].GWPlayer.stats.EstimatedBonus;
+                                }
+                            }
+                        }
+                        return points + "*";
+                    }
+                }
+            }
+        } else {
+            return self.GWPoints();
+        }
+
     };
 
     self.GetPosition = function (position) {

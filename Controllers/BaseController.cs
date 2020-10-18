@@ -22,6 +22,23 @@ namespace FPL.Controllers
             return "https://fantasy.premierleague.com/api/";
         }
 
+        public async Task<EventStatus> GetEventStatus()
+        {
+            var client = new FPLHttpClient();
+
+            var response = await client.GetAsync("event-status");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            EventStatus eventStatus = JsonConvert.DeserializeObject<EventStatus>(content);
+
+            return eventStatus;
+
+        }
+
+
         public async Task<List<Game>> PopulateGameListWithTeams(List<Game> games)
         {
             var client = new FPLHttpClient();

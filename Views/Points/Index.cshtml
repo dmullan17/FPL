@@ -21,7 +21,7 @@
             Total Points: <span data-bind="text: $root.TotalPoints()"></span>
         </h4>
         <h4 class="ui header">
-            GW<span data-bind="text: $root.GameweekId()"></span> Points: <span data-bind="text: $root.GWPoints()"></span>
+            GW<span data-bind="text: $root.GameweekId()"></span> Points: <span data-bind="text: $root.GetGWPoints($root.GWPoints())"></span>
         </h4>
         <table class="ui table">
             <thead>
@@ -85,10 +85,10 @@
                         <span data-bind="text: GWPlayer.stats.saves"></span>
                     </td>
                     <td>
-                        <span data-bind="text: GWPlayer.stats.bonus"></span>
+                        <span data-bind="text: $root.GetBonus($data)"></span>
                     </td>
                     <td>
-                        <span data-bind="text: GWPlayer.stats.gw_points"></span>
+                        <span data-bind="text: $root.GetPoints($data)"></span>
                     </td>
                     <td>
                         <span data-bind="visible: GWGame.finished_provisional"><i class="check icon"></i></span>
