@@ -45,6 +45,17 @@
         }
     };
 
+    self.HomeOrAway = function (player) {
+
+        if (player.GWGame.team_h == player.player.Team.id) {
+            return player.GWGame.AwayTeam.name + " (H)"
+        }
+        else if (player.GWGame.team_a == player.player.Team.id) {
+            return player.GWGame.HomeTeam.name + " (A)"
+        }
+    };
+
+
     self.GetBonus = function (player) {
 
         var kickoffDate = new Date(player.GWGame.kickoff_time);

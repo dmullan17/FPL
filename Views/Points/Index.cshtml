@@ -29,14 +29,12 @@
                     <th>Name</th>
                     <th data-bind="visible: $root.GWTeam().automatic_subs.length > 0"></th>
                     <th>Position</th>
-                    <th>Opp</th>
+                    <th>Opposition</th>
                     <th>Mins</th>
                     <th>GF</th>
                     <th>CS</th>
                     <th>GA</th>
                     <th>Assists</th>
-                    <th>Yellow C</th>
-                    <th>Red C</th>
                     <th>Saves</th>
                     <th>Bonus</th>
                     <th>GW Points</th>
@@ -49,6 +47,8 @@
                         <span data-bind="text: player.web_name"></span>
                         <span data-bind="visible: is_captain"><i class="copyright icon"></i></span>
                         <span data-bind="visible: GWPlayer.stats.in_dreamteam"><i class="star icon"></i></span>
+                        <i class="yellow square icon" data-bind="visible: GWPlayer.stats.yellow_cards > 0"></i>
+                        <i class="red square icon" data-bind="visible: GWPlayer.stats.red_cards > 0"></i>
                     </td>
                     <td data-bind="visible: $root.GWTeam().automatic_subs.length > 0">
                         <span data-bind="visible: $root.SubOn($data)">On</span>
@@ -58,7 +58,7 @@
                         <span data-bind="text: $root.GetPosition(player.element_type)"></span>
                     </td>
                     <td>
-                        <span data-bind="text: GWOppositionName"></span>
+                        <span data-bind="text: $root.HomeOrAway($data)"></span>
                     </td>
                     <td>
                         <span data-bind="text: GWPlayer.stats.minutes"></span>
@@ -74,12 +74,6 @@
                     </td>
                     <td>
                         <span data-bind="text: GWPlayer.stats.assists"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: GWPlayer.stats.yellow_cards"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: GWPlayer.stats.red_cards"></span>
                     </td>
                     <td>
                         <span data-bind="text: GWPlayer.stats.saves"></span>
