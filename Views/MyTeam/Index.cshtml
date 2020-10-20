@@ -21,20 +21,25 @@
             Total Points: <span data-bind="text: $root.TotalPoints()"></span>
         </h4>
         <h4 class="ui header">
-            Team Value: <span data-bind="text: $root.TotalPoints()"></span>
+            Team Value: <span data-bind="text: $root.ConvertToDecimal($root.TransferInfo().value)"></span>
+        </h4>
+        <h4 class="ui header">
+            Bank: <span data-bind="text: $root.ConvertToDecimal($root.TransferInfo().bank)"></span>
         </h4>
         <table class="ui table">
             <thead>
                 <tr>
                     <th>Name</th>
                     <th>Team</th>
-                    <th>Position</th>
-                    <th>Value</th>
-                    <th>Points</th>
-                    <th>Points while on Team</th>
+                    <th>Pos</th>
+                    <th>Val</th>
+                    <th>Pts</th>
+                    <th>Pts for Team</th>
                     <th>PPG</th>
-                    <th>Overall ICT Ranking</th>
-                    <th>Position ICT Ranking</th>
+                    <th>% Mins Played</th>
+                    <th><i class="star icon"></i></th>
+                    <th>Overall Rank</th>
+                    <th>Pos Rank</th>
                     <th>% Selected by</th>
                     <th>Next Game</th>
                     @*<th>Form</th>
@@ -66,6 +71,12 @@
                     </td>
                     <td>
                         <span data-bind="text: player.points_per_game"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: player.MinsPlayedPercentage"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: player.dreamteam_count"></span>
                     </td>
                     <td>
                         <span data-bind="text: $root.FormatOverallRank(player.ict_index_rank)"></span>

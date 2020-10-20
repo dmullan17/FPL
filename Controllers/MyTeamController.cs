@@ -36,9 +36,14 @@ namespace FPL.Controllers
 
             var content = await response.Content.ReadAsStringAsync();
 
-            var teamPicksJSON = AllChildren(JObject.Parse(content))
+            var myTeamJSON = JObject.Parse(content);
+
+            var teamPicksJSON = AllChildren(myTeamJSON)
                 .First(c => c.Type == JTokenType.Array && c.Path.Contains("picks"))
                 .Children<JObject>();
+
+            JObject transfersObject = (JObject)myTeamJSON["transfers"];
+            TransferInfo transferInfo = transfersObject.ToObject<TransferInfo>();
 
             List<Pick> teamPicks = new List<Pick>();
             List<Transfer> transfers = new List<Transfer>();
@@ -60,6 +65,7 @@ namespace FPL.Controllers
             viewModel.Team = teamDetails;
             viewModel.Positions = positions;
             viewModel.TotalPoints = teamDetails.summary_overall_points;
+            viewModel.TransferInfo = transferInfo;
 
             return View(viewModel);
         }
@@ -188,6 +194,11 @@ namespace FPL.Controllers
             //var content2 = await response2.Content.ReadAsStringAsync();
 
             //List<Transfer> transfers = JsonConvert.DeserializeObject<List<Transfer>>(content2);
+
+            foreach (Pick pick in teamPicks)
+            {
+                pick.player.MinsPlayedPercentage = Math.Round((pick.player.minutes / (pick.player.Team.Results.Count * 90m)) * 100m, 1);
+            }
 
             return teamPicks;
         }

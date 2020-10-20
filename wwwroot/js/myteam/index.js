@@ -7,6 +7,7 @@
     self.Team = ko.observable(data.Team);
     self.Positions = ko.observableArray(data.Positions);
     self.TotalPoints = ko.observable(data.TotalPoints);
+    self.TransferInfo = ko.observable(data.TransferInfo);
 
 
     //self.getColor = ko.pureComputed(function (data) {
@@ -20,6 +21,10 @@
         else {
             return null;
         }
+    };
+
+    self.ConvertToDecimal = function (value) {
+        return (value / 10).toFixed(1);
     };
 
 
