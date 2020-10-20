@@ -70,6 +70,7 @@ namespace FPL.Controllers
 
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
             teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, currentGameweekId);
+            //gwTeam = await AddAutoSubs(gwTeam, teamPicks);
             int gwpoints = GetGameWeekPoints(teamPicks);
             FPLTeam teamDetails = await GetTeamInfo();
             EventStatus eventStatus = await GetEventStatus();
@@ -168,6 +169,70 @@ namespace FPL.Controllers
             }
 
             return gwpoints;
+        }
+
+        private async Task<GWTeam> AddAutoSubs(GWTeam gwTeam, List<Pick> picks)
+        {
+            EventStatus eventStatus = await GetEventStatus();
+            var lastEvent = eventStatus.status.LastOrDefault();
+            var starters = picks.FindAll(x => x.position < 12);
+            var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0);
+            var subsWhoPlayed = picks.FindAll(x => x.position > 12 && x.GWPlayer.stats.minutes > 0);
+
+            if (lastEvent.bonus_added)
+            {
+                return gwTeam;
+            }
+            else
+            { 
+                if (startersWhoDidNotPlay.Count > 0 && subsWhoPlayed.Count > 0)
+                {
+                    AutomaticSub autoSub = new AutomaticSub();
+
+                    for (var i = 0; i < startersWhoDidNotPlay.Count; i++)
+                    {
+                        if (startersWhoDidNotPlay[i].player.element_type == 1)
+                        {
+                            if (subsWhoPlayed.Find(x => x.player.element_type == 1) != null)
+                            {
+                                autoSub.element_out = startersWhoDidNotPlay[i].element;
+                                autoSub.element_in = subsWhoPlayed.Find(x => x.player.element_type == 1).element;
+                                autoSub.@event = eventStatus.status[0].@event;
+                                gwTeam.automatic_subs.Add(autoSub);
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+
+                        }
+
+                        if (startersWhoDidNotPlay[i].player.element_type == 2 && starters.FindAll(x => x.player.element_type == 2).ToList().Count > 3)
+                        {
+                            for (var k = 0; k < subsWhoPlayed.Count; k++)
+                            {
+                                if (subsWhoPlayed[k].player.element_type == 2)
+                                {
+                                    autoSub.element_out = startersWhoDidNotPlay[i].element;
+                                    autoSub.element_in = subsWhoPlayed[k].element;
+                                    autoSub.@event = eventStatus.status[0].@event;
+                                    gwTeam.automatic_subs.Add(autoSub);
+                                    break;
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+
+            }
+
+
+
+            return gwTeam;
+
         }
 
         private async Task<FPLTeam> GetTeamInfo()

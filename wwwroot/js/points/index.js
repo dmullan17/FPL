@@ -28,10 +28,8 @@
             if (self.GWTeam().automatic_subs[i].element_in == player.element) {
                 return true;
             }
-            else {
-                return false;
-            }
         }
+        return false;
     };
 
     self.SubOff = function (player) {
@@ -39,10 +37,8 @@
             if (self.GWTeam().automatic_subs[i].element_out == player.element) {
                 return true;
             }
-            else {
-                return false;
-            }
         }
+        return false;
     };
 
     self.HomeOrAway = function (player) {
@@ -121,7 +117,7 @@
         var today = new Date();
         today.setUTCHours(0, 0, 0, 0);
 
-        if (self.EventStatus().status[0].event == self.GameweekId()) {
+        if (self.EventStatus().status[0].event == self.GameweekId() && self.EventStatus().leagues != "Updated") {
             for (var i = 0; i < self.EventStatus().status.length; i++) {
 
                 var eventStatusDate = new Date(self.EventStatus().status[i].date);
