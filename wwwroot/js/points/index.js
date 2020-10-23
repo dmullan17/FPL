@@ -51,6 +51,37 @@
         }
     };
 
+    self.GetPlayerStatusIcon = function (playerStatus) {
+        //injured
+        if (playerStatus == "i") {
+            return "plus circle icon";
+        }
+        //doubtful
+        else if (playerStatus == "d") {
+            return "help circle icon";
+        }
+        //not available or suspended
+        else if (playerStatus == "n" || playerStatus == "s") {
+            return "warning circle icon";
+        }
+        //unavailable - left the club
+        else if (playerStatus == "u") {
+            return "warning sign icon";
+        }
+        else {
+            return null;
+        }
+    };
+
+    self.DoesPlayerHaveStatus = function (playerStatus) {
+        if (playerStatus == "i" || playerStatus == "d" || playerStatus == "n" || playerStatus == "s" || playerStatus == "u") {
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+
 
     self.GetBonus = function (player) {
 

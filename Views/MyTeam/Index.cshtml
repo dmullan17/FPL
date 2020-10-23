@@ -43,8 +43,8 @@
                     <th>% Selected by</th>
                     <th>Next Game</th>
                     @*<th>Form</th>
-        <th>Points achieved</th>
-        <th>Next Game</th>*@
+                    <th>Points achieved</th>
+                    <th>Next Game</th>*@
                 </tr>
             </thead>
             <tbody data-bind="foreach: $root.Picks">
@@ -53,6 +53,7 @@
                         <span data-bind="text: player.web_name"></span>
                         <span data-bind="visible: is_captain"><i class="copyright icon"></i></span>
                         <span data-bind="visible: player.in_dreamteam"><i class="star icon"></i></span>
+                        <i class="ui icon" data-bind="visible: $root.DoesPlayerHaveStatus(player.status), class: $root.GetPlayerStatusIcon(player.status)"></i>
                     </td>
                     <td>
                         <span data-bind="text: player.Team.short_name"></span>

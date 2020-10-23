@@ -1,4 +1,5 @@
-﻿MyTeamViewModel = function (data) {
+﻿
+MyTeamViewModel = function (data) {
     "use strict";
 
     var self = this;
@@ -23,10 +24,40 @@
         }
     };
 
+    self.GetPlayerStatusIcon = function (playerStatus) {
+        //injured
+        if (playerStatus == "i") {
+            return "plus circle icon";
+        }
+        //doubtful
+        else if (playerStatus == "d") {
+            return "help circle icon";
+        }
+        //not available or suspended
+        else if (playerStatus == "n" || playerStatus == "s") {
+            return "warning circle icon";
+        }
+        //unavailable - left the club
+        else if (playerStatus == "u") {
+            return "warning sign icon";
+        }
+        else {
+            return null;
+        }
+    };
+
+    self.DoesPlayerHaveStatus = function (playerStatus) {
+        if (playerStatus == "i" || playerStatus == "d" || playerStatus == "n" || playerStatus == "s" || playerStatus == "u") {
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+
     self.ConvertToDecimal = function (value) {
         return (value / 10).toFixed(1);
     };
-
 
     self.GetPlayersNextFixture = function (team) {
 
@@ -58,28 +89,6 @@
         return value + " / " + pos.element_count;
     };
 
-    //self.SubOn = function (player) {
-    //    for (var i = 0; i < self.GWTeam().automatic_subs.length; i++) {
-    //        if (self.GWTeam().automatic_subs[i].element_in == player.element) {
-    //            return true;
-    //        }
-    //        else {
-    //            return false;
-    //        }
-    //    }
-    //};
-
-    //self.SubOff = function (player) {
-    //    for (var i = 0; i < self.GWTeam().automatic_subs.length; i++) {
-    //        if (self.GWTeam().automatic_subs[i].element_out == player.element) {
-    //            return true;
-    //        }
-    //        else {
-    //            return false;
-    //        }
-    //    }
-    //};
-
     self.GetPosition = function (position) {
         if (position == 1) {
             return "GK";
@@ -95,22 +104,44 @@
         }
     };
 
-    //self.OnBench = function (entry) {
-    //    //return entry.type === 'file' ? 'icon-file' : 'icon-filder';
-    //    return;
+    //self.viewGame = function (player) {
+    //    $('.ui.special.popup').popup({
+    //        inline: true
+    //    }).show();
+
+    //    var popupLoading = '<i class="notched circle loading icon green"></i> wait...';
+    //    $('.test').popup({
+    //        popup: $('.ui.special.popup'),
+    //        inline: true,
+    //        on: 'click',
+    //        exclusive: true,
+    //        hoverable: true,
+    //        html: popupLoading,
+    //        variation: 'wide',
+    //        delay: {
+    //            show: 400,
+    //            hide: 400
+    //        },
+    //        onShow: function (el) { // load data (it could be called in an external function.)
+    //            var popup = this;
+    //            popup.html(popupLoading);
+    //            $.ajax({
+    //                url: 'http://www.example.com/'
+    //            }).done(function (result) {
+    //                popup.html(result);
+    //            }).fail(function () {
+    //                popup.html('error');
+    //            });
+    //        }
+    //    }).show();
     //};
 
     self.init = function () {
-        //totalling a players total gw stats
-        //for (var i = 0; i < self.Picks().length; i++) {
-        //    for (var j = 0; j < self.Picks()[i].GWPlayer.explain.length; j++) {
-        //        for (var k = 0; k < self.Picks()[i].GWPlayer.explain[j].stats.length; k++) {
-        //            if (self.Picks()[i].GWPlayer.explain[j].stats[k].points != 0) {
-        //                self.Picks()[i].GWPlayer.stats.gw_points += self.Picks()[i].GWPlayer.explain[j].stats[k].points;
-        //            }
-        //        }
-        //    }
-        //}
+
+        //$('.ui.icon.button').popup();
+        //$('.circle.icon').popup();
+
+
     };
 
     self.init();
