@@ -23,6 +23,9 @@
         <h4 class="ui header">
             GW<span data-bind="text: $root.GameweekId()"></span> Points: <span data-bind="text: $root.GetGWPoints($root.GWPoints())"></span>
         </h4>
+        <h4 class="ui header">
+            Percentile Rank: <span data-bind="text: $root.EntryHistory().RankPercentile"></span>
+        </h4>
         <table class="ui table">
             <thead>
                 <tr>
@@ -100,18 +103,18 @@
                 <!-- <span data-bind="text: $root.SelectedGame().team_a_score"> -->
                 <!-- <span data-bind="text: $root.SelectedGame().team_h_score + ' - ' + $root.SelectedGame().team_a_score"> -->
                 @*<div class="ui grid">
-            <div class="six wide right aligned middle aligned column">
-                <h2 class="ui header" data-bind="text: HomeTeam.name"></h3>
-            </div>
-            <div class="four wide center aligned column">
-                <div class="ui large statistic">
-                    <div class="value" data-bind="text: team_h_score + ' - ' + team_a_score"></div>
-                </div>
-            </div>
-            <div class="six wide middle aligned column">
-                <h2 class="ui header" data-bind="text: AwayTeam.name"></h3>
-            </div>
-        </div>*@
+                    <div class="six wide right aligned middle aligned column">
+                        <h2 class="ui header" data-bind="text: HomeTeam.name"></h3>
+                    </div>
+                    <div class="four wide center aligned column">
+                        <div class="ui large statistic">
+                            <div class="value" data-bind="text: team_h_score + ' - ' + team_a_score"></div>
+                        </div>
+                    </div>
+                    <div class="six wide middle aligned column">
+                        <h2 class="ui header" data-bind="text: AwayTeam.name"></h3>
+                    </div>
+                </div>*@
             </div>
             @*<div class="ui top attached tabular menu">
                 <a class="item active" data-tab="first">First</a>

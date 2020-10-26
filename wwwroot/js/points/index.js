@@ -9,6 +9,7 @@
     self.GWPoints = ko.observable(data.GWPoints);
     self.GameweekId = ko.observable(data.GameweekId);
     self.EventStatus = ko.observable(data.EventStatus);
+    self.EntryHistory = ko.observable(data.EntryHistory);
     self.SelectedPlayer = ko.observable();
 
     self.viewPlayer = function (player) {

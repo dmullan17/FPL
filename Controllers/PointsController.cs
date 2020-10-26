@@ -62,6 +62,13 @@ namespace FPL.Controllers
                 autoSubs.Add(sub);
             }
 
+            var entryHistoryJSON = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Object && c.Path.Contains("entry_history"));
+
+            EntryHistory entryHistory = new EntryHistory();
+
+            entryHistory = entryHistoryJSON.ToObject<EntryHistory>();
+
             GWTeam gwTeam = new GWTeam
             {
                 picks = teamPicks,
@@ -70,12 +77,14 @@ namespace FPL.Controllers
 
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
             teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, currentGameweekId);
+            entryHistory = await AddExtraDatatoEntryHistory(entryHistory);
             //gwTeam = await AddAutoSubs(gwTeam, teamPicks);
             int gwpoints = GetGameWeekPoints(teamPicks);
             FPLTeam teamDetails = await GetTeamInfo();
             EventStatus eventStatus = await GetEventStatus();
 
             viewModel.GWTeam = gwTeam;
+            viewModel.EntryHistory = entryHistory;
             viewModel.EventStatus = eventStatus;
             viewModel.Team = teamDetails;
             viewModel.GWPoints = gwpoints;
@@ -132,6 +141,13 @@ namespace FPL.Controllers
                 autoSubs.Add(sub);
             }
 
+            var entryHistoryJSON = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Object && c.Path.Contains("entry_history"));
+
+            EntryHistory entryHistory = new EntryHistory();
+
+            entryHistory = entryHistoryJSON.ToObject<EntryHistory>();
+
             GWTeam gwTeam = new GWTeam
             {
                 picks = teamPicks,
@@ -140,11 +156,13 @@ namespace FPL.Controllers
 
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
             teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, id);
+            entryHistory = await AddExtraDatatoEntryHistory(entryHistory);
             int gwpoints = GetGameWeekPoints(teamPicks);
             FPLTeam teamDetails = await GetTeamInfo();
             EventStatus eventStatus = await GetEventStatus();
 
             viewModel.GWTeam = gwTeam;
+            viewModel.EntryHistory = entryHistory;
             viewModel.EventStatus = eventStatus;
             viewModel.Team = teamDetails;
             viewModel.GWPoints = gwpoints;
@@ -169,6 +187,30 @@ namespace FPL.Controllers
             }
 
             return gwpoints;
+        }
+
+        private async Task<EntryHistory> AddExtraDatatoEntryHistory(EntryHistory entryHistory)
+        {
+            var client = new FPLHttpClient();
+
+            var response = await client.GetAsync("bootstrap-static/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var totalPlayersJson = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Integer && c.Path.Contains("total_players"));
+
+            //EntryHistory entryHistory = new EntryHistory();
+
+            int totalPlayers = totalPlayersJson.ToObject<int>();
+
+            var rankPercentile = Math.Round(((decimal)entryHistory.rank / (decimal)totalPlayers) * 100m, 0);
+
+            entryHistory.RankPercentile = Convert.ToInt32(rankPercentile);
+
+            return entryHistory;
         }
 
         private async Task<GWTeam> AddAutoSubs(GWTeam gwTeam, List<Pick> picks)
