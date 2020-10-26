@@ -9,14 +9,18 @@
     self.GWPoints = ko.observable(data.GWPoints);
     self.GameweekId = ko.observable(data.GameweekId);
     self.EventStatus = ko.observable(data.EventStatus);
+    self.SelectedPlayer = ko.observable();
 
-    //self.getColor = ko.pureComputed(function (data) {
-    //    return this;
-    //});
+    self.viewPlayer = function (player) {
+        self.SelectedPlayer(player);
+
+
+        $('.ui.modal').modal().modal('show');
+    };
 
     self.getColor = function (multipler) {
         if (multipler == 0) {
-            return "grey";
+            return "lightgray";
         }
         else {
             return null;

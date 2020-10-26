@@ -13,5 +13,6 @@ namespace FPL.ViewModels.FPL
         public int GWPoints { get; set; }
         public int GameweekId { get; set; }
         public EventStatus EventStatus { get; set; }
+
     }
 }

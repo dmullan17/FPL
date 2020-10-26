@@ -44,7 +44,7 @@
             <tbody data-bind="foreach: $root.GWTeam().picks">
                 <tr data-bind="style: { 'background-color': $root.getColor($data.multiplier) }">
                     <td>
-                        <span data-bind="text: player.web_name"></span>
+                        <a data-bind="click: $root.viewPlayer"><span data-bind="text: player.web_name"></span></a>
                         <span data-bind="visible: is_captain"><i class="copyright icon"></i></span>
                         <span data-bind="visible: GWPlayer.stats.in_dreamteam"><i class="star icon"></i></span>
                         <i class="ui icon" data-bind="visible: $root.DoesPlayerHaveStatus(player.status), class: $root.GetPlayerStatusIcon(player.status)"></i>
@@ -92,5 +92,147 @@
                 </tr>
             </tbody>
         </table>
+        <div class="ui modal">
+            <i class="close icon"></i>
+            <div class="header" data-bind="with: $root.SelectedPlayer()">
+                <div data-bind="text: player.web_name"></div>
+                <div data-bind="text: player.news"></div>
+                <!-- <span data-bind="text: $root.SelectedGame().team_a_score"> -->
+                <!-- <span data-bind="text: $root.SelectedGame().team_h_score + ' - ' + $root.SelectedGame().team_a_score"> -->
+                @*<div class="ui grid">
+            <div class="six wide right aligned middle aligned column">
+                <h2 class="ui header" data-bind="text: HomeTeam.name"></h3>
+            </div>
+            <div class="four wide center aligned column">
+                <div class="ui large statistic">
+                    <div class="value" data-bind="text: team_h_score + ' - ' + team_a_score"></div>
+                </div>
+            </div>
+            <div class="six wide middle aligned column">
+                <h2 class="ui header" data-bind="text: AwayTeam.name"></h3>
+            </div>
+        </div>*@
+            </div>
+            @*<div class="ui top attached tabular menu">
+                <a class="item active" data-tab="first">First</a>
+                <a class="item" data-tab="second">Second</a>
+                <a class="item" data-tab="third">Third</a>
+            </div>
+            <div class="ui bottom attached tab segment active" data-tab="first">
+                <div class="image content">
+                    <table class="ui table">
+                        <thead data-bind="with: $root.Game()">
+                        <th></th>
+                        <th data-bind="text: HomeTeam.name"></th>
+                        <th data-bind="text: AwayTeam.name"></th>
+                        </thead>
+                        <tbody data-bind="foreach: $root.GameStats">
+                            <tr>
+                                <td data-bind="text: identifier"></td>
+                                <td data-bind="foreach: h">
+                                    <span data-bind="text: Player.web_name"></span>
+                                    <span data-bind="text: value"></span>
+                                </td>
+                                <td data-bind="foreach: a">
+                                    <span data-bind="text: Player.web_name"></span>
+                                    <span data-bind="text: value"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="ui bottom attached tab segment" data-tab="second">
+                <div class="ui grid">
+                    <div class="eight wide column">
+                        <h3 class="ui header" data-bind="with: $root.Game()">
+                            <span data-bind="text: HomeTeam.name"></span>
+                        </h3>
+                        <table class="ui table">
+                            <thead>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Minutes</th>
+                            <th>Goals</th>
+                            <th>Goals Conceded</th>
+                            <th>Assists</th>
+                            </thead>
+                            <tbody data-bind="foreach: $root.SelectedHomeGWPlayerStats">
+                                <tr>
+                                    <td>
+                                        <span data-bind="text: player.web_name"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: player.element_type"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: stats.minutes"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: stats.goals_scored"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: stats.goals_conceded"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: stats.assists"></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="eight wide column">
+                        <h3 class="ui header" data-bind="with: $root.Game()">
+                            <span data-bind="text: AwayTeam.name"></span>
+                        </h3>
+                        <table class="ui table">
+                            <thead>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Minutes</th>
+                            <th>Goals</th>
+                            <th>Goals Conceded</th>
+                            <th>Assists</th>
+                            </thead>
+                            <tbody data-bind="foreach: $root.SelectedAwayGWPlayerStats">
+                                <tr>
+                                    <td>
+                                        <span data-bind="text: player.web_name"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: player.element_type"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: stats.minutes"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: stats.goals_scored"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: stats.goals_conceded"></span>
+                                    </td>
+                                    <td>
+                                        <span data-bind="text: stats.assists"></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+            <div class="ui bottom attached tab segment" data-tab="third">
+                Third
+            </div>
+            <div class="actions">
+                <div class="ui black deny button">
+                    Nope
+                </div>
+                <div class="ui positive right labeled icon button">
+                    Yep, that's me
+                    <i class="checkmark icon"></i>
+                </div>
+            </div>*@
+        </div>
     </div>
 </div>
