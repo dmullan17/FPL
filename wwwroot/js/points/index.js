@@ -11,6 +11,7 @@
     self.EventStatus = ko.observable(data.EventStatus);
     self.EntryHistory = ko.observable(data.EntryHistory);
     self.SelectedPlayer = ko.observable();
+    self.SelectedPlayerStatus = ko.observable();
 
     self.viewPlayer = function (player) {
         self.SelectedPlayer(player);
@@ -85,6 +86,18 @@
         else {
             return false;
         }
+    };
+
+    self.ShowStatusPopup = function (playerStatus) {
+        self.SelectedPlayerStatus(playerStatus);
+
+        //$('.ui.icon').popup({
+        //    popup: '.special.popup',
+        //    on: 'click'
+        //});
+        $('.special.popup').popup().popup('show');
+        //$('.ui.modal').modal().modal('show');
+
     };
 
 
@@ -183,6 +196,9 @@
                         return points + "*";
                     }
                 }
+                else {
+                    return self.GWPoints();
+                }
             }
         } else {
             return self.GWPoints();
@@ -216,6 +232,7 @@
     //};
 
     self.init = function () {
+
         //totalling a players total gw stats
         //for (var i = 0; i < self.Picks().length; i++) {
         //    for (var j = 0; j < self.Picks()[i].GWPlayer.explain.length; j++) {

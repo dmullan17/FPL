@@ -1,5 +1,4 @@
-﻿
-MyTeamViewModel = function (data) {
+﻿MyTeamViewModel = function (data) {
     "use strict";
 
     var self = this;

@@ -5,6 +5,8 @@ namespace FPL.Models
     public class Player
     {
         public Team Team { get; set; }
+        public int BpsRank { get; set; }
+        public int BpsPositionRank { get; set; }
         public decimal? MinsPlayedPercentage { get; set; }
         public int? chance_of_playing_next_round { get; set; }
         public int? chance_of_playing_this_round { get; set; }

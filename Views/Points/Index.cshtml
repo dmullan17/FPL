@@ -24,7 +24,7 @@
             GW<span data-bind="text: $root.GameweekId()"></span> Points: <span data-bind="text: $root.GetGWPoints($root.GWPoints())"></span>
         </h4>
         <h4 class="ui header">
-            Percentile Rank: <span data-bind="text: $root.EntryHistory().RankPercentile"></span>
+            GW Rank Percentile: <span data-bind="text: $root.EntryHistory().RankPercentile"></span>
         </h4>
         <table class="ui table">
             <thead>
@@ -50,7 +50,7 @@
                         <a data-bind="click: $root.viewPlayer"><span data-bind="text: player.web_name"></span></a>
                         <span data-bind="visible: is_captain"><i class="copyright icon"></i></span>
                         <span data-bind="visible: GWPlayer.stats.in_dreamteam"><i class="star icon"></i></span>
-                        <i class="ui icon" data-bind="visible: $root.DoesPlayerHaveStatus(player.status), class: $root.GetPlayerStatusIcon(player.status)"></i>
+                        <i class="ui icon" data-bind="visible: $root.DoesPlayerHaveStatus(player.status), class: $root.GetPlayerStatusIcon(player.status), click: $root.ShowStatusPopup(player.status)"></i>
                         <i class="yellow square icon" data-bind="visible: GWPlayer.stats.yellow_cards > 0"></i>
                         <i class="red square icon" data-bind="visible: GWPlayer.stats.red_cards > 0"></i>
                     </td>
@@ -95,6 +95,9 @@
                 </tr>
             </tbody>
         </table>
+        <div class="ui special popup">
+            test
+        </div>
         <div class="ui modal">
             <i class="close icon"></i>
             <div class="header" data-bind="with: $root.SelectedPlayer()">

@@ -36,15 +36,18 @@
                     <th>Pts</th>
                     <th>Pts for Team</th>
                     <th>PPG</th>
+                    <th>Form</th>
                     <th>% Mins Played</th>
                     <th><i class="star icon"></i></th>
-                    <th>Overall Rank</th>
-                    <th>Pos Rank</th>
+                    <th>ICT Rank</th>
+                    <th>Pos ICT Rank</th>
+                    <th>Bps Rank</th>
+                    <th>Pos Bps Rank</th>
                     <th>% Selected by</th>
                     <th>Next Game</th>
                     @*<th>Form</th>
-                    <th>Points achieved</th>
-                    <th>Next Game</th>*@
+        <th>Points achieved</th>
+        <th>Next Game</th>*@
                 </tr>
             </thead>
             <tbody data-bind="foreach: $root.Picks">
@@ -74,6 +77,9 @@
                         <span data-bind="text: player.points_per_game"></span>
                     </td>
                     <td>
+                        <span data-bind="text: player.form"></span>
+                    </td>
+                    <td>
                         <span data-bind="text: player.MinsPlayedPercentage"></span>
                     </td>
                     <td>
@@ -84,6 +90,12 @@
                     </td>
                     <td>
                         <span data-bind="text: $root.FormatPositionRankType(player.element_type, player.ict_index_rank_type)"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: $root.FormatOverallRank(player.BpsRank)"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: $root.FormatPositionRankType(player.element_type, player.BpsPositionRank)"></span>
                     </td>
                     <td>
                         <span data-bind="text: player.selected_by_percent"></span>

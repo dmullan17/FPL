@@ -100,6 +100,34 @@ namespace FPL.Controllers
                 }
             }
 
+            var allPlayersByBps = allPlayers.OrderByDescending(m => m.bps).ToList();
+            var allGoalkeepersByBps = allPlayers.Where(x => x.element_type == 1).OrderByDescending(m => m.bps).ToList();
+            var allDefendersByBps = allPlayers.Where(x => x.element_type == 2).OrderByDescending(m => m.bps).ToList();
+            var allMidfieldersByBps = allPlayers.Where(x => x.element_type == 3).OrderByDescending(m => m.bps).ToList();
+            var allForwardsByBps = allPlayers.Where(x => x.element_type == 4).OrderByDescending(m => m.bps).ToList();
+
+            foreach (var player in allPlayers)
+            {
+                player.BpsRank = allPlayersByBps.IndexOf(player) + 1;
+
+                if (player.element_type == 1)
+                {
+                    player.BpsPositionRank = allGoalkeepersByBps.IndexOf(player) + 1;
+                }
+                else if (player.element_type == 2) 
+                {
+                    player.BpsPositionRank = allDefendersByBps.IndexOf(player) + 1;
+                }
+                if (player.element_type == 3)
+                {
+                    player.BpsPositionRank = allMidfieldersByBps.IndexOf(player) + 1;
+                }
+                else if (player.element_type == 4)
+                {
+                    player.BpsPositionRank = allForwardsByBps.IndexOf(player) + 1;
+                }
+            }
+
             var allTeamsJSON = AllChildren(JObject.Parse(content))
                 .First(c => c.Type == JTokenType.Array && c.Path.Contains("teams"))
                 .Children<JObject>();
