@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 
 namespace FPL.Models
 {
     public class Player
     {
         public Team Team { get; set; }
+        public List<PlayerFixture> Fixtures { get; set; }
         public int BpsRank { get; set; }
         public int BpsPositionRank { get; set; }
         public decimal? MinsPlayedPercentage { get; set; }

@@ -35,8 +35,7 @@
                     <th>Val</th>
                     <th>Pts</th>
                     <th>Pts for Team</th>
-                    <th>PPG</th>
-                    <th>Form</th>
+                    <th>PPG (Prev 30 days)</th>
                     <th>% Mins Played</th>
                     <th><i class="star icon"></i></th>
                     <th>ICT Rank</th>
@@ -45,6 +44,7 @@
                     <th>Pos Bps Rank</th>
                     <th>% Selected by</th>
                     <th>Next Game</th>
+                    <th>Avg FDR Next 5</th>
                     @*<th>Form</th>
         <th>Points achieved</th>
         <th>Next Game</th>*@
@@ -74,10 +74,7 @@
                         <span data-bind="text: TotalPointsAccumulatedForTeam"></span>
                     </td>
                     <td>
-                        <span data-bind="text: player.points_per_game"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: player.form"></span>
+                        <span data-bind="text: player.points_per_game + ' (' + player.form + ')'"></span>
                     </td>
                     <td>
                         <span data-bind="text: player.MinsPlayedPercentage"></span>
@@ -102,6 +99,9 @@
                     </td>
                     <td>
                         <span data-bind="text: $root.GetPlayersNextFixture(player.Team)"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: $root.CalculateFixtureDifficulty(player.Team, player.Fixtures)"></span>
                     </td>
                 </tr>
             </tbody>

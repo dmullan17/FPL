@@ -260,7 +260,12 @@ namespace FPL.Controllers
                     .First(c => c.Type == JTokenType.Array && c.Path.Contains("history"))
                     .Children<JObject>();
 
+                var playerFixturesJSON = AllChildren(JObject.Parse(content))
+                    .First(c => c.Type == JTokenType.Array && c.Path.Contains("fixtures"))
+                    .Children<JObject>();
+
                 List<PlayerHistory> playerHistory = new List<PlayerHistory>();
+                List<PlayerFixture> playerFixtures = new List<PlayerFixture>();
 
                 foreach (JObject result in playerHistoryJSON)
                 {
@@ -275,6 +280,23 @@ namespace FPL.Controllers
                         pick.TotalPointsAccumulatedForTeam += playerGwHistory.total_points;
                     }
                 }
+
+                foreach (JObject result in playerFixturesJSON)
+                {
+                    PlayerFixture pf = result.ToObject<PlayerFixture>();
+                    playerFixtures.Add(pf);
+                }
+
+                pick.player.Fixtures = playerFixtures;
+
+                //foreach (PlayerFixture playerFixture in playerFixtures)
+                //{
+
+                //    if (pick.HadSinceGW <= playerGwHistory.round)
+                //    {
+                //        pick.TotalPointsAccumulatedForTeam += playerGwHistory.total_points;
+                //    }
+                //}
             }
 
             return teamPicks;

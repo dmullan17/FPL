@@ -70,6 +70,30 @@
         }
     };
 
+    self.CalculateFixtureDifficulty = function (team, playerFixtures) {
+
+        var oppositionStrength = 0;
+        var FDR = 0;
+
+        for (var i = 0; i < 5; i++) {
+
+            if (team.id == team.Fixtures[i].team_h) {
+                oppositionStrength += team.Fixtures[i].team_h_difficulty;
+            }
+            else if (team.id == team.Fixtures[i].team_a) {
+                oppositionStrength += team.Fixtures[i].team_a_difficulty;
+            }
+
+            FDR += playerFixtures[i].difficulty;
+
+        }
+
+        var oppositionStrengthAvg = (oppositionStrength / 5).toFixed(2);
+        var fdrAvg = (FDR / 5).toFixed(2);
+
+        return oppositionStrengthAvg + " (" + fdrAvg + ")";
+    };
+
     self.FormatValue = function (value) {
         var value = parseFloat(value) / 10;
         return value.toFixed(1);
