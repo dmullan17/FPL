@@ -50,10 +50,10 @@
     self.HomeOrAway = function (player) {
 
         if (player.GWGame.team_h == player.player.Team.id) {
-            return player.GWGame.AwayTeam.name + " (H)"
+            return player.GWGame.AwayTeam.name + " (H) on " + getDayOfWeek(player.GWGame.kickoff_time);
         }
         else if (player.GWGame.team_a == player.player.Team.id) {
-            return player.GWGame.HomeTeam.name + " (A)"
+            return player.GWGame.HomeTeam.name + " (A) on " + getDayOfWeek(player.GWGame.kickoff_time)
         }
     };
 
@@ -102,6 +102,33 @@
 
 
     self.GetBonus = function (player) {
+
+        var kickoffDate = new Date(player.GWGame.kickoff_time);
+        kickoffDate.setUTCHours(0, 0, 0, 0);
+
+        if (self.EventStatus().status[0].event == self.GameweekId() && player.GWGame.started) {
+            for (var i = 0; i < self.EventStatus().status.length; i++) {
+
+                var eventStatusDate = new Date(self.EventStatus().status[i].date);
+                eventStatusDate.setUTCHours(0, 0, 0, 0);
+
+                if (kickoffDate.getTime() == eventStatusDate.getTime()) {
+
+                    if (self.EventStatus().status[i].bonus_added) {
+                        return player.GWPlayer.stats.bonus;
+                    }
+                    else if (!self.EventStatus().status[i].bonus_added) {
+                        return player.GWPlayer.stats.EstimatedBonus + "*";
+                    }
+                }
+            }
+        } else {
+            return player.GWPlayer.stats.bonus;
+        }
+
+    };
+
+    self.GetBonusRank = function (player) {
 
         var kickoffDate = new Date(player.GWGame.kickoff_time);
         kickoffDate.setUTCHours(0, 0, 0, 0);
@@ -225,6 +252,13 @@
         var value = parseFloat(value) / 10;
         return value.toFixed(1);
     };
+
+    // Accepts a Date object or date string that is recognized by the Date.parse() method
+    function getDayOfWeek(date) {
+        const dayOfWeek = new Date(date).getDay();
+        return isNaN(dayOfWeek) ? null :
+            ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][dayOfWeek];
+    }
 
     //self.OnBench = function (entry) {
     //    //return entry.type === 'file' ? 'icon-file' : 'icon-filder';

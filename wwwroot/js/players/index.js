@@ -1,18 +1,12 @@
-﻿MyTeamViewModel = function (data) {
+PlayersViewModel = function (data) {
     "use strict";
 
     var self = this;
 
-    self.Picks = ko.observable(data.Picks);
-    self.Team = ko.observable(data.Team);
+    self.AllPlayers = ko.observableArray(data.AllPlayers);
+    self.Player = ko.observable(data.Player);
+    self.TotalPlayerCount = ko.observable(data.TotalPlayerCount);
     self.Positions = ko.observableArray(data.Positions);
-    self.TotalPoints = ko.observable(data.TotalPoints);
-    self.TransferInfo = ko.observable(data.TransferInfo);
-
-
-    //self.getColor = ko.pureComputed(function (data) {
-    //    return this;
-    //});
 
     self.getColor = function (multipler) {
         if (multipler == 0) {
@@ -74,26 +68,26 @@
         return player.transfers_in_event - player.transfers_out_event;
     }
 
-    self.CalculateFixtureDifficulty = function (team, playerFixtures) {
+    self.CalculateFixtureDifficulty = function (team) {
 
-        //var oppositionStrength = 0;
-        var FDR = 0;
+        var oppositionStrength = 0;
+        //var FDR = 0;
 
         for (var i = 0; i < 5; i++) {
 
-            //if (team.id == team.Fixtures[i].team_h) {
-            //    oppositionStrength += team.Fixtures[i].team_h_difficulty;
-            //}
-            //else if (team.id == team.Fixtures[i].team_a) {
-            //    oppositionStrength += team.Fixtures[i].team_a_difficulty;
-            //}
+            if (team.id == team.Fixtures[i].team_h) {
+                oppositionStrength += team.Fixtures[i].team_h_difficulty;
+            }
+            else if (team.id == team.Fixtures[i].team_a) {
+                oppositionStrength += team.Fixtures[i].team_a_difficulty;
+            }
 
-            FDR += playerFixtures[i].difficulty;
+            //FDR += playerFixtures[i].difficulty;
 
         }
 
-        //var oppositionStrengthAvg = (oppositionStrength / 5).toFixed(2);
-        var fdrAvg = (FDR / 5).toFixed(2);
+        var fdrAvg = (oppositionStrength / 5).toFixed(2);
+        //var fdrAvg = (FDR / 5).toFixed(2);
 
         return fdrAvg;
     };
@@ -131,45 +125,12 @@
         }
     };
 
-    //self.viewGame = function (player) {
-    //    $('.ui.special.popup').popup({
-    //        inline: true
-    //    }).show();
-
-    //    var popupLoading = '<i class="notched circle loading icon green"></i> wait...';
-    //    $('.test').popup({
-    //        popup: $('.ui.special.popup'),
-    //        inline: true,
-    //        on: 'click',
-    //        exclusive: true,
-    //        hoverable: true,
-    //        html: popupLoading,
-    //        variation: 'wide',
-    //        delay: {
-    //            show: 400,
-    //            hide: 400
-    //        },
-    //        onShow: function (el) { // load data (it could be called in an external function.)
-    //            var popup = this;
-    //            popup.html(popupLoading);
-    //            $.ajax({
-    //                url: 'http://www.example.com/'
-    //            }).done(function (result) {
-    //                popup.html(result);
-    //            }).fail(function () {
-    //                popup.html('error');
-    //            });
-    //        }
-    //    }).show();
-    //};
-
     self.init = function () {
-
-        //$('.ui.icon.button').popup();
-        //$('.circle.icon').popup();
-
-
     };
 
     self.init();
+
+    $(document).ready(function () {
+        $('#allPlayersTable').DataTable();
+    });
 };

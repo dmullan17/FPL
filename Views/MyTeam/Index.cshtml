@@ -43,6 +43,7 @@
                     <th>Bps Rank</th>
                     <th>Pos Bps Rank</th>
                     <th>% Selected by</th>
+                    <th>GW Net Transfers</th>
                     <th>Next Game</th>
                     <th>Avg FDR Next 5</th>
                     @*<th>Form</th>
@@ -98,6 +99,9 @@
                         <span data-bind="text: player.selected_by_percent"></span>
                     </td>
                     <td>
+                        <span data-bind="text: $root.CreateGWNetTransfers(player)"></span>
+                    </td>
+                    <td>
                         <span data-bind="text: $root.GetPlayersNextFixture(player.Team)"></span>
                     </td>
                     <td>
@@ -106,5 +110,28 @@
                 </tr>
             </tbody>
         </table>
+        @*<div class="pitch">
+            <div>
+                <div class="box1">
+                    <div class="pen1">
+                        <div class="pos" style="margin: 5px 17px;">1</div>
+                    </div>
+                </div>
+                <div class="pos" style="margin: 65px 75px">2</div>
+
+                <div class="pos" style="margin: 65px 157px;">3</div>
+                <div class="pos" style="margin: 65px 230px">4</div>
+
+                <div class="pos" style="margin: 125px 53px">5</div>
+                <div class="pos" style="margin: 125px 126px">6</div>
+                <div class="pos" style="margin: 125px 186px">7</div>
+                <div class="pos" style="margin: 125px 258px">8</div>
+
+                <div class="pos" style="margin: 190px 75px;">9</div>
+                <div class="pos" style="margin: 190px 230px;">10</div>
+
+                <div class="pos" style="margin: 190px 157px;">11</div>
+            </div>
+        </div>*@
     </div>
 </div>

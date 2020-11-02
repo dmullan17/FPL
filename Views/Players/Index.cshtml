@@ -1,0 +1,129 @@
+@using Newtonsoft.Json;
+
+@model FPL.ViewModels.PlayersViewModel
+
+@{ var data = JsonConvert.SerializeObject(Model); }
+
+@section PageScripts {
+    <script src="~/js/players/index.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+    <script type="text/javascript">
+    const viewModel = new PlayersViewModel(@Html.Raw(data));
+    ko.applyBindings(viewModel, document.getElementById("app"));
+    </script>
+}
+
+<div id="app">
+    @*Total Players: <p data-bind="text: TotalPlayerCount"></p>
+        <p data-bind="using: Player">
+            web_name: <span data-bind="text: web_name"> </span>
+            team: <span data-bind="text: team"> </span>
+            now_cost: <span data-bind="text: now_cost"> </span>
+            total_points: <span data-bind="text: total_points"> </span>
+            bonus: <span data-bind="text: bonus"> </span>
+            points_per_game: <span data-bind="text: points_per_game"> </span>
+            minutes: <span data-bind="text: minutes"> </span>
+            goals_scored: <span data-bind="text: goals_scored"> </span>
+            goals_conceded: <span data-bind="text: goals_conceded"> </span>
+            assists: <span data-bind="text: assists"> </span>
+            clean_sheets: <span data-bind="text: clean_sheets"> </span>
+            ict_index: <span data-bind="text: ict_index"> </span>
+            ict_index_rank: <span data-bind="text: ict_index_rank"> </span>
+            selected_by_percent: <span data-bind="text: selected_by_percent"> </span>
+        </p>
+        <table class="ui very basic table">
+            <tbody data-bind="foreach: $root.AllPlayers">
+                <tr>
+                    <td>
+                        <a data-bind="text: web_name"></a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>*@
+
+    <table id="allPlayersTable" class="ui table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Team</th>
+                <th>Pos</th>
+                <th>Val</th>
+                <th>Pts</th>
+                @*<th>Pts for Team</th>*@
+                <th>PPG (Prev 30 days)</th>
+                <th>% Mins Played</th>
+                <th><i class="star icon"></i></th>
+                <th>ICT Rank</th>
+                <th>Pos ICT Rank</th>
+                <th>Bps Rank</th>
+                <th>Pos Bps Rank</th>
+                <th>% Selected by</th>
+                <th>GW Net Transfers</th>
+                <th>Next Game</th>
+                <th>Avg FDR Next 5</th>
+                @*<th>Form</th>
+                    <th>Points achieved</th>
+                    <th>Next Game</th>*@
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: $root.AllPlayers">
+            <tr>
+                <td>
+                    <span data-bind="text: web_name"></span>
+                    @*<span data-bind="visible: is_captain"><i class="copyright icon"></i></span>*@
+                    <span data-bind="visible: in_dreamteam"><i class="star icon"></i></span>
+                    <i class="ui icon" data-bind="visible: $root.DoesPlayerHaveStatus(status), class: $root.GetPlayerStatusIcon(status)"></i>
+                </td>
+                <td>
+                    <span data-bind="text: Team.short_name"></span>
+                </td>
+                <td>
+                    <span data-bind="text: $root.GetPosition(element_type)"></span>
+                </td>
+                <td>
+                    <span data-bind="text: $root.FormatValue(now_cost)"></span>
+                </td>
+                <td>
+                    <span data-bind="text: total_points"></span>
+                </td>
+                @*<td>
+                        <span data-bind="text: TotalPointsAccumulatedForTeam"></span>
+                    </td>*@
+                <td>
+                    <span data-bind="text: points_per_game + ' (' + form + ')'"></span>
+                </td>
+                <td>
+                    <span data-bind="text: MinsPlayedPercentage"></span>
+                </td>
+                <td>
+                    <span data-bind="text: dreamteam_count"></span>
+                </td>
+                <td>
+                    <span data-bind="text: $root.FormatOverallRank(ict_index_rank)"></span>
+                </td>
+                <td>
+                    <span data-bind="text: $root.FormatPositionRankType(element_type, ict_index_rank_type)"></span>
+                </td>
+                <td>
+                    <span data-bind="text: $root.FormatOverallRank(BpsRank)"></span>
+                </td>
+                <td>
+                    <span data-bind="text: $root.FormatPositionRankType(element_type, BpsPositionRank)"></span>
+                </td>
+                <td>
+                    <span data-bind="text: selected_by_percent"></span>
+                </td>
+                <td>
+                    <span data-bind="text: $root.CreateGWNetTransfers($data)"></span>
+                </td>
+                <td>
+                    <span data-bind="text: $root.GetPlayersNextFixture(Team)"></span>
+                </td>
+                <td>
+                    <span data-bind="text: $root.CalculateFixtureDifficulty(Team)"></span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -206,7 +206,12 @@ namespace FPL.Controllers
 
             int totalPlayers = totalPlayersJson.ToObject<int>();
 
-            var rankPercentile = Math.Round(((decimal)entryHistory.rank / (decimal)totalPlayers) * 100m, 0);
+            var rankPercentile = 0m;
+
+            if (entryHistory.rank != null)
+            {
+                rankPercentile = Math.Round(((decimal)entryHistory.rank / (decimal)totalPlayers) * 100m, 0);
+            }
 
             entryHistory.RankPercentile = Convert.ToInt32(rankPercentile);
 

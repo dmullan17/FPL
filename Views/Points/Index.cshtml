@@ -40,6 +40,7 @@
                     <th>Assists</th>
                     <th>Saves</th>
                     <th>Bonus</th>
+                    <th>Bonus Rank</th>
                     <th>GW Points</th>
                     <th></th>
                 </tr>
@@ -84,6 +85,9 @@
                     </td>
                     <td>
                         <span data-bind="text: $root.GetBonus($data)"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: $root.GetBonusRank($data)"></span>
                     </td>
                     <td>
                         <span data-bind="text: $root.GetPoints($data)"></span>

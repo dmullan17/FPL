@@ -32,8 +32,10 @@ namespace FPL.Controllers
             var client = new FPLHttpClient();
 
             CookieContainer cookies = new CookieContainer();
-            HttpClientHandler handler = new HttpClientHandler();
-            handler.CookieContainer = cookies;
+            HttpClientHandler handler = new HttpClientHandler
+            {
+                CookieContainer = cookies
+            };
 
             var loginAttempt = new LoginAttempt
             {

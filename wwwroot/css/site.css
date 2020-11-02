@@ -69,3 +69,135 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+/*body {
+	margin: 0 auto;
+	background: #34495e;
+	font-family: "Open Sans", sans-serif;
+	cursor: default;
+}
+
+header {
+	width: 100%;
+	color: #eee;
+	border-bottom: 1px solid #eee;
+	font-size: 32px;
+	padding: 20px 70px;
+}
+
+main {
+	padding: 40px 50px;
+}
+
+.pitch {
+	background: #26A65B;
+	width: 355px;
+	height: 250px;
+	border-radius: 5px;
+	margin: 0 16px;
+	display: inline-block;
+}
+
+.pitch h4 {
+	position: absolute;
+	color: #eee;
+	text-align: center;
+	margin: -40px 153px;
+}
+
+.pitch .container {
+	width: 350px;
+	height: 450px;
+	border: 2px solid #eee;
+}
+
+.pitch .half {
+	margin: 217px 0 0 -2px;
+	width: 350px;
+	border: 1px solid #eee;
+}
+
+.pitch .half:before {
+	position: absolute;
+	margin: -63px 115px;
+	width: 120px;
+	height: 120px;
+	border-radius: 60px;
+	border: 2px solid #eee;
+	content: "";
+}
+
+.pitch .box1 {
+	position: absolute;
+	margin: -2px 114px;
+	width: 120px;
+	height: 60px;
+	border: 2px solid #eee;
+}
+
+.pitch .pen1 {
+	position: absolute;
+	margin: -2px 21px;
+	width: 75px;
+	height: 35px;
+	border: 2px solid #eee;
+}
+
+.pitch .box2 {
+	position: absolute;
+	margin: 169px 114px;
+	width: 120px;
+	height: 60px;
+	border: 2px solid #eee;
+}
+
+.pitch .pen2 {
+	position: absolute;
+	margin: 23px 21px;
+	width: 75px;
+	height: 35px;
+	border: 2px solid #eee;
+}
+
+.pos {
+	position: absolute;
+	width: 40px;
+	height: 40px;
+	border-radius: 20px;
+	background: #BDC3C7;
+	color: #34495e;
+	text-align: center;
+	line-height: 40px;
+	font-size: 24px;
+	font-weight: 100;
+	transition: .3s linear all;
+	z-index: 1;
+}
+
+.pos:hover {
+	color: #BDC3C7;
+	background: #34495e;
+}
+
+p {
+	width: 355px;
+	height: 455px;
+	background: rgba(0, 0, 0, .6);
+	margin: 13px 16px;
+	border-radius: 5px;
+	padding: 20px;
+	display: inline-block;
+}
+
+p:after {
+	content: '';
+	position: absolute;
+	top: 87%;
+	margin: 0 0 0 160px;
+	width: 0;
+	height: 0;
+	opacity: 0.6;
+	border-bottom: solid 10px #000;
+	border-left: solid 20px transparent;
+	border-right: solid 20px transparent;
+}*/

@@ -2,6 +2,7 @@ namespace FPL.Models.GWPlayerStats
 {
     public class GWPlayerStats
     {
+        public int BpsRank { get; set; }
         public int minutes { get; set; }
         public int goals_scored { get; set; }
         public int assists { get; set; }
