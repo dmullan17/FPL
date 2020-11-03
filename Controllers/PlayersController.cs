@@ -154,6 +154,39 @@ namespace FPL.Controllers
             foreach (Player player in players)
             {
                 player.MinsPlayedPercentage = Math.Round((player.minutes / (player.Team.Results.Count * 90m)) * 100m, 1);
+
+                player.GamesPlayed = 0;
+
+                if (player.MinsPlayedPercentage != 0)
+                {
+                    foreach (Game result in player.Team.Results)
+                    {                       
+                        if (player.team == result.team_h)
+                        {
+                            List<PlayerStat> bps = result.stats[9].h;
+
+                            foreach (PlayerStat playerStat in bps)
+                            {
+                                if (playerStat.element == player.id)
+                                {
+                                    player.GamesPlayed++;
+                                }
+                            }
+                        }
+                        else if (player.team == result.team_a)
+                        {
+                            List<PlayerStat> bps = result.stats[9].a;
+
+                            foreach (PlayerStat playerStat in bps)
+                            {
+                                if (playerStat.element == player.id)
+                                {
+                                    player.GamesPlayed++;
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             List<PlayerPosition> positions = new List<PlayerPosition>();

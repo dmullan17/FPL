@@ -125,6 +125,11 @@ PlayersViewModel = function (data) {
         }
     };
 
+    self.GetGamesPlayed = function (player) {
+
+        return player.GamesPlayed + "/" + player.Team.Results.length;
+    };
+
     self.init = function () {
     };
 

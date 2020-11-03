@@ -10,6 +10,7 @@ namespace FPL.Models
         public int BpsRank { get; set; }
         public int BpsPositionRank { get; set; }
         public decimal? MinsPlayedPercentage { get; set; }
+        public int GamesPlayed { get; set; }
         public int? chance_of_playing_next_round { get; set; }
         public int? chance_of_playing_this_round { get; set; }
         public int code { get; set; }
