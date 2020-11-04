@@ -38,6 +38,8 @@ namespace FPL.Controllers
                 players.Add(p);
             }
 
+            players = players.Where(x => x.minutes != 0).ToList();
+
             var allPlayersByBps = players.OrderByDescending(m => m.bps).ToList();
             var allGoalkeepersByBps = players.Where(x => x.element_type == 1).OrderByDescending(m => m.bps).ToList();
             var allDefendersByBps = players.Where(x => x.element_type == 2).OrderByDescending(m => m.bps).ToList();

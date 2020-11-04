@@ -103,11 +103,16 @@ PlayersViewModel = function (data) {
             totalPlayerCount += self.Positions()[i].element_count;
         }
         return value + " / " + totalPlayerCount;
+        //var percentile = ((value / totalPlayerCount) * 100);
+        //return Math.ceil(percentile);
     };
 
     self.FormatPositionRankType = function (postionId, value) {
         var pos = self.Positions().find(x => x.id == postionId);
         return value + " / " + pos.element_count;
+        //var percentile = ((value / pos.element_count) * 100);
+        //return Math.ceil(percentile);
+        //return percentile;
     };
 
     self.GetPosition = function (position) {
@@ -136,6 +141,16 @@ PlayersViewModel = function (data) {
     self.init();
 
     $(document).ready(function () {
-        $('#allPlayersTable').DataTable();
+        var table = $('#allPlayersTable').DataTable({
+            columnDefs: [
+                { type: 'natural', targets: 10 },
+                { type: 'natural', targets: 11 },
+                { type: 'natural', targets: 12 },
+                { type: 'natural', targets: 13 }
+            ]
+        });
+        //table.columns(2).search("GK").draw();
+        //table.columns(1).search("LIV").draw();
     });
+
 };

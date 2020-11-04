@@ -8,6 +8,7 @@
     <script src="~/js/players/index.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.10.21/sorting/natural.js"></script>
     <script type="text/javascript">
     const viewModel = new PlayersViewModel(@Html.Raw(data));
     ko.applyBindings(viewModel, document.getElementById("app"));
@@ -51,7 +52,8 @@
                 <th>Val</th>
                 <th>Pts</th>
                 @*<th>Pts for Team</th>*@
-                <th>PPG (Prev 30 days)</th>
+                <th>PPG</th>
+                <th>PPG Prev 30 days</th>
                 <th>% Mins Played</th>
                 <th>Games Played</th>
                 <th><i class="star icon"></i></th>
@@ -64,8 +66,8 @@
                 <th>Next Game</th>
                 <th>Avg FDR Next 5</th>
                 @*<th>Form</th>
-        <th>Points achieved</th>
-        <th>Next Game</th>*@
+                    <th>Points achieved</th>
+                    <th>Next Game</th>*@
             </tr>
         </thead>
         <tbody data-bind="foreach: $root.AllPlayers">
@@ -89,10 +91,13 @@
                     <span data-bind="text: total_points"></span>
                 </td>
                 @*<td>
-            <span data-bind="text: TotalPointsAccumulatedForTeam"></span>
-        </td>*@
+                        <span data-bind="text: TotalPointsAccumulatedForTeam"></span>
+                    </td>*@
                 <td>
-                    <span data-bind="text: points_per_game + ' (' + form + ')'"></span>
+                    <span data-bind="text: points_per_game"></span>
+                </td>
+                <td>
+                    <span data-bind="text: form"></span>
                 </td>
                 <td>
                     <span data-bind="text: MinsPlayedPercentage"></span>
