@@ -78,7 +78,8 @@ namespace FPL.Controllers
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
             teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, currentGameweekId);
             entryHistory = await AddExtraDatatoEntryHistory(entryHistory);
-            //gwTeam = await AddAutoSubs(gwTeam, teamPicks);
+            gwTeam = await AddAutoSubs(gwTeam, teamPicks);
+            //gwTeam.picks = teamPicks.OrderBy(x => x.position).ToList();
             int gwpoints = GetGameWeekPoints(teamPicks);
             FPLTeam teamDetails = await GetTeamInfo();
             EventStatus eventStatus = await GetEventStatus();
@@ -255,7 +256,7 @@ namespace FPL.Controllers
 
                         }
 
-                        if (startersWhoDidNotPlay[i].player.element_type == 2 && starters.FindAll(x => x.player.element_type == 2).ToList().Count > 3)
+                        if (startersWhoDidNotPlay[i].player.element_type == 2)
                         {
                             for (var k = 0; k < subsWhoPlayed.Count; k++)
                             {
@@ -264,6 +265,40 @@ namespace FPL.Controllers
                                     autoSub.element_out = startersWhoDidNotPlay[i].element;
                                     autoSub.element_in = subsWhoPlayed[k].element;
                                     autoSub.@event = eventStatus.status[0].@event;
+                                    autoSub.entry = TeamId;
+                                    var starterPosition = startersWhoDidNotPlay[i].position;
+                                    var subPosition = subsWhoPlayed[k].position;
+                                    startersWhoDidNotPlay[i].position = subPosition;
+                                    subsWhoPlayed[k].position = starterPosition;
+                                    gwTeam.automatic_subs.Add(autoSub);
+                                    break;
+                                }
+
+                                if (subsWhoPlayed[k].player.element_type == 3)
+                                {
+                                    autoSub.element_out = startersWhoDidNotPlay[i].element;
+                                    autoSub.element_in = subsWhoPlayed[k].element;
+                                    autoSub.@event = eventStatus.status[0].@event;
+                                    autoSub.entry = TeamId;
+                                    var starterPosition = startersWhoDidNotPlay[i].position;
+                                    var subPosition = subsWhoPlayed[k].position;
+                                    startersWhoDidNotPlay[i].position = subPosition;
+                                    subsWhoPlayed[k].position = starterPosition;
+                                    gwTeam.automatic_subs.Add(autoSub);
+                                    break;
+
+                                }
+
+                                if (subsWhoPlayed[k].player.element_type == 2)
+                                {
+                                    autoSub.element_out = startersWhoDidNotPlay[i].element;
+                                    autoSub.element_in = subsWhoPlayed[k].element;
+                                    autoSub.@event = eventStatus.status[0].@event;
+                                    autoSub.entry = TeamId;
+                                    var starterPosition = startersWhoDidNotPlay[i].position;
+                                    var subPosition = subsWhoPlayed[k].position;
+                                    startersWhoDidNotPlay[i].position = subPosition;
+                                    subsWhoPlayed[k].position = starterPosition;
                                     gwTeam.automatic_subs.Add(autoSub);
                                     break;
                                 }
@@ -276,7 +311,7 @@ namespace FPL.Controllers
 
             }
 
-
+            gwTeam.picks = picks.OrderBy(x => x.position).ToList();
 
             return gwTeam;
 
@@ -501,6 +536,14 @@ namespace FPL.Controllers
                     List<PlayerStat> allPlayersInGameBps = homeBps.Concat(awayBps).ToList();
                     allPlayersInGameBps = allPlayersInGameBps.OrderByDescending(x => x.value).ToList();
                     List<PlayerStat> topPlayersByBps = allPlayersInGameBps.Take(3).ToList();
+
+                    for (var i = 0; i < allPlayersInGameBps.Count; i++)
+                    {
+                        if (pick.element == allPlayersInGameBps[i].element)
+                        {
+                            pick.GWPlayer.stats.BpsRank = allPlayersInGameBps.IndexOf(allPlayersInGameBps[i]) + 1;
+                        }
+                    }
 
                     for (var i = 0; i < topPlayersByBps.Count; i++)
                     {

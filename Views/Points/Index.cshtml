@@ -40,13 +40,13 @@
                     <th>Assists</th>
                     <th>Saves</th>
                     <th>Bonus</th>
-                    <th>Bonus Rank</th>
+                    <th>Bps Rank</th>
                     <th>GW Points</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody data-bind="foreach: $root.GWTeam().picks">
-                <tr data-bind="style: { 'background-color': $root.getColor($data.multiplier) }">
+                <tr data-bind="style: { 'background-color': $root.getColor($data.position) }">
                     <td>
                         <a data-bind="click: $root.viewPlayer"><span data-bind="text: player.web_name"></span></a>
                         <span data-bind="visible: is_captain"><i class="copyright icon"></i></span>

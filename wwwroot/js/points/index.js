@@ -20,8 +20,8 @@
         $('.ui.modal').modal().modal('show');
     };
 
-    self.getColor = function (multipler) {
-        if (multipler == 0) {
+    self.getColor = function (position) {
+        if (position > 11) {
             return "lightgray";
         }
         else {
@@ -142,15 +142,15 @@
                 if (kickoffDate.getTime() == eventStatusDate.getTime()) {
 
                     if (self.EventStatus().status[i].bonus_added) {
-                        return player.GWPlayer.stats.bonus;
+                        return player.GWPlayer.stats.BpsRank;
                     }
                     else if (!self.EventStatus().status[i].bonus_added) {
-                        return player.GWPlayer.stats.EstimatedBonus + "*";
+                        return player.GWPlayer.stats.BpsRank + "*";
                     }
                 }
             }
         } else {
-            return player.GWPlayer.stats.bonus;
+            return player.GWPlayer.stats.BpsRank;
         }
 
     };
@@ -223,9 +223,9 @@
                         return points + "*";
                     }
                 }
-                else {
-                    return self.GWPoints();
-                }
+                //else {
+                //    return self.GWPoints();
+                //}
             }
         } else {
             return self.GWPoints();
