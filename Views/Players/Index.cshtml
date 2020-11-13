@@ -65,9 +65,10 @@
                 <th>GW Net Transfers</th>
                 <th>Next Game</th>
                 <th>Avg FDR Next 5</th>
+                <th>Next 5</th>
                 @*<th>Form</th>
-                    <th>Points achieved</th>
-                    <th>Next Game</th>*@
+        <th>Points achieved</th>
+        <th>Next Game</th>*@
             </tr>
         </thead>
         <tbody data-bind="foreach: $root.AllPlayers">
@@ -91,8 +92,8 @@
                     <span data-bind="text: total_points"></span>
                 </td>
                 @*<td>
-                        <span data-bind="text: TotalPointsAccumulatedForTeam"></span>
-                    </td>*@
+            <span data-bind="text: TotalPointsAccumulatedForTeam"></span>
+        </td>*@
                 <td>
                     <span data-bind="text: points_per_game"></span>
                 </td>
@@ -131,6 +132,9 @@
                 </td>
                 <td>
                     <span data-bind="text: $root.CalculateFixtureDifficulty(Team)"></span>
+                </td>
+                <td>
+                    <span data-bind="text: $root.GetNextFiveFixtures(Team)"></span>
                 </td>
             </tr>
         </tbody>

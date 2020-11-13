@@ -86,10 +86,28 @@ PlayersViewModel = function (data) {
 
         }
 
-        var fdrAvg = (oppositionStrength / 5).toFixed(2);
+        var fdrAvg = (oppositionStrength / 5).toFixed(1);
         //var fdrAvg = (FDR / 5).toFixed(2);
 
         return fdrAvg;
+    };
+
+    self.GetNextFiveFixtures = function (team) {
+
+        var games = [];
+
+        for (var i = 0; i < 5; i++) {
+
+            if (team.id == team.Fixtures[i].team_h) {
+                games.push(' ' + team.Fixtures[i].team_a_name.substring(0, 3) + ' (H)');
+            }
+            else if (team.id == team.Fixtures[i].team_a) {
+                games.push(' ' + team.Fixtures[i].team_h_name.substring(0, 3) + ' (A)');
+            }
+
+        }
+
+        return games;
     };
 
     self.FormatValue = function (value) {
