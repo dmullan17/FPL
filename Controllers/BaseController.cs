@@ -15,11 +15,33 @@ namespace FPL.Controllers
 {
     public class BaseController : Controller
     {
-        public static readonly int TeamId = 2675560;
+        //public static readonly int TeamId = 2675560;
 
         public string GetBaseUrl()
         {
             return "https://fantasy.premierleague.com/api/";
+        }
+
+        public async Task<int> GetTeamId()
+        {
+            HttpClientHandler handler = new HttpClientHandler();
+
+            var client = new FPLHttpClient();
+
+            var response = await client.GetAuthAsync(CreateHandler(handler), "me/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var userDetailsJson = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Object && c.Path.Contains("player"));
+
+            FplPlayer fplPlayer = new FplPlayer();
+
+            fplPlayer = userDetailsJson.ToObject<FplPlayer>();
+
+            return fplPlayer.entry;
         }
 
         public async Task<EventStatus> GetEventStatus()

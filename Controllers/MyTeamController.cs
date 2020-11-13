@@ -30,7 +30,9 @@ namespace FPL.Controllers
 
             int currentGwId = await GetCurrentGameWeekId();
 
-            var response = await client.GetAuthAsync(CreateHandler(handler), $"my-team/{TeamId}");
+            int teamId = await GetTeamId();
+
+            var response = await client.GetAuthAsync(CreateHandler(handler), $"my-team/{teamId}");
 
             response.EnsureSuccessStatusCode();
 
@@ -306,7 +308,9 @@ namespace FPL.Controllers
         {
             var client = new FPLHttpClient();
 
-            var response = await client.GetAsync($"entry/{TeamId}/transfers/");
+            int teamId = await GetTeamId();
+
+            var response = await client.GetAsync($"entry/{teamId}/transfers/");
 
             response.EnsureSuccessStatusCode();
 
@@ -355,7 +359,9 @@ namespace FPL.Controllers
 
             var client = new FPLHttpClient();
 
-            var response = await client.GetAuthAsync(handler, $"entry/{TeamId}/");
+            int teamId = await GetTeamId();
+
+            var response = await client.GetAuthAsync(handler, $"entry/{teamId}/");
 
             response.EnsureSuccessStatusCode();
 

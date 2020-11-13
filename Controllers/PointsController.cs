@@ -32,7 +32,9 @@ namespace FPL.Controllers
 
             var client = new FPLHttpClient();
 
-            var response = await client.GetAuthAsync(CreateHandler(handler), $"entry/{TeamId}/event/{currentGameweekId}/picks/");
+            int teamId = await GetTeamId();
+
+            var response = await client.GetAuthAsync(CreateHandler(handler), $"entry/{teamId}/event/{currentGameweekId}/picks/");
 
             response.EnsureSuccessStatusCode();
 
@@ -112,7 +114,9 @@ namespace FPL.Controllers
                 return RedirectToAction("Index", new { id = currentGwId });
             }
 
-            var response = await client.GetAuthAsync(CreateHandler(handler), $"entry/{TeamId}/event/{id}/picks/");
+            int teamId = await GetTeamId();
+
+            var response = await client.GetAuthAsync(CreateHandler(handler), $"entry/{teamId}/event/{id}/picks/");
 
             response.EnsureSuccessStatusCode();
 
@@ -325,7 +329,9 @@ namespace FPL.Controllers
 
             var client = new FPLHttpClient();
 
-            var response = await client.GetAuthAsync(handler, $"entry/{TeamId}/");
+            int teamId = await GetTeamId();
+
+            var response = await client.GetAuthAsync(handler, $"entry/{teamId}/");
 
             response.EnsureSuccessStatusCode();
 
@@ -451,7 +457,9 @@ namespace FPL.Controllers
             //    }
             //}
 
-            var response2 = await client.GetAsync($"entry/{TeamId}/transfers/");
+            int teamId = await GetTeamId();
+
+            var response2 = await client.GetAsync($"entry/{teamId}/transfers/");
 
             response2.EnsureSuccessStatusCode();
 
