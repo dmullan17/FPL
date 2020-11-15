@@ -14,9 +14,9 @@
     //    return this;
     //});
 
-    self.getColor = function (multipler) {
-        if (multipler == 0) {
-            return "grey";
+    self.getColor = function (position) {
+        if (position > 11) {
+            return "lightgray";
         }
         else {
             return null;
@@ -93,7 +93,7 @@
         }
 
         //var oppositionStrengthAvg = (oppositionStrength / 5).toFixed(2);
-        var fdrAvg = (FDR / 5).toFixed(2);
+        var fdrAvg = (FDR / 5).toFixed(1);
 
         return fdrAvg;
     };

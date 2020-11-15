@@ -52,7 +52,7 @@
                 </tr>
             </thead>
             <tbody data-bind="foreach: $root.Picks">
-                <tr>
+                <tr data-bind="style: { 'background-color': $root.getColor($data.position) }">
                     <td>
                         <span data-bind="text: player.web_name"></span>
                         <span data-bind="visible: is_captain"><i class="copyright icon"></i></span>

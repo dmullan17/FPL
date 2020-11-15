@@ -260,6 +260,8 @@ namespace FPL.Controllers
 
                         }
 
+                        int teamId = await GetTeamId();
+
                         if (startersWhoDidNotPlay[i].player.element_type == 2)
                         {
                             for (var k = 0; k < subsWhoPlayed.Count; k++)
@@ -269,7 +271,7 @@ namespace FPL.Controllers
                                     autoSub.element_out = startersWhoDidNotPlay[i].element;
                                     autoSub.element_in = subsWhoPlayed[k].element;
                                     autoSub.@event = eventStatus.status[0].@event;
-                                    autoSub.entry = TeamId;
+                                    autoSub.entry = teamId;
                                     var starterPosition = startersWhoDidNotPlay[i].position;
                                     var subPosition = subsWhoPlayed[k].position;
                                     startersWhoDidNotPlay[i].position = subPosition;
@@ -283,7 +285,7 @@ namespace FPL.Controllers
                                     autoSub.element_out = startersWhoDidNotPlay[i].element;
                                     autoSub.element_in = subsWhoPlayed[k].element;
                                     autoSub.@event = eventStatus.status[0].@event;
-                                    autoSub.entry = TeamId;
+                                    autoSub.entry = teamId;
                                     var starterPosition = startersWhoDidNotPlay[i].position;
                                     var subPosition = subsWhoPlayed[k].position;
                                     startersWhoDidNotPlay[i].position = subPosition;
@@ -298,7 +300,7 @@ namespace FPL.Controllers
                                     autoSub.element_out = startersWhoDidNotPlay[i].element;
                                     autoSub.element_in = subsWhoPlayed[k].element;
                                     autoSub.@event = eventStatus.status[0].@event;
-                                    autoSub.entry = TeamId;
+                                    autoSub.entry = teamId;
                                     var starterPosition = startersWhoDidNotPlay[i].position;
                                     var subPosition = subsWhoPlayed[k].position;
                                     startersWhoDidNotPlay[i].position = subPosition;
