@@ -162,6 +162,7 @@ namespace FPL.Controllers
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
             teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, id);
             entryHistory = await AddExtraDatatoEntryHistory(entryHistory);
+            gwTeam = await AddAutoSubs(gwTeam, teamPicks);
             int gwpoints = GetGameWeekPoints(teamPicks);
             FPLTeam teamDetails = await GetTeamInfo();
             EventStatus eventStatus = await GetEventStatus();
@@ -231,7 +232,7 @@ namespace FPL.Controllers
             var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0);
             var subsWhoPlayed = picks.FindAll(x => x.position > 12 && x.GWPlayer.stats.minutes > 0);
 
-            if (lastEvent.bonus_added)
+            if (lastEvent.bonus_added && eventStatus.leagues != "Updating")
             {
                 return gwTeam;
             }

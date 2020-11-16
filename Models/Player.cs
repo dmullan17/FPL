@@ -5,12 +5,23 @@ namespace FPL.Models
 {
     public class Player
     {
+        //public Player()
+        //{
+        //    GamesPlayed = 1;
+        //}
+        public PlayerHistory PlayerHistory { get; set; }
         public Team Team { get; set; }
         public List<PlayerFixture> Fixtures { get; set; }
         public int BpsRank { get; set; }
         public int BpsPositionRank { get; set; }
+        public int AvgBpsRank { get; set; }
         public decimal? MinsPlayedPercentage { get; set; }
         public int GamesPlayed { get; set; }
+        public CostInterval CostInterval { get; set; }
+        //public int CostIntervalPositionRank { get; set; }
+        //public int CostInterval { get; set; }
+        //public int PointsRankingForCostInterval { get; set; }
+        //public int PointsPositionRankingForCostInterval { get; set; }
         public int? chance_of_playing_next_round { get; set; }
         public int? chance_of_playing_this_round { get; set; }
         public int code { get; set; }

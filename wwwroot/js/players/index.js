@@ -64,6 +64,10 @@ PlayersViewModel = function (data) {
         }
     };
 
+    self.CreateNetTransfers = function (player) {
+        return player.transfers_in - player.transfers_out;
+    }
+
     self.CreateGWNetTransfers = function (player) {
         return player.transfers_in_event - player.transfers_out_event;
     }
@@ -150,7 +154,16 @@ PlayersViewModel = function (data) {
 
     self.GetGamesPlayed = function (player) {
 
-        return player.GamesPlayed + "/" + player.Team.Results.length;
+        if (player.GamesPlayed == 0) {
+            return 0;
+        }
+        else if (player.GamesPlayed != 0) {
+            return player.GamesPlayed + "/" + player.Team.Results.length;
+        }
+        else {
+            return player.GamesPlayed + "/" + (player.Team.Results.length + 1);
+        }
+
     };
 
     self.init = function () {
@@ -161,11 +174,15 @@ PlayersViewModel = function (data) {
     $(document).ready(function () {
         var table = $('#allPlayersTable').DataTable({
             columnDefs: [
-                { type: 'natural', targets: 10 },
-                { type: 'natural', targets: 11 },
-                { type: 'natural', targets: 12 },
-                { type: 'natural', targets: 13 }
-            ]
+                { type: 'natural', targets: 16 },
+                { type: 'natural', targets: 17 },
+                { type: 'natural', targets: 18 },
+                { type: 'natural', targets: 19 }
+            ],
+            scrollX: true,
+            fixedColumns: {
+                leftColumns: 1
+            }
         });
         //table.columns(2).search("GK").draw();
         //table.columns(1).search("LIV").draw();
