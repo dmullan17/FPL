@@ -196,6 +196,22 @@ namespace FPL.Controllers
                     {
                         pick.player.Team.Results.Add(result);
                     }
+
+                    Stat totalBps = result.stats[9];
+
+                    List<PlayerStat> homeBps = totalBps.h;
+                    List<PlayerStat> awayBps = totalBps.a;
+                    List<PlayerStat> allPlayersInGameBps = homeBps.Concat(awayBps).ToList();
+                    allPlayersInGameBps = allPlayersInGameBps.OrderByDescending(x => x.value).ToList();
+
+                    for (var i = 0; i < allPlayersInGameBps.Count; i++)
+                    {
+                        if (pick.element == allPlayersInGameBps[i].element)
+                        {
+                            //currently only calculates players total bps ranking - need to find away to get average
+                            pick.player.AvgBpsRank += allPlayersInGameBps.IndexOf(allPlayersInGameBps[i]) + 1;
+                        }
+                    }
                 }
 
                 foreach (Game playerResult in pick.player.Team.Results)

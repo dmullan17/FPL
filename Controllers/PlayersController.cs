@@ -40,6 +40,8 @@ namespace FPL.Controllers
 
             players = players.Where(x => x.minutes != 0).ToList();
 
+            //create stat for percentage of team goals scored by player
+
             var allPlayersByBps = players.OrderByDescending(m => m.bps).ToList();
             var allGoalkeepersByBps = players.Where(x => x.element_type == 1).OrderByDescending(m => m.bps).ToList();
             var allDefendersByBps = players.Where(x => x.element_type == 2).OrderByDescending(m => m.bps).ToList();
@@ -66,6 +68,12 @@ namespace FPL.Controllers
                 {
                     player.BpsPositionRank = allForwardsByBps.IndexOf(player) + 1;
                 }
+
+                player.CostInterval = new CostInterval
+                {
+                    Value = player.now_cost / 10
+                };
+
             }
 
             var allTeamsJSON = AllChildren(JObject.Parse(content))
@@ -153,42 +161,87 @@ namespace FPL.Controllers
                 }
             }
 
+            //avg points for player in same value range
+            var allPlayersByCost = players.OrderByDescending(m => m.now_cost).ToList();
+            var mostExpensivePlayerValueInterval = allPlayersByCost.FirstOrDefault().now_cost / 10;
+            var leastExpensivePlayerValueInterval = allPlayersByCost.LastOrDefault().now_cost / 10;
+            var playerValueIntervalRange = (mostExpensivePlayerValueInterval - leastExpensivePlayerValueInterval) + 1;
+
+            //var allGoalkeepersByTotalPoints = players.Where(x => x.element_type == 1).OrderByDescending(m => m.total_points).ToList();
+            //var allDefendersByTotalPoints = players.Where(x => x.element_type == 2).OrderByDescending(m => m.total_points).ToList();
+            //var allMidfieldersByTotalPoints = players.Where(x => x.element_type == 3).OrderByDescending(m => m.total_points).ToList();
+            //var allForwardsByTotalPoints = players.Where(x => x.element_type == 4).OrderByDescending(m => m.total_points).ToList();
+
+            for (var i = leastExpensivePlayerValueInterval; i <= mostExpensivePlayerValueInterval; i++)
+            {
+                List<Player> playersCostInterval = players.FindAll(x => x.CostInterval.Value == i).OrderByDescending(m => m.total_points).ToList();
+                var allGoalkeepersByTotalPoints = playersCostInterval.Where(x => x.element_type == 1).OrderByDescending(m => m.total_points).ToList();
+                var allDefendersByTotalPoints = playersCostInterval.Where(x => x.element_type == 2).OrderByDescending(m => m.total_points).ToList();
+                var allMidfieldersByTotalPoints = playersCostInterval.Where(x => x.element_type == 3).OrderByDescending(m => m.total_points).ToList();
+                var allForwardsByTotalPoints = playersCostInterval.Where(x => x.element_type == 4).OrderByDescending(m => m.total_points).ToList();
+
+                foreach (var p in playersCostInterval)
+                {
+                    p.CostInterval.PointsRanking = playersCostInterval.IndexOf(p) + 1;
+
+                    if (p.element_type == 1)
+                    {
+                        p.CostInterval.PointsPositionRanking = allGoalkeepersByTotalPoints.IndexOf(p) + 1;
+                    }
+                    else if (p.element_type == 2)
+                    {
+                        p.CostInterval.PointsPositionRanking = allDefendersByTotalPoints.IndexOf(p) + 1;
+                    }
+                    if (p.element_type == 3)
+                    {
+                        p.CostInterval.PointsPositionRanking = allMidfieldersByTotalPoints.IndexOf(p) + 1;
+                    }
+                    else if (p.element_type == 4)
+                    {
+                        p.CostInterval.PointsPositionRanking = allForwardsByTotalPoints.IndexOf(p) + 1;
+                    }
+                }
+            }
+
             foreach (Player player in players)
             {
-                player.MinsPlayedPercentage = Math.Round((player.minutes / (player.Team.Results.Count * 90m)) * 100m, 1);
-
-                player.GamesPlayed = 0;
-
-                if (player.MinsPlayedPercentage != 0)
+                foreach (Game result in player.Team.Results)
                 {
-                    foreach (Game result in player.Team.Results)
-                    {                       
-                        if (player.team == result.team_h)
-                        {
-                            List<PlayerStat> bps = result.stats[9].h;
+                    if (player.team == result.team_h)
+                    {
+                        List<PlayerStat> bps = result.stats[9].h;
 
-                            foreach (PlayerStat playerStat in bps)
+                        foreach (PlayerStat playerStat in bps)
+                        {
+                            if (playerStat.element == player.id)
                             {
-                                if (playerStat.element == player.id)
-                                {
-                                    player.GamesPlayed++;
-                                }
+                                player.GamesPlayed++;
                             }
                         }
-                        else if (player.team == result.team_a)
-                        {
-                            List<PlayerStat> bps = result.stats[9].a;
+                    }
+                    else if (player.team == result.team_a)
+                    {
+                        List<PlayerStat> bps = result.stats[9].a;
 
-                            foreach (PlayerStat playerStat in bps)
+                        foreach (PlayerStat playerStat in bps)
+                        {
+                            if (playerStat.element == player.id)
                             {
-                                if (playerStat.element == player.id)
-                                {
-                                    player.GamesPlayed++;
-                                }
+                                player.GamesPlayed++;
                             }
                         }
                     }
                 }
+
+                if (player.GamesPlayed != 0)
+                {
+                    player.MinsPlayedPercentage = Math.Round((player.minutes / (player.Team.Results.Count * 90m)) * 100m, 1);
+                }
+                else
+                {
+                    player.MinsPlayedPercentage = 0;
+                }
+
             }
 
             List<PlayerPosition> positions = new List<PlayerPosition>();
