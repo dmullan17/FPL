@@ -167,11 +167,6 @@ namespace FPL.Controllers
             var leastExpensivePlayerValueInterval = allPlayersByCost.LastOrDefault().now_cost / 10;
             var playerValueIntervalRange = (mostExpensivePlayerValueInterval - leastExpensivePlayerValueInterval) + 1;
 
-            //var allGoalkeepersByTotalPoints = players.Where(x => x.element_type == 1).OrderByDescending(m => m.total_points).ToList();
-            //var allDefendersByTotalPoints = players.Where(x => x.element_type == 2).OrderByDescending(m => m.total_points).ToList();
-            //var allMidfieldersByTotalPoints = players.Where(x => x.element_type == 3).OrderByDescending(m => m.total_points).ToList();
-            //var allForwardsByTotalPoints = players.Where(x => x.element_type == 4).OrderByDescending(m => m.total_points).ToList();
-
             for (var i = leastExpensivePlayerValueInterval; i <= mostExpensivePlayerValueInterval; i++)
             {
                 List<Player> playersCostInterval = players.FindAll(x => x.CostInterval.Value == i).OrderByDescending(m => m.total_points).ToList();

@@ -182,8 +182,107 @@ PlayersViewModel = function (data) {
             scrollX: true,
             fixedColumns: {
                 leftColumns: 1
-            }
+            },
+            //dom: 'Bfrtip',
+            buttons: []
+            //stateSave: true 
+            //buttons: [
+            //    {
+            //        text: 'My button',
+            //        action: function (e, dt, node, config) {
+            //            alert('Button activated');
+            //        }
+            //    }
+            //]
         });
+
+        new $.fn.dataTable.Buttons(table, {
+            buttons: [
+                {
+                    extend: 'collection',
+                    text: 'Table control',
+                    buttons: [
+                        {
+                            text: 'Positions',
+                            extend: 'collection',
+                            buttons: [
+                                {
+                                    text: 'GK',
+                                    action: function (e, dt, node, config) {
+                                        //dt.column(-2).visible(!dt.column(-2).visible());
+
+                                        if (dt.column(2).search() == config.text) {
+                                            dt.column(2).search("").draw();
+                                        }
+                                        else {
+                                            dt.column(2).search(config.text).draw();
+                                        }                                    
+                                    }
+                                },
+                                {
+                                    text: 'DEF',
+                                    action: function (e, dt, node, config) {
+                                        //dt.column(-2).visible(!dt.column(-2).visible());
+
+                                        if (dt.column(2).search() == config.text) {
+                                            dt.column(2).search("").draw();
+                                        }
+                                        else {
+                                            dt.column(2).search(config.text).draw();
+                                        }
+                                    }
+                                },
+                                {
+                                    text: 'MID',
+                                    action: function (e, dt, node, config) {
+                                        //dt.column(-2).visible(!dt.column(-2).visible());
+
+                                        if (dt.column(2).search() == config.text) {
+                                            dt.column(2).search("").draw();
+                                        }
+                                        else {
+                                            dt.column(2).search(config.text).draw();
+                                        }
+
+                                    }
+                                },
+                                {
+                                    text: 'FWD',
+                                    action: function (e, dt, node, config) {
+                                        //dt.column(-2).visible(!dt.column(-2).visible());
+
+                                        if (dt.column(2).search() == config.text) {
+                                            dt.column(2).search("").draw();
+                                        }
+                                        else {
+                                            dt.column(2).search(config.text).draw();
+                                        }
+                                    }
+                                },
+                            ]
+                        },
+                        {
+                            text: 'Toggle salary',
+                            action: function (e, dt, node, config) {
+                                dt.column(-1).visible(!dt.column(-1).visible());
+                            }
+                        },
+                        {
+                            collectionTitle: 'Visibility control',
+                            extend: 'colvis',
+                            collectionLayout: 'two-column',
+                            postfixButtons: ['colvisRestore']
+                        }
+                    ]
+                }
+            ]
+        });
+
+        table.buttons(1, null).container().prependTo(
+            table.table().container()
+        );
+
+
         //table.columns(2).search("GK").draw();
         //table.columns(1).search("LIV").draw();
     });

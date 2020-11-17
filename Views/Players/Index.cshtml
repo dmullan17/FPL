@@ -7,9 +7,12 @@
 @section PageScripts {
     <script src="~/js/players/index.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.4/css/buttons.dataTables.min.css">
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.10.21/sorting/natural.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/fc-3.3.1/datatables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.4/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js"></script>
     <script type="text/javascript">
     const viewModel = new PlayersViewModel(@Html.Raw(data));
     ko.applyBindings(viewModel, document.getElementById("app"));
@@ -117,8 +120,8 @@
                     <span data-bind="text: form"></span>
                 </td>
                 @*<td>
-            <span data-bind="text: Team.Results.length"></span>
-        </td>*@
+                        <span data-bind="text: Team.Results.length"></span>
+                    </td>*@
                 <td>
                     <span data-bind="text: minutes"></span>
                 </td>

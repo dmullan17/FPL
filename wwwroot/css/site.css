@@ -201,3 +201,8 @@ p:after {
 	border-left: solid 20px transparent;
 	border-right: solid 20px transparent;
 }*/
+
+div.dt-buttons {
+	clear: both;
+}
+
