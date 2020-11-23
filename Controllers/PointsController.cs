@@ -82,9 +82,9 @@ namespace FPL.Controllers
             entryHistory = await AddExtraDatatoEntryHistory(entryHistory);
             gwTeam = await AddAutoSubs(gwTeam, teamPicks);
             //gwTeam.picks = teamPicks.OrderBy(x => x.position).ToList();
-            int gwpoints = GetGameWeekPoints(teamPicks);
-            FPLTeam teamDetails = await GetTeamInfo();
             EventStatus eventStatus = await GetEventStatus();
+            int gwpoints = GetGameWeekPoints(teamPicks, eventStatus);
+            FPLTeam teamDetails = await GetTeamInfo();
 
             viewModel.GWTeam = gwTeam;
             viewModel.EntryHistory = entryHistory;
@@ -163,31 +163,57 @@ namespace FPL.Controllers
             teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, id);
             entryHistory = await AddExtraDatatoEntryHistory(entryHistory);
             gwTeam = await AddAutoSubs(gwTeam, teamPicks);
-            int gwpoints = GetGameWeekPoints(teamPicks);
-            FPLTeam teamDetails = await GetTeamInfo();
             EventStatus eventStatus = await GetEventStatus();
+            int gwpoints = GetGameWeekPoints(teamPicks, eventStatus);
+            FPLTeam teamDetails = await GetTeamInfo();
+
+            if (id == currentGwId)
+            {
+                viewModel.TotalPoints = (teamDetails.summary_overall_points - teamDetails.summary_event_points) + gwpoints;
+            }
+            else
+            {
+                viewModel.TotalPoints = teamDetails.summary_overall_points;
+            }
 
             viewModel.GWTeam = gwTeam;
             viewModel.EntryHistory = entryHistory;
             viewModel.EventStatus = eventStatus;
             viewModel.Team = teamDetails;
             viewModel.GWPoints = gwpoints;
-            viewModel.TotalPoints = teamDetails.summary_overall_points;
             viewModel.GameweekId = id;
 
             return View(viewModel);
 
         }
 
-        private int GetGameWeekPoints(List<Pick> teamPicks)
+        private int GetGameWeekPoints(List<Pick> teamPicks, EventStatus eventStatus)
         {
             int gwpoints = 0;
+            bool bonusAdded = true;
+
+            //needs to be sorted
+
+            foreach (var status in eventStatus.status)
+            {
+                if (status.date == DateTime.Now.ToString("yyyy-MM-dd") && !status.bonus_added )
+                {
+                    bonusAdded = false;
+                }
+            }
 
             foreach (Pick pick in teamPicks)
             {
                 while (pick.position < 12)
                 {
-                    gwpoints += pick.GWPlayer.stats.gw_points;
+                    if (!bonusAdded && !pick.GWGame.finished)
+                    {
+                        gwpoints += pick.GWPlayer.stats.gw_points + pick.GWPlayer.stats.EstimatedBonus;
+                    }
+                    else
+                    {
+                        gwpoints += pick.GWPlayer.stats.gw_points;
+                    }                
                     break;
                 }
             }
