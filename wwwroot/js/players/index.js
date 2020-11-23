@@ -65,10 +65,12 @@ PlayersViewModel = function (data) {
     };
 
     self.CreateNetTransfers = function (player) {
+        //return nFormatter((player.transfers_in - player.transfers_out), 0)
         return player.transfers_in - player.transfers_out;
     }
 
     self.CreateGWNetTransfers = function (player) {
+        //return nFormatter((player.transfers_in_event - player.transfers_out_event), 0)
         return player.transfers_in_event - player.transfers_out_event;
     }
 
@@ -174,14 +176,14 @@ PlayersViewModel = function (data) {
     $(document).ready(function () {
         var table = $('#allPlayersTable').DataTable({
             columnDefs: [
-                { type: 'natural', targets: 16 },
-                { type: 'natural', targets: 17 },
                 { type: 'natural', targets: 18 },
-                { type: 'natural', targets: 19 }
+                { type: 'natural', targets: 19 },
+                { type: 'natural', targets: 20 },
+                { type: 'natural', targets: 21 }
             ],
             scrollX: true,
             fixedColumns: {
-                leftColumns: 1
+                leftColumns: 2
             },
             //dom: 'Bfrtip',
             buttons: []
@@ -211,11 +213,11 @@ PlayersViewModel = function (data) {
                                     action: function (e, dt, node, config) {
                                         //dt.column(-2).visible(!dt.column(-2).visible());
 
-                                        if (dt.column(2).search() == config.text) {
-                                            dt.column(2).search("").draw();
+                                        if (dt.column(3).search() == config.text) {
+                                            dt.column(3).search("").draw();
                                         }
                                         else {
-                                            dt.column(2).search(config.text).draw();
+                                            dt.column(3).search(config.text).draw();
                                         }                                    
                                     }
                                 },
@@ -224,11 +226,11 @@ PlayersViewModel = function (data) {
                                     action: function (e, dt, node, config) {
                                         //dt.column(-2).visible(!dt.column(-2).visible());
 
-                                        if (dt.column(2).search() == config.text) {
-                                            dt.column(2).search("").draw();
+                                        if (dt.column(3).search() == config.text) {
+                                            dt.column(3).search("").draw();
                                         }
                                         else {
-                                            dt.column(2).search(config.text).draw();
+                                            dt.column(3).search(config.text).draw();
                                         }
                                     }
                                 },
@@ -237,11 +239,11 @@ PlayersViewModel = function (data) {
                                     action: function (e, dt, node, config) {
                                         //dt.column(-2).visible(!dt.column(-2).visible());
 
-                                        if (dt.column(2).search() == config.text) {
-                                            dt.column(2).search("").draw();
+                                        if (dt.column(3).search() == config.text) {
+                                            dt.column(3).search("").draw();
                                         }
                                         else {
-                                            dt.column(2).search(config.text).draw();
+                                            dt.column(3).search(config.text).draw();
                                         }
 
                                     }
@@ -251,11 +253,11 @@ PlayersViewModel = function (data) {
                                     action: function (e, dt, node, config) {
                                         //dt.column(-2).visible(!dt.column(-2).visible());
 
-                                        if (dt.column(2).search() == config.text) {
-                                            dt.column(2).search("").draw();
+                                        if (dt.column(3).search() == config.text) {
+                                            dt.column(3).search("").draw();
                                         }
                                         else {
-                                            dt.column(2).search(config.text).draw();
+                                            dt.column(3).search(config.text).draw();
                                         }
                                     }
                                 },

@@ -52,9 +52,9 @@
         <thead>
             <tr>
                 <th>Name</th>
+                <th>Val</th>
                 <th>Team</th>
                 <th>Pos</th>
-                <th>Val</th>
                 <th>Points rank by Val Interval</th>
                 <th>Points Pos rank by Val Interval</th>
                 <th>Price Change</th>
@@ -91,13 +91,13 @@
                     <i class="ui icon" data-bind="visible: $root.DoesPlayerHaveStatus(status), class: $root.GetPlayerStatusIcon(status)"></i>
                 </td>
                 <td>
+                    <span data-bind="text: $root.FormatValue(now_cost)"></span>
+                </td>
+                <td>
                     <span data-bind="text: Team.short_name"></span>
                 </td>
                 <td>
                     <span data-bind="text: $root.GetPosition(element_type)"></span>
-                </td>
-                <td>
-                    <span data-bind="text: $root.FormatValue(now_cost)"></span>
                 </td>
                 <td>
                     <span data-bind="text: CostInterval.PointsRanking"></span>
@@ -121,8 +121,8 @@
                     <span data-bind="text: form"></span>
                 </td>
                 @*<td>
-                        <span data-bind="text: Team.Results.length"></span>
-                    </td>*@
+            <span data-bind="text: Team.Results.length"></span>
+        </td>*@
                 <td>
                     <span data-bind="text: minutes"></span>
                 </td>
