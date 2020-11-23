@@ -26,7 +26,7 @@
         <h4 class="ui header">
             Bank: <span data-bind="text: $root.ConvertToDecimal($root.TransferInfo().bank)"></span>
         </h4>
-        <table class="ui table">
+        <table class="ui collapsing selectable table">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -35,6 +35,7 @@
                     <th>Val</th>
                     <th>Pts</th>
                     <th>Pts for Team</th>
+                    <th>GWs on Team</th>
                     <th>PPG (Prev 30 days)</th>
                     <th>% Mins Played</th>
                     <th><i class="star icon"></i></th>
@@ -51,7 +52,7 @@
         <th>Next Game</th>*@
                 </tr>
             </thead>
-            <tbody data-bind="foreach: $root.Picks">
+            <tbody class="single line" data-bind="foreach: $root.Picks">
                 <tr data-bind="style: { 'background-color': $root.getColor($data.position) }">
                     <td>
                         <span data-bind="text: player.web_name"></span>
@@ -73,6 +74,9 @@
                     </td>
                     <td>
                         <span data-bind="text: TotalPointsAccumulatedForTeam"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: GWOnTeam"></span>
                     </td>
                     <td>
                         <span data-bind="text: player.points_per_game + ' (' + player.form + ')'"></span>

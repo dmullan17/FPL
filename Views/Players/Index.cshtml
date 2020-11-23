@@ -13,6 +13,7 @@
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/fc-3.3.1/datatables.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.4/js/dataTables.buttons.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js"></script>
+    @*<script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.21/sorting/any-number.js"></script>*@
     <script type="text/javascript">
     const viewModel = new PlayersViewModel(@Html.Raw(data));
     ko.applyBindings(viewModel, document.getElementById("app"));
@@ -47,7 +48,7 @@
             </tbody>
         </table>*@
 
-    <table id="allPlayersTable" class="ui collapsing table">
+    <table id="allPlayersTable" class="ui collapsing selectable table">
         <thead>
             <tr>
                 <th>Name</th>

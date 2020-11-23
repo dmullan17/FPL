@@ -253,6 +253,8 @@ namespace FPL.Controllers
         {
             var client = new FPLHttpClient();
 
+            int currentGwId = await GetCurrentGameWeekId();
+
             foreach (Pick pick in teamPicks)
             {
                 foreach (Transfer transfer in teamTransfers)
@@ -260,7 +262,22 @@ namespace FPL.Controllers
                     if (pick.element == transfer.element_in)
                     {
                         pick.HadSinceGW = transfer.@event;
+                        var gw = currentGwId - pick.HadSinceGW;
+
+                        if (gw != 0)
+                        {
+                            pick.GWOnTeam = currentGwId - pick.HadSinceGW;
+                        }
+                        else
+                        {
+                            pick.GWOnTeam = 0;
+                        }
                     }
+                }
+
+                if (pick.HadSinceGW == 1)
+                {
+                    pick.GWOnTeam = currentGwId;
                 }
             }
 
