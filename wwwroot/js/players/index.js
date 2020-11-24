@@ -176,14 +176,11 @@ PlayersViewModel = function (data) {
     $(document).ready(function () {
         var table = $('#allPlayersTable').DataTable({
             columnDefs: [
-                { type: 'natural', targets: 18 },
-                { type: 'natural', targets: 19 },
-                { type: 'natural', targets: 20 },
-                { type: 'natural', targets: 21 }
+                { type: 'natural', targets: "natural-sorter" }
             ],
             scrollX: true,
             fixedColumns: {
-                leftColumns: 2
+                leftColumns: 5
             },
             //dom: 'Bfrtip',
             buttons: []
@@ -213,11 +210,11 @@ PlayersViewModel = function (data) {
                                     action: function (e, dt, node, config) {
                                         //dt.column(-2).visible(!dt.column(-2).visible());
 
-                                        if (dt.column(3).search() == config.text) {
-                                            dt.column(3).search("").draw();
+                                        if (dt.column(".position").search() == config.text) {
+                                            dt.column(".position").search("").draw();
                                         }
                                         else {
-                                            dt.column(3).search(config.text).draw();
+                                            dt.column(".position").search(config.text).draw();
                                         }                                    
                                     }
                                 },
@@ -226,12 +223,12 @@ PlayersViewModel = function (data) {
                                     action: function (e, dt, node, config) {
                                         //dt.column(-2).visible(!dt.column(-2).visible());
 
-                                        if (dt.column(3).search() == config.text) {
-                                            dt.column(3).search("").draw();
+                                        if (dt.column(".position").search() == config.text) {
+                                            dt.column(".position").search("").draw();
                                         }
                                         else {
-                                            dt.column(3).search(config.text).draw();
-                                        }
+                                            dt.column(".position").search(config.text).draw();
+                                        }   
                                     }
                                 },
                                 {
@@ -239,12 +236,12 @@ PlayersViewModel = function (data) {
                                     action: function (e, dt, node, config) {
                                         //dt.column(-2).visible(!dt.column(-2).visible());
 
-                                        if (dt.column(3).search() == config.text) {
-                                            dt.column(3).search("").draw();
+                                        if (dt.column(".position").search() == config.text) {
+                                            dt.column(".position").search("").draw();
                                         }
                                         else {
-                                            dt.column(3).search(config.text).draw();
-                                        }
+                                            dt.column(".position").search(config.text).draw();
+                                        }   
 
                                     }
                                 },
@@ -253,12 +250,12 @@ PlayersViewModel = function (data) {
                                     action: function (e, dt, node, config) {
                                         //dt.column(-2).visible(!dt.column(-2).visible());
 
-                                        if (dt.column(3).search() == config.text) {
-                                            dt.column(3).search("").draw();
+                                        if (dt.column(".position").search() == config.text) {
+                                            dt.column(".position").search("").draw();
                                         }
                                         else {
-                                            dt.column(3).search(config.text).draw();
-                                        }
+                                            dt.column(".position").search(config.text).draw();
+                                        }   
                                     }
                                 },
                             ]

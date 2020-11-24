@@ -53,32 +53,33 @@
             <tr>
                 <th>Name</th>
                 <th>Val</th>
+                <th>PPG</th>
+                <th>% Mins Played</th>
+                <th>Avg FDR Next 5</th>
                 <th>Team</th>
-                <th>Pos</th>
+                <th class="position">Pos</th>
                 <th>Points rank by Val Interval</th>
                 <th>Points Pos rank by Val Interval</th>
                 <th>Price Change</th>
                 <th>GW Price Change</th>
                 <th>Pts</th>
-                <th>PPG</th>
                 <th>PPG Prev 30 days</th>
                 @*<th>Games played</th>*@
                 <th>Mins</th>
-                <th>% Mins Played</th>
                 <th>Goals</th>
                 <th>Assists</th>
                 <th>Clean Sheets</th>
                 <th>Saves</th>
                 <th><i class="star icon"></i></th>
-                <th>ICT Rank</th>
-                <th>Pos ICT Rank</th>
-                <th>Bps Rank</th>
-                <th>Pos Bps Rank</th>
+                <th>Bps</th>
+                <th class="natural-sorter">ICT Rank</th>
+                <th class="natural-sorter">Pos ICT Rank</th>
+                <th class="natural-sorter">Bps Rank</th>
+                <th class="natural-sorter">Pos Bps Rank</th>
                 <th>% Selected by</th>
                 <th>Net Transfers</th>
                 <th>GW Net Transfers</th>
                 <th>Next Game</th>
-                <th>Avg FDR Next 5</th>
                 <th>Next 5</th>
             </tr>
         </thead>
@@ -92,6 +93,15 @@
                 </td>
                 <td>
                     <span data-bind="text: $root.FormatValue(now_cost)"></span>
+                </td>
+                <td>
+                    <span data-bind="text: points_per_game"></span>
+                </td>
+                <td>
+                    <span data-bind="text: MinsPlayedPercentage"></span>
+                </td>
+                <td>
+                    <span data-bind="text: $root.CalculateFixtureDifficulty(Team)"></span>
                 </td>
                 <td>
                     <span data-bind="text: Team.short_name"></span>
@@ -115,9 +125,6 @@
                     <span data-bind="text: total_points"></span>
                 </td>
                 <td>
-                    <span data-bind="text: points_per_game"></span>
-                </td>
-                <td>
                     <span data-bind="text: form"></span>
                 </td>
                 @*<td>
@@ -125,9 +132,6 @@
         </td>*@
                 <td>
                     <span data-bind="text: minutes"></span>
-                </td>
-                <td>
-                    <span data-bind="text: MinsPlayedPercentage"></span>
                 </td>
                 <td>
                     <span data-bind="text: goals_scored"></span>
@@ -143,6 +147,9 @@
                 </td>
                 <td>
                     <span data-bind="text: dreamteam_count"></span>
+                </td>
+                <td>
+                    <span data-bind="text: bps"></span>
                 </td>
                 <td>
                     <span data-bind="text: $root.FormatOverallRank(ict_index_rank)"></span>
@@ -167,9 +174,6 @@
                 </td>
                 <td>
                     <span data-bind="text: $root.GetPlayersNextFixture(Team)"></span>
-                </td>
-                <td>
-                    <span data-bind="text: $root.CalculateFixtureDifficulty(Team)"></span>
                 </td>
                 <td>
                     <span data-bind="text: $root.GetNextFiveFixtures(Team)"></span>

@@ -266,11 +266,11 @@ namespace FPL.Controllers
 
                         if (gw != 0)
                         {
-                            pick.GWOnTeam = currentGwId - pick.HadSinceGW;
+                            pick.GWOnTeam = (currentGwId - pick.HadSinceGW) + 1;
                         }
                         else
                         {
-                            pick.GWOnTeam = 0;
+                            pick.GWOnTeam = 1;
                         }
                     }
                 }
