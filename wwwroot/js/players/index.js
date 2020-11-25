@@ -183,7 +183,8 @@ PlayersViewModel = function (data) {
                 leftColumns: 5
             },
             //dom: 'Bfrtip',
-            buttons: []
+            buttons: [],
+            select: true
             //stateSave: true 
             //buttons: [
             //    {
@@ -194,6 +195,26 @@ PlayersViewModel = function (data) {
             //    }
             //]
         });
+
+        //$('#table tbody').on('click', 'tr', function () {
+        //    if ($(this).hasClass('selected')) {
+        //        $(this).removeClass('selected');
+        //    }
+        //    else {
+        //        table.$('tr.selected').removeClass('selected');
+        //        $(this).addClass('selected');
+        //    }
+        //});
+
+        //$("table tbody tr").hover(function () {
+        //    if ($(this).hasClass('selected')) {
+        //        $(this).removeClass('selected');
+        //    }
+        //    else {
+        //        table.$('tr.selected').removeClass('selected');
+        //        $(this).addClass('selected');
+        //    }
+        //});
 
         new $.fn.dataTable.Buttons(table, {
             buttons: [
@@ -208,8 +229,6 @@ PlayersViewModel = function (data) {
                                 {
                                     text: 'GK',
                                     action: function (e, dt, node, config) {
-                                        //dt.column(-2).visible(!dt.column(-2).visible());
-
                                         if (dt.column(".position").search() == config.text) {
                                             dt.column(".position").search("").draw();
                                         }
@@ -221,8 +240,6 @@ PlayersViewModel = function (data) {
                                 {
                                     text: 'DEF',
                                     action: function (e, dt, node, config) {
-                                        //dt.column(-2).visible(!dt.column(-2).visible());
-
                                         if (dt.column(".position").search() == config.text) {
                                             dt.column(".position").search("").draw();
                                         }
@@ -234,22 +251,17 @@ PlayersViewModel = function (data) {
                                 {
                                     text: 'MID',
                                     action: function (e, dt, node, config) {
-                                        //dt.column(-2).visible(!dt.column(-2).visible());
-
                                         if (dt.column(".position").search() == config.text) {
                                             dt.column(".position").search("").draw();
                                         }
                                         else {
                                             dt.column(".position").search(config.text).draw();
                                         }   
-
                                     }
                                 },
                                 {
                                     text: 'FWD',
                                     action: function (e, dt, node, config) {
-                                        //dt.column(-2).visible(!dt.column(-2).visible());
-
                                         if (dt.column(".position").search() == config.text) {
                                             dt.column(".position").search("").draw();
                                         }
@@ -285,5 +297,20 @@ PlayersViewModel = function (data) {
         //table.columns(2).search("GK").draw();
         //table.columns(1).search("LIV").draw();
     });
+
+    $(document).on({
+        mouseenter: function () {
+            var trIndex = $(this).index() + 1;
+            $("table.dataTable").each(function (index) {
+                $(this).find("tr:eq(" + trIndex + ")").addClass("hover")
+            });
+        },
+        mouseleave: function () {
+            var trIndex = $(this).index() + 1;
+            $("table.dataTable").each(function (index) {
+                $(this).find("tr:eq(" + trIndex + ")").removeClass("hover")
+            });
+        }
+    }, ".dataTables_wrapper tr");
 
 };
