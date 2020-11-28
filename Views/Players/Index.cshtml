@@ -22,38 +22,14 @@
 }
 
 <div id="app">
-    @*Total Players: <p data-bind="text: TotalPlayerCount"></p>
-        <p data-bind="using: Player">
-            web_name: <span data-bind="text: web_name"> </span>
-            team: <span data-bind="text: team"> </span>
-            now_cost: <span data-bind="text: now_cost"> </span>
-            total_points: <span data-bind="text: total_points"> </span>
-            bonus: <span data-bind="text: bonus"> </span>
-            points_per_game: <span data-bind="text: points_per_game"> </span>
-            minutes: <span data-bind="text: minutes"> </span>
-            goals_scored: <span data-bind="text: goals_scored"> </span>
-            goals_conceded: <span data-bind="text: goals_conceded"> </span>
-            assists: <span data-bind="text: assists"> </span>
-            clean_sheets: <span data-bind="text: clean_sheets"> </span>
-            ict_index: <span data-bind="text: ict_index"> </span>
-            ict_index_rank: <span data-bind="text: ict_index_rank"> </span>
-            selected_by_percent: <span data-bind="text: selected_by_percent"> </span>
-        </p>
-        <table class="ui very basic table">
-            <tbody data-bind="foreach: $root.AllPlayers">
-                <tr>
-                    <td>
-                        <a data-bind="text: web_name"></a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>*@
-
+    <input type="number" placeholder="Max Value" id="val" step="0.1" />
     <table id="allPlayersTable" class="ui collapsing table">
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Val</th>
+                <th id="value">
+                    Val
+                </th>
                 <th>PPG Prev 30 days</th>
                 <th>% Mins Played</th>
                 <th>Avg FDR Next 5</th>
@@ -88,7 +64,6 @@
             <tr>
                 <td>
                     <span data-bind="text: web_name"></span>
-                    @*<span data-bind="visible: is_captain"><i class="copyright icon"></i></span>*@
                     <span data-bind="visible: in_dreamteam"><i class="star icon"></i></span>
                     <i class="ui icon" data-bind="visible: $root.DoesPlayerHaveStatus(status), class: $root.GetPlayerStatusIcon(status)"></i>
                 </td>
@@ -181,5 +156,38 @@
                 </td>
             </tr>
         </tbody>
+        @*<tfoot>
+            <tr>
+                <th>Name</th>
+                <th id="value">Val</th>
+                <th>PPG Prev 30 days</th>
+                <th>% Mins Played</th>
+                <th>Avg FDR Next 5</th>
+                <th>Team</th>
+                <th>Pos</th>
+                <th>Points rank by Val Interval</th>
+                <th>Points Pos rank by Val Interval</th>
+                <th>Price Change</th>
+                <th>GW Price Change</th>
+                <th>Pts</th>
+                <th>PPG</th>
+                <th>Mins</th>
+                <th>Goals</th>
+                <th>Assists</th>
+                <th>Clean Sheets</th>
+                <th>Saves</th>
+                <th><i class="star icon"></i></th>
+                <th>Bps</th>
+                <th>ICT Rank</th>
+                <th>Pos ICT Rank</th>
+                <th>Bps Rank</th>
+                <th>Pos Bps Rank</th>
+                <th>% Selected by</th>
+                <th>Net Transfers</th>
+                <th>GW Net Transfers</th>
+                <th>Next Game</th>
+                <th>Next 5</th>
+            </tr>
+        </tfoot>*@
     </table>
 </div>

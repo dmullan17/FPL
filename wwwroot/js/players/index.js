@@ -173,28 +173,49 @@ PlayersViewModel = function (data) {
 
     self.init();
 
+    /* Custom filtering function which will search data in column four between two values */
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            var max = parseFloat($('#val').val(), 10);
+            var val = parseFloat(data[1]) || 0;
+
+            if (isNaN(max) || val <= max) {
+                return true;
+            }
+            return false;
+        }
+    );
+
     $(document).ready(function () {
+
+        //$('#allPlayersTable thead th#value').html('<input type="text" placeholder="Search Value" data-index="2" />');
+
         var table = $('#allPlayersTable').DataTable({
+            fixedColumns: {
+                leftColumns: 5
+            },
             columnDefs: [
                 { type: 'natural', targets: "natural-sorter" }
             ],
             scrollX: true,
-            fixedColumns: {
-                leftColumns: 5
-            },
-            //dom: 'Bfrtip',
+            //dom: 'lfrtip',
             buttons: [],
-            select: true
-            //stateSave: true 
-            //buttons: [
-            //    {
-            //        text: 'My button',
-            //        action: function (e, dt, node, config) {
-            //            alert('Button activated');
-            //        }
-            //    }
-            //]
+            select: true,
+            order: [[2, "desc"]],
         });
+
+        $('#val').keyup(function () {
+            table.draw();
+        });
+
+        // Filter event handler
+        //$(table.table().container()).on('keyup', 'thead input', function () {
+        //    table
+        //        .column(1)
+        //        .search(this.value)
+        //        .draw();
+        //    table.draw();
+        //});
 
         //$('#table tbody').on('click', 'tr', function () {
         //    if ($(this).hasClass('selected')) {
@@ -298,19 +319,19 @@ PlayersViewModel = function (data) {
         //table.columns(1).search("LIV").draw();
     });
 
-    $(document).on({
-        mouseenter: function () {
-            var trIndex = $(this).index() + 1;
-            $("table.dataTable").each(function (index) {
-                $(this).find("tr:eq(" + trIndex + ")").addClass("hover")
-            });
-        },
-        mouseleave: function () {
-            var trIndex = $(this).index() + 1;
-            $("table.dataTable").each(function (index) {
-                $(this).find("tr:eq(" + trIndex + ")").removeClass("hover")
-            });
-        }
-    }, ".dataTables_wrapper tr");
+    //$(document).on({
+    //    mouseenter: function () {
+    //        var trIndex = $(this).index() + 1;
+    //        $("table.dataTable").each(function (index) {
+    //            $(this).find("tr:eq(" + trIndex + ")").addClass("hover")
+    //        });
+    //    },
+    //    mouseleave: function () {
+    //        var trIndex = $(this).index() - 1;
+    //        $("table.dataTable").each(function (index) {
+    //            $(this).find("tr:eq(" + trIndex + ")").removeClass("hover")
+    //        });
+    //    }
+    //}, ".dataTables_wrapper tr");
 
 };

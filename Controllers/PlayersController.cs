@@ -231,6 +231,11 @@ namespace FPL.Controllers
                 if (player.GamesPlayed != 0)
                 {
                     player.MinsPlayedPercentage = Math.Round((player.minutes / (player.Team.Results.Count * 90m)) * 100m, 1);
+                    
+                    if (player.MinsPlayedPercentage > 100)
+                    {
+                        player.MinsPlayedPercentage = 100;
+                    }
                 }
                 else
                 {
