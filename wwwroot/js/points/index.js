@@ -10,6 +10,7 @@
     self.GameweekId = ko.observable(data.GameweekId);
     self.EventStatus = ko.observable(data.EventStatus);
     self.EntryHistory = ko.observable(data.EntryHistory);
+    self.IsLive = ko.observable(data.IsLive);
     self.SelectedPlayer = ko.observable();
     self.SelectedPlayerStatus = ko.observable();
 
@@ -295,9 +296,22 @@
 
     self.init = function () {
 
-        //window.setTimeout(function () {
-        //    window.top.location = window.top.location;
-        //}, 10000);
+        if (self.IsLive()) {
+            //auto refresh after a minute of inactivity
+            var time = new Date().getTime();
+            $(document.body).bind("mousemove keypress", function (e) {
+                time = new Date().getTime();
+            });
+
+            function refresh() {
+                if (new Date().getTime() - time >= 60000)
+                    window.location.reload(true);
+                else
+                    setTimeout(refresh, 10000);
+            }
+
+            setTimeout(refresh, 10000);
+        }
 
         //totalling a players total gw stats
         //for (var i = 0; i < self.Picks().length; i++) {

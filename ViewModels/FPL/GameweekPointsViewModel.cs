@@ -9,11 +9,16 @@ namespace FPL.ViewModels.FPL
 {
     public class GameweekPointsViewModel : FPL
     {
+        public GameweekPointsViewModel()
+        {
+            IsLive = false;
+        }
         public GWTeam GWTeam { get; set; }
         public int GWPoints { get; set; }
         public int GameweekId { get; set; }
         public EventStatus EventStatus { get; set; }
         public EntryHistory EntryHistory { get; set; }
+        public bool IsLive { get; set; }
 
     }
 }

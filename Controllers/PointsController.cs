@@ -81,11 +81,12 @@ namespace FPL.Controllers
             teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, currentGameweekId);
             entryHistory = await AddExtraDatatoEntryHistory(entryHistory);
             gwTeam = await AddAutoSubs(gwTeam, teamPicks);
-            //gwTeam.picks = teamPicks.OrderBy(x => x.position).ToList();
+            var liveGameCount = gwTeam.picks.FindAll(x => !x.GWGame.finished_provisional).Count();
             EventStatus eventStatus = await GetEventStatus();
             int gwpoints = GetGameWeekPoints(teamPicks, eventStatus);
             FPLTeam teamDetails = await GetTeamInfo();
 
+            if (liveGameCount > 0){viewModel.IsLive = true;}
             viewModel.GWTeam = gwTeam;
             viewModel.EntryHistory = entryHistory;
             viewModel.EventStatus = eventStatus;
@@ -163,6 +164,7 @@ namespace FPL.Controllers
             teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, id);
             entryHistory = await AddExtraDatatoEntryHistory(entryHistory);
             gwTeam = await AddAutoSubs(gwTeam, teamPicks);
+            var liveGameCount = gwTeam.picks.FindAll(x => !x.GWGame.finished_provisional).Count();
             EventStatus eventStatus = await GetEventStatus();
             int gwpoints = GetGameWeekPoints(teamPicks, eventStatus);
             FPLTeam teamDetails = await GetTeamInfo();
@@ -176,6 +178,8 @@ namespace FPL.Controllers
                 viewModel.TotalPoints = teamDetails.summary_overall_points;
             }
 
+
+            if (liveGameCount > 0) { viewModel.IsLive = true; }
             viewModel.GWTeam = gwTeam;
             viewModel.EntryHistory = entryHistory;
             viewModel.EventStatus = eventStatus;
