@@ -196,7 +196,7 @@ namespace FPL.Controllers
 
             foreach (var status in eventStatus.status)
             {
-                if (status.date == DateTime.Now.ToString("yyyy-MM-dd") && !status.bonus_added )
+                if (status.date == DateTime.Now.ToString("yyyy-MM-dd") && !status.bonus_added)
                 {
                     bonusAdded = false;
                 }
@@ -213,7 +213,7 @@ namespace FPL.Controllers
                     else
                     {
                         gwpoints += pick.GWPlayer.stats.gw_points;
-                    }                
+                    }
                     break;
                 }
             }
@@ -263,7 +263,7 @@ namespace FPL.Controllers
                 return gwTeam;
             }
             else
-            { 
+            {
                 if (startersWhoDidNotPlay.Count > 0 && subsWhoPlayed.Count > 0)
                 {
                     AutomaticSub autoSub = new AutomaticSub();
@@ -578,26 +578,20 @@ namespace FPL.Controllers
                     {
                         if (pick.element == allPlayersInGameBps[i].element)
                         {
+
                             pick.GWPlayer.stats.BpsRank = allPlayersInGameBps.IndexOf(allPlayersInGameBps[i]) + 1;
+
                         }
                     }
+
+                    //var test = topPlayersByBps.Any(n => n.value == pick.GWPlayer.stats.bps);
 
                     for (var i = 0; i < topPlayersByBps.Count; i++)
                     {
                         if (topPlayersByBps[i].element == pick.element)
                         {
-                            if (i == 0)
-                            {
-                                pick.GWPlayer.stats.EstimatedBonus = 3;
-                            }
-                            else if (i == 1)
-                            {
-                                pick.GWPlayer.stats.EstimatedBonus = 2;
-                            }
-                            else if (i == 2)
-                            {
-                                pick.GWPlayer.stats.EstimatedBonus = 1;
-                            }
+                            pick.GWPlayer.stats.EstimatedBonus = 3 - i;
+
                         }
                     }
                 }

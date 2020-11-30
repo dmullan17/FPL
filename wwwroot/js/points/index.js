@@ -295,6 +295,10 @@
 
     self.init = function () {
 
+        //window.setTimeout(function () {
+        //    window.top.location = window.top.location;
+        //}, 10000);
+
         //totalling a players total gw stats
         //for (var i = 0; i < self.Picks().length; i++) {
         //    for (var j = 0; j < self.Picks()[i].GWPlayer.explain.length; j++) {

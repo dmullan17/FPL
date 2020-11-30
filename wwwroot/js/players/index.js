@@ -201,7 +201,7 @@ PlayersViewModel = function (data) {
             //dom: 'lfrtip',
             buttons: [],
             select: true,
-            order: [[2, "desc"]],
+            order: [[2, "desc"]]
         });
 
         $('#val').keyup(function () {
