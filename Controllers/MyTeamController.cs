@@ -13,6 +13,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Team = FPL.Models.Team;
 using FPLTeam = FPL.Models.FPL.Team;
+using System.Globalization;
 
 namespace FPL.Controllers
 {
@@ -98,8 +99,14 @@ namespace FPL.Controllers
                     if (p.id == pick.element)
                     {
                         pick.player = p;
+                        pick.NetProfitOnTransfer = pick.selling_price - pick.purchase_price;
                     }
                 }
+            }
+
+            foreach (var player in allPlayers)
+            {
+                player.FplIndex = (float)player.bps + float.Parse(player.ict_index, CultureInfo.InvariantCulture.NumberFormat);
             }
 
             var allPlayersByBps = allPlayers.OrderByDescending(m => m.bps).ToList();
@@ -108,25 +115,36 @@ namespace FPL.Controllers
             var allMidfieldersByBps = allPlayers.Where(x => x.element_type == 3).OrderByDescending(m => m.bps).ToList();
             var allForwardsByBps = allPlayers.Where(x => x.element_type == 4).OrderByDescending(m => m.bps).ToList();
 
+            var allPlayersByFplIndex = allPlayers.OrderByDescending(m => m.FplIndex).ToList();
+            var allGoalkeepersByFplIndex = allPlayers.Where(x => x.element_type == 1).OrderByDescending(m => m.FplIndex).ToList();
+            var allDefendersByFplIndex = allPlayers.Where(x => x.element_type == 2).OrderByDescending(m => m.FplIndex).ToList();
+            var allMidfieldersByFplIndex = allPlayers.Where(x => x.element_type == 3).OrderByDescending(m => m.FplIndex).ToList();
+            var allForwardsByFplIndex = allPlayers.Where(x => x.element_type == 4).OrderByDescending(m => m.FplIndex).ToList();
+
             foreach (var player in allPlayers)
             {
                 player.BpsRank = allPlayersByBps.IndexOf(player) + 1;
+                player.FplRank = allPlayersByFplIndex.IndexOf(player) + 1;
 
                 if (player.element_type == 1)
                 {
                     player.BpsPositionRank = allGoalkeepersByBps.IndexOf(player) + 1;
+                    player.FplPositionRank = allGoalkeepersByFplIndex.IndexOf(player) + 1;
                 }
                 else if (player.element_type == 2) 
                 {
                     player.BpsPositionRank = allDefendersByBps.IndexOf(player) + 1;
+                    player.FplPositionRank = allDefendersByFplIndex.IndexOf(player) + 1;
                 }
                 if (player.element_type == 3)
                 {
                     player.BpsPositionRank = allMidfieldersByBps.IndexOf(player) + 1;
+                    player.FplPositionRank = allMidfieldersByFplIndex.IndexOf(player) + 1;
                 }
                 else if (player.element_type == 4)
                 {
                     player.BpsPositionRank = allForwardsByBps.IndexOf(player) + 1;
+                    player.FplPositionRank = allForwardsByFplIndex.IndexOf(player) + 1;
                 }
             }
 
@@ -318,8 +336,12 @@ namespace FPL.Controllers
                     if (pick.HadSinceGW <= playerGwHistory.round)
                     {
                         pick.TotalPointsAccumulatedForTeam += playerGwHistory.total_points;
+                        continue;
                     }
+
                 }
+                
+                pick.PPGOnTeam = (float)pick.TotalPointsAccumulatedForTeam / (float)pick.GWOnTeam;
 
                 foreach (JObject result in playerFixturesJSON)
                 {

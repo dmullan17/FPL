@@ -32,17 +32,23 @@
                     <th>Name</th>
                     <th>Team</th>
                     <th>Pos</th>
-                    <th>Val</th>
-                    <th>Pts</th>
-                    <th>Pts for Team</th>
+                    <th>Val (Change)</th>
+                    @*<th>Pts</th>
+        <th>Pts for Team</th>*@
                     <th>GWs on Team</th>
-                    <th>PPG (Prev 30 days)</th>
+                    <th>PPGW on Team</th>
+                    <th>PPG Prev 30 days</th>
                     <th>% Mins Played</th>
                     <th><i class="star icon"></i></th>
+                    <th>FPL Index</th>
+                    <th>FPL Rank</th>
+                    <th>FPL Position Rank</th>
+                    @*<th>ICT</th>
                     <th>ICT Rank</th>
                     <th>Pos ICT Rank</th>
+                    <th>BPS</th>
                     <th>Bps Rank</th>
-                    <th>Pos Bps Rank</th>
+                    <th>Pos Bps Rank</th>*@
                     <th>% Selected by</th>
                     <th>GW Net Transfers</th>
                     <th>Next Game</th>
@@ -67,19 +73,22 @@
                         <span data-bind="text: $root.GetPosition(player.element_type)"></span>
                     </td>
                     <td>
-                        <span data-bind="text: $root.FormatValue(player.now_cost)"></span>
+                        <span data-bind="text: $root.FormatValue(player.now_cost, NetProfitOnTransfer)"></span>
                     </td>
-                    <td>
-                        <span data-bind="text: player.total_points"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: TotalPointsAccumulatedForTeam"></span>
-                    </td>
+                    @*<td>
+            <span data-bind="text: player.total_points"></span>
+        </td>
+        <td>
+            <span data-bind="text: TotalPointsAccumulatedForTeam"></span>
+        </td>*@
                     <td>
                         <span data-bind="text: GWOnTeam"></span>
                     </td>
                     <td>
-                        <span data-bind="text: player.points_per_game + ' (' + player.form + ')'"></span>
+                        <span data-bind="text: PPGOnTeam.toFixed(1)"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: player.form"></span>
                     </td>
                     <td>
                         <span data-bind="text: player.MinsPlayedPercentage"></span>
@@ -88,17 +97,32 @@
                         <span data-bind="text: player.dreamteam_count"></span>
                     </td>
                     <td>
+                        <span data-bind="text: player.FplIndex"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: player.FplRank"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: player.FplPositionRank"></span>
+                    </td>
+                    @*<td>
+                        <span data-bind="text: player.ict_index"></span>
+                    </td>
+                    <td>
                         <span data-bind="text: $root.FormatOverallRank(player.ict_index_rank)"></span>
                     </td>
                     <td>
                         <span data-bind="text: $root.FormatPositionRankType(player.element_type, player.ict_index_rank_type)"></span>
                     </td>
                     <td>
+                        <span data-bind="text: player.bps"></span>
+                    </td>
+                    <td>
                         <span data-bind="text: $root.FormatOverallRank(player.BpsRank)"></span>
                     </td>
                     <td>
                         <span data-bind="text: $root.FormatPositionRankType(player.element_type, player.BpsPositionRank)"></span>
-                    </td>
+                    </td>*@
                     <td>
                         <span data-bind="text: player.selected_by_percent"></span>
                     </td>

@@ -12,6 +12,9 @@ namespace FPL.Models
         public PlayerHistory PlayerHistory { get; set; }
         public Team Team { get; set; }
         public List<PlayerFixture> Fixtures { get; set; }
+        public int FplRank { get; set; }
+        public int FplPositionRank { get; set; }
+        public float FplIndex { get; set; }
         public int BpsRank { get; set; }
         public int BpsPositionRank { get; set; }
         public int AvgBpsRank { get; set; }

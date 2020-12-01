@@ -99,9 +99,14 @@
         return fdrAvg;
     };
 
-    self.FormatValue = function (value) {
+    self.FormatValue = function (value, netProfit) {
         var value = parseFloat(value) / 10;
-        return value.toFixed(1);
+        if (netProfit > 0) {
+            return value.toFixed(1) + " (+" + (netProfit / 10) + ")";
+        }
+        else {
+            return value.toFixed(1) + " (" + (netProfit / 10) + ")";
+        }
     };
 
     self.FormatOverallRank = function (value) {
