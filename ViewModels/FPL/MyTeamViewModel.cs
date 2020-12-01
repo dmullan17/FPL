@@ -13,5 +13,7 @@ namespace FPL.ViewModels.FPL
         public List<Chip> Chips { get; set; }
 
         public TransferInfo TransferInfo { get; set; }
+
+        public int CurrentGwId { get; set; }
     }
 }

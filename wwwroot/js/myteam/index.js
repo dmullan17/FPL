@@ -8,6 +8,7 @@
     self.Positions = ko.observableArray(data.Positions);
     self.TotalPoints = ko.observable(data.TotalPoints);
     self.TransferInfo = ko.observable(data.TransferInfo);
+    self.CurrentGwId = ko.observable(data.CurrentGwId);
 
 
     //self.getColor = ko.pureComputed(function (data) {
@@ -62,11 +63,16 @@
 
         var firstFixture = team.Fixtures[0];
 
-        if (team.id == firstFixture.team_h) {
-            return firstFixture.team_a_name + " (H)";
+        if ((self.CurrentGwId() + 1) == firstFixture.Event) {
+            if (team.id == firstFixture.team_h) {
+                return firstFixture.team_a_name + " (H)";
+            }
+            else if (team.id == firstFixture.team_a) {
+                return firstFixture.team_h_name + " (A)";
+            }
         }
-        else if (team.id == firstFixture.team_a) {
-            return firstFixture.team_h_name + " (A)";
+        else {
+            return "No Game";
         }
     };
 
