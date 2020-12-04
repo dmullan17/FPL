@@ -49,6 +49,7 @@ namespace FPL.Controllers
             TransferInfo transferInfo = transfersObject.ToObject<TransferInfo>();
 
             List<Pick> teamPicks = new List<Pick>();
+            List<Pick> teamPicksLastWeek = new List<Pick>();
             List<Transfer> transfers = new List<Transfer>();
             List<PlayerPosition> positions = new List<PlayerPosition>();
 
@@ -56,6 +57,16 @@ namespace FPL.Controllers
             {
                 Pick p = result.ToObject<Pick>();
                 teamPicks.Add(p);
+            }
+
+            teamPicksLastWeek = await GetLastWeeksTeam(teamPicksLastWeek, teamId, currentGwId);
+
+            foreach (var p in teamPicks)
+            {
+                if (teamPicksLastWeek.FindAll(x => x.element == p.element).Count == 0)
+                {
+                    p.IsNewTransfer = true;
+                }
             }
 
             transfers = await GetTeamTransfers();
@@ -72,6 +83,31 @@ namespace FPL.Controllers
             viewModel.TransferInfo = transferInfo;
 
             return View(viewModel);
+        }
+
+        private async Task<List<Pick>> GetLastWeeksTeam(List<Pick> teamPicksLastWeek, int teamId, int currentGwId)
+        {
+            var client = new FPLHttpClient();
+
+            var response = await client.GetAsync($"entry/{teamId}/event/{currentGwId}/picks/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var teamPicksLastWeekJSON = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("picks"))
+                .Children<JObject>();
+
+            teamPicksLastWeek = new List<Pick>();
+
+            foreach (JObject result in teamPicksLastWeekJSON)
+            {
+                Pick p = result.ToObject<Pick>();
+                teamPicksLastWeek.Add(p);
+            }
+
+            return teamPicksLastWeek;
         }
 
         private async Task<List<Pick>> AddPlayerSummaryDataToTeam(List<Pick> teamPicks)
@@ -250,16 +286,6 @@ namespace FPL.Controllers
                 }
             }
 
-            //List<Pick> test = pick.FindAll(x => x.HadSinceGW == false);
-
-            //var response2 = await client.GetAsync($"entry/{TeamId}/transfers/");
-
-            //response2.EnsureSuccessStatusCode();
-
-            //var content2 = await response2.Content.ReadAsStringAsync();
-
-            //List<Transfer> transfers = JsonConvert.DeserializeObject<List<Transfer>>(content2);
-
             foreach (Pick pick in teamPicks)
             {
                 pick.player.MinsPlayedPercentage = Math.Round((pick.player.minutes / (pick.player.Team.Results.Count * 90m)) * 100m, 1);
@@ -299,9 +325,13 @@ namespace FPL.Controllers
                     }
                 }
 
-                if (pick.HadSinceGW == 1)
+                if (pick.HadSinceGW == 1 && !pick.IsNewTransfer)
                 {
                     pick.GWOnTeam = currentGwId;
+                }
+                else if (pick.IsNewTransfer)
+                {
+                    pick.GWOnTeam = 0;
                 }
             }
 
@@ -342,7 +372,14 @@ namespace FPL.Controllers
 
                 }
                 
-                pick.PPGOnTeam = (float)pick.TotalPointsAccumulatedForTeam / (float)pick.GWOnTeam;
+                if (pick.GWOnTeam != 0)
+                {
+                    pick.PPGOnTeam = (float)pick.TotalPointsAccumulatedForTeam / (float)pick.GWOnTeam;
+                }
+                else
+                {
+                    pick.PPGOnTeam = 0;
+                }
 
                 foreach (JObject result in playerFixturesJSON)
                 {

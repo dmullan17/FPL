@@ -11,6 +11,7 @@ namespace FPL.Models.FPL
         public Pick()
         {
             HadSinceGW = 1;
+            IsNewTransfer = false;
         }
 
         public int TotalPointsAccumulatedForTeam { get; set; }
@@ -18,6 +19,7 @@ namespace FPL.Models.FPL
         public int GWOnTeam { get; set; }
         public float PPGOnTeam { get; set; }
         public int NetProfitOnTransfer { get; set; }
+        public bool IsNewTransfer { get; set; }
         public int element { get; set; }
         public int position { get; set; }
         public int selling_price { get; set; }
