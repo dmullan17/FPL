@@ -63,7 +63,7 @@
 
         var firstFixture = team.Fixtures[0];
 
-        if ((self.CurrentGwId() + 1) == firstFixture.Event) {
+        if ((self.CurrentGwId() + 1) == firstFixture.Event || self.CurrentGwId() == firstFixture.Event) {
             if (team.id == firstFixture.team_h) {
                 return firstFixture.team_a_name + " (H)";
             }
