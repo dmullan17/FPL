@@ -33,6 +33,7 @@
                     <th data-bind="visible: $root.GWTeam().automatic_subs.length > 0"></th>
                     <th>Position</th>
                     <th>Opposition</th>
+                    <th>Time</th>
                     <th>Mins</th>
                     <th>GF</th>
                     <th>CS</th>
@@ -40,6 +41,7 @@
                     <th>Assists</th>
                     <th>Saves</th>
                     <th>Bonus</th>
+                    <th>Bps</th>
                     <th>Bps Rank</th>
                     <th>GW Points</th>
                     <th></th>
@@ -66,6 +68,9 @@
                         <span data-bind="text: $root.HomeOrAway($data)"></span>
                     </td>
                     <td>
+                        <span data-bind="text: $root.GetTime($data)"></span>
+                    </td>
+                    <td>
                         <span data-bind="text: GWPlayer.stats.minutes"></span>
                     </td>
                     <td>
@@ -85,6 +90,9 @@
                     </td>
                     <td>
                         <span data-bind="text: $root.GetBonus($data)"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: GWPlayer.stats.bps"></span>
                     </td>
                     <td>
                         <span data-bind="text: $root.GetBonusRank($data)"></span>

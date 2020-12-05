@@ -51,11 +51,26 @@
     self.HomeOrAway = function (player) {
 
         if (player.GWGame.team_h == player.player.Team.id) {
-            return player.GWGame.AwayTeam.name + " (H) on " + getDayOfWeek(player.GWGame.kickoff_time);
+            return player.GWGame.AwayTeam.name + " (H)"
         }
         else if (player.GWGame.team_a == player.player.Team.id) {
-            return player.GWGame.HomeTeam.name + " (A) on " + getDayOfWeek(player.GWGame.kickoff_time)
+            return player.GWGame.HomeTeam.name + " (A)";
         }
+        else {
+            return "No Game";
+        }
+    };
+
+    self.GetTime = function (player) {
+
+        if (player.GWGame.id != 0) {
+            return getDayOfWeek(player.GWGame.kickoff_time) + " @ " + player.GWGame.kickoff_time.substring(11, 16);
+        }
+        else {
+            return "";
+        }
+
+
     };
 
     self.GetPlayerStatusIcon = function (playerStatus) {
