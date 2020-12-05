@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using FPL.Http;
@@ -40,6 +41,11 @@ namespace FPL.Controllers
 
             players = players.Where(x => x.minutes != 0).ToList();
 
+            foreach (var player in players)
+            {
+                player.FplIndex = (float)player.bps + float.Parse(player.ict_index, CultureInfo.InvariantCulture.NumberFormat);
+            }
+
             //create stat for percentage of team goals scored by player
 
             var allPlayersByBps = players.OrderByDescending(m => m.bps).ToList();
@@ -48,25 +54,36 @@ namespace FPL.Controllers
             var allMidfieldersByBps = players.Where(x => x.element_type == 3).OrderByDescending(m => m.bps).ToList();
             var allForwardsByBps = players.Where(x => x.element_type == 4).OrderByDescending(m => m.bps).ToList();
 
+            var allPlayersByFplIndex = players.OrderByDescending(m => m.FplIndex).ToList();
+            var allGoalkeepersByFplIndex = players.Where(x => x.element_type == 1).OrderByDescending(m => m.FplIndex).ToList();
+            var allDefendersByFplIndex = players.Where(x => x.element_type == 2).OrderByDescending(m => m.FplIndex).ToList();
+            var allMidfieldersByFplIndex = players.Where(x => x.element_type == 3).OrderByDescending(m => m.FplIndex).ToList();
+            var allForwardsByFplIndex = players.Where(x => x.element_type == 4).OrderByDescending(m => m.FplIndex).ToList();
+
             foreach (var player in players)
             {
                 player.BpsRank = allPlayersByBps.IndexOf(player) + 1;
+                player.FplRank = allPlayersByFplIndex.IndexOf(player) + 1;
 
                 if (player.element_type == 1)
                 {
                     player.BpsPositionRank = allGoalkeepersByBps.IndexOf(player) + 1;
+                    player.FplPositionRank = allGoalkeepersByFplIndex.IndexOf(player) + 1;
                 }
                 else if (player.element_type == 2)
                 {
                     player.BpsPositionRank = allDefendersByBps.IndexOf(player) + 1;
+                    player.FplPositionRank = allDefendersByFplIndex.IndexOf(player) + 1;
                 }
                 if (player.element_type == 3)
                 {
                     player.BpsPositionRank = allMidfieldersByBps.IndexOf(player) + 1;
+                    player.FplPositionRank = allMidfieldersByFplIndex.IndexOf(player) + 1;
                 }
                 else if (player.element_type == 4)
                 {
                     player.BpsPositionRank = allForwardsByBps.IndexOf(player) + 1;
+                    player.FplPositionRank = allForwardsByFplIndex.IndexOf(player) + 1;
                 }
 
                 player.CostInterval = new CostInterval
