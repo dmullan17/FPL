@@ -192,7 +192,7 @@ PlayersViewModel = function (data) {
 
         var table = $('#allPlayersTable').DataTable({
             fixedColumns: {
-                leftColumns: 5
+                leftColumns: 6
             },
             columnDefs: [
                 { type: 'natural', targets: "natural-sorter" }

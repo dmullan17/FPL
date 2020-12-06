@@ -33,6 +33,7 @@
                 <th>PPG Prev 30 days</th>
                 <th>% Mins Played</th>
                 <th>Avg FDR Next 5</th>
+                <th>FPL Index</th>
                 <th>Team</th>
                 <th class="position">Pos</th>
                 <th>Points rank by Val Interval</th>
@@ -82,6 +83,9 @@
                 </td>
                 <td>
                     <span data-bind="text: $root.CalculateFixtureDifficulty(Team)"></span>
+                </td>
+                <td>
+                    <span data-bind="text: FplIndex"></span>
                 </td>
                 <td>
                     <span data-bind="text: Team.short_name"></span>
