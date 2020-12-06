@@ -67,8 +67,9 @@
                     <td>
                         <span data-bind="text: $root.HomeOrAway($data)"></span>
                     </td>
-                    <td>
-                        <span data-bind="text: $root.GetTime($data)"></span>
+                    <td data-bind="class: GWGame.finished_provisional || !GWGame.started ? '' : 'center aligned'">
+                        <span data-bind="text: $root.GetTime($data), visible: GWGame.finished_provisional || !GWGame.started"></span>
+                        <span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>
                     </td>
                     <td>
                         <span data-bind="text: GWPlayer.stats.minutes"></span>
@@ -102,7 +103,7 @@
                     </td>
                     <td>
                         <span data-bind="visible: GWGame.finished_provisional"><i class="check icon"></i></span>
-                        <span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>
+                        @*<span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>*@
                     </td>
                 </tr>
             </tbody>
