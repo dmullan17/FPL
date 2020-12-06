@@ -87,10 +87,13 @@ namespace FPL.Controllers
 
             foreach (var g in gwTeam.picks)
             {
-                if (g.GWGame.started ?? true && !g.GWGame.finished_provisional)
+                if (g.GWGame.started ?? true && g.GWGame.started != null)
                 {
-                    viewModel.IsLive = true;
-                    break;
+                    if (!g.GWGame.finished_provisional)
+                    {
+                        viewModel.IsLive = true;
+                        break;
+                    }
                 }
             }
 
@@ -266,7 +269,7 @@ namespace FPL.Controllers
             EventStatus eventStatus = await GetEventStatus();
             var lastEvent = eventStatus.status.LastOrDefault();
             var starters = picks.FindAll(x => x.position < 12);
-            var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0);
+            var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && x.GWGame.finished_provisional);
             var subsWhoPlayed = picks.FindAll(x => x.position > 12 && x.GWPlayer.stats.minutes > 0);
 
             if (lastEvent.bonus_added && eventStatus.leagues != "Updating")
@@ -579,36 +582,58 @@ namespace FPL.Controllers
 
                 foreach (Game g in startedGames)
                 {
-                    //if (g.kickoff_time > DateTime.Today && (g.kickoff_time < DateTime.Today.AddDays(1)))
-                    //{
-
-                    //}
                     Stat totalBps = g.stats[9];
-
                     List<PlayerStat> homeBps = totalBps.h;
                     List<PlayerStat> awayBps = totalBps.a;
                     List<PlayerStat> allPlayersInGameBps = homeBps.Concat(awayBps).ToList();
                     allPlayersInGameBps = allPlayersInGameBps.OrderByDescending(x => x.value).ToList();
-                    List<PlayerStat> topPlayersByBps = allPlayersInGameBps.Take(3).ToList();
+                    List<PlayerStat> topPlayersByBps = allPlayersInGameBps.Take(4).ToList();
+                    var IsBpsEqual = topPlayersByBps.FindAll(n => n.value == pick.GWPlayer.stats.bps).Count > 1;
 
                     for (var i = 0; i < allPlayersInGameBps.Count; i++)
                     {
                         if (pick.element == allPlayersInGameBps[i].element)
                         {
-
-                            pick.GWPlayer.stats.BpsRank = allPlayersInGameBps.IndexOf(allPlayersInGameBps[i]) + 1;
-
+                            if (IsBpsEqual)
+                            {
+                                if (topPlayersByBps[0].value == pick.GWPlayer.stats.bps && topPlayersByBps[1].value == pick.GWPlayer.stats.bps)
+                                {
+                                    pick.GWPlayer.stats.BpsRank = 1;
+                                    pick.GWPlayer.stats.EstimatedBonus = 3;
+                                }
+                                else if (topPlayersByBps[1].value == pick.GWPlayer.stats.bps && topPlayersByBps[2].value == pick.GWPlayer.stats.bps)
+                                {
+                                    pick.GWPlayer.stats.BpsRank = 2;
+                                    pick.GWPlayer.stats.EstimatedBonus = 2;
+                                }
+                                else if (topPlayersByBps[2].value == pick.GWPlayer.stats.bps && topPlayersByBps[3].value == pick.GWPlayer.stats.bps)
+                                {
+                                    pick.GWPlayer.stats.BpsRank = 3;
+                                    pick.GWPlayer.stats.EstimatedBonus = 1;
+                                }
+                                break;
+                            } 
+                            else
+                            {
+                                pick.GWPlayer.stats.BpsRank = allPlayersInGameBps.IndexOf(allPlayersInGameBps[i]) + 1;
+                                break;
+                            }
                         }
                     }
 
-                    //var test = topPlayersByBps.Any(n => n.value == pick.GWPlayer.stats.bps);
-
                     for (var i = 0; i < topPlayersByBps.Count; i++)
                     {
-                        if (topPlayersByBps[i].element == pick.element)
+                        if (topPlayersByBps[i].element == pick.element && !IsBpsEqual)
                         {
-                            pick.GWPlayer.stats.EstimatedBonus = 3 - i;
-
+                            if (i == 3)
+                            {
+                                pick.GWPlayer.stats.EstimatedBonus = 0;
+                            }
+                            else
+                            {
+                                pick.GWPlayer.stats.EstimatedBonus = 3 - i;
+                            }
+                            break;
                         }
                     }
                 }
