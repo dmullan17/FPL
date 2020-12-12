@@ -26,7 +26,7 @@
         <h4 class="ui header">
             Bank: <span data-bind="text: $root.ConvertToDecimal($root.TransferInfo().bank)"></span>
         </h4>
-        <table class="ui collapsing selectable table">
+        <table id="table" class="ui collapsing selectable table">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -34,7 +34,7 @@
                     <th>Pos</th>
                     <th>Val (Potential Profit)</th>
                     @*<th>Pts</th>
-        <th>Pts for Team</th>*@
+                        <th>Pts for Team</th>*@
                     <th>GWs on Team</th>
                     <th>PPGW on Team</th>
                     <th>PPG Prev 30 days</th>
@@ -44,18 +44,18 @@
                     <th>FPL Rank</th>
                     <th>FPL Position Rank</th>
                     @*<th>ICT</th>
-                    <th>ICT Rank</th>
-                    <th>Pos ICT Rank</th>
-                    <th>BPS</th>
-                    <th>Bps Rank</th>
-                    <th>Pos Bps Rank</th>*@
+                        <th>ICT Rank</th>
+                        <th>Pos ICT Rank</th>
+                        <th>BPS</th>
+                        <th>Bps Rank</th>
+                        <th>Pos Bps Rank</th>*@
                     <th>% Selected by</th>
                     <th>GW Net Transfers</th>
                     <th>Next Game</th>
                     <th>Avg FDR Next 5</th>
                     @*<th>Form</th>
-        <th>Points achieved</th>
-        <th>Next Game</th>*@
+                        <th>Points achieved</th>
+                        <th>Next Game</th>*@
                 </tr>
             </thead>
             <tbody class="single line" data-bind="foreach: $root.Picks">
@@ -76,11 +76,11 @@
                         <span data-bind="text: $root.FormatValue(player.now_cost, NetProfitOnTransfer)"></span>
                     </td>
                     @*<td>
-            <span data-bind="text: player.total_points"></span>
-        </td>
-        <td>
-            <span data-bind="text: TotalPointsAccumulatedForTeam"></span>
-        </td>*@
+                            <span data-bind="text: player.total_points"></span>
+                        </td>
+                        <td>
+                            <span data-bind="text: TotalPointsAccumulatedForTeam"></span>
+                        </td>*@
                     <td>
                         <span data-bind="text: GWOnTeam"></span>
                     </td>
@@ -106,23 +106,23 @@
                         <span data-bind="text: player.FplPositionRank"></span>
                     </td>
                     @*<td>
-                        <span data-bind="text: player.ict_index"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: $root.FormatOverallRank(player.ict_index_rank)"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: $root.FormatPositionRankType(player.element_type, player.ict_index_rank_type)"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: player.bps"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: $root.FormatOverallRank(player.BpsRank)"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: $root.FormatPositionRankType(player.element_type, player.BpsPositionRank)"></span>
-                    </td>*@
+                            <span data-bind="text: player.ict_index"></span>
+                        </td>
+                        <td>
+                            <span data-bind="text: $root.FormatOverallRank(player.ict_index_rank)"></span>
+                        </td>
+                        <td>
+                            <span data-bind="text: $root.FormatPositionRankType(player.element_type, player.ict_index_rank_type)"></span>
+                        </td>
+                        <td>
+                            <span data-bind="text: player.bps"></span>
+                        </td>
+                        <td>
+                            <span data-bind="text: $root.FormatOverallRank(player.BpsRank)"></span>
+                        </td>
+                        <td>
+                            <span data-bind="text: $root.FormatPositionRankType(player.element_type, player.BpsPositionRank)"></span>
+                        </td>*@
                     <td>
                         <span data-bind="text: player.selected_by_percent"></span>
                     </td>
@@ -139,27 +139,27 @@
             </tbody>
         </table>
         @*<div class="pitch">
-            <div>
-                <div class="box1">
-                    <div class="pen1">
-                        <div class="pos" style="margin: 5px 17px;">1</div>
+                <div>
+                    <div class="box1">
+                        <div class="pen1">
+                            <div class="pos" style="margin: 5px 17px;">1</div>
+                        </div>
                     </div>
+                    <div class="pos" style="margin: 65px 75px">2</div>
+
+                    <div class="pos" style="margin: 65px 157px;">3</div>
+                    <div class="pos" style="margin: 65px 230px">4</div>
+
+                    <div class="pos" style="margin: 125px 53px">5</div>
+                    <div class="pos" style="margin: 125px 126px">6</div>
+                    <div class="pos" style="margin: 125px 186px">7</div>
+                    <div class="pos" style="margin: 125px 258px">8</div>
+
+                    <div class="pos" style="margin: 190px 75px;">9</div>
+                    <div class="pos" style="margin: 190px 230px;">10</div>
+
+                    <div class="pos" style="margin: 190px 157px;">11</div>
                 </div>
-                <div class="pos" style="margin: 65px 75px">2</div>
-
-                <div class="pos" style="margin: 65px 157px;">3</div>
-                <div class="pos" style="margin: 65px 230px">4</div>
-
-                <div class="pos" style="margin: 125px 53px">5</div>
-                <div class="pos" style="margin: 125px 126px">6</div>
-                <div class="pos" style="margin: 125px 186px">7</div>
-                <div class="pos" style="margin: 125px 258px">8</div>
-
-                <div class="pos" style="margin: 190px 75px;">9</div>
-                <div class="pos" style="margin: 190px 230px;">10</div>
-
-                <div class="pos" style="margin: 190px 157px;">11</div>
-            </div>
-        </div>*@
+            </div>*@
     </div>
 </div>

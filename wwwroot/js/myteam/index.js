@@ -65,10 +65,10 @@
 
         if ((self.CurrentGwId() + 1) == firstFixture.Event || self.CurrentGwId() == firstFixture.Event) {
             if (team.id == firstFixture.team_h) {
-                return firstFixture.team_a_name + " (H)";
+                return "GW" + firstFixture.Event + " - " + firstFixture.team_a_name + " (H)";
             }
             else if (team.id == firstFixture.team_a) {
-                return firstFixture.team_h_name + " (A)";
+                return "GW" + firstFixture.Event + " - " + firstFixture.team_h_name + " (A)";
             }
         }
         else {

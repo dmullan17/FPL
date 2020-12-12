@@ -73,6 +73,7 @@ namespace FPL.Controllers
             positions = await GetPlayerPositionInfo();
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
             teamPicks = await CalculateTotalPointsContributed(teamPicks, transfers);
+            teamPicks = teamPicks.OrderBy(x => x.position).ToList();
             FPLTeam teamDetails = await GetTeamInfo();
 
             viewModel.CurrentGwId = await GetCurrentGameWeekId();
