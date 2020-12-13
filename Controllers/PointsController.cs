@@ -280,17 +280,18 @@ namespace FPL.Controllers
             {
                 if (startersWhoDidNotPlay.Count > 0 && subsWhoPlayed.Count > 0)
                 {
-                    AutomaticSub autoSub = new AutomaticSub();
-
                     for (var i = 0; i < startersWhoDidNotPlay.Count; i++)
                     {
                         if (startersWhoDidNotPlay[i].player.element_type == 1)
                         {
                             if (subsWhoPlayed.Find(x => x.player.element_type == 1) != null)
                             {
-                                autoSub.element_out = startersWhoDidNotPlay[i].element;
-                                autoSub.element_in = subsWhoPlayed.Find(x => x.player.element_type == 1).element;
-                                autoSub.@event = eventStatus.status[0].@event;
+                                AutomaticSub autoSub = new AutomaticSub
+                                {
+                                    element_out = startersWhoDidNotPlay[i].element,
+                                    element_in = subsWhoPlayed.Find(x => x.player.element_type == 1).element,
+                                    @event = eventStatus.status[0].@event
+                                };
                                 gwTeam.automatic_subs.Add(autoSub);
                                 break;
                             }
@@ -309,43 +310,78 @@ namespace FPL.Controllers
                             {
                                 if (subsWhoPlayed[k].player.element_type == 2)
                                 {
-                                    autoSub.element_out = startersWhoDidNotPlay[i].element;
-                                    autoSub.element_in = subsWhoPlayed[k].element;
-                                    autoSub.@event = eventStatus.status[0].@event;
-                                    autoSub.entry = teamId;
-                                    var starterPosition = startersWhoDidNotPlay[i].position;
-                                    var subPosition = subsWhoPlayed[k].position;
-                                    startersWhoDidNotPlay[i].position = subPosition;
-                                    subsWhoPlayed[k].position = starterPosition;
+                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     break;
                                 }
 
                                 if (subsWhoPlayed[k].player.element_type == 3)
                                 {
-                                    autoSub.element_out = startersWhoDidNotPlay[i].element;
-                                    autoSub.element_in = subsWhoPlayed[k].element;
-                                    autoSub.@event = eventStatus.status[0].@event;
-                                    autoSub.entry = teamId;
-                                    var starterPosition = startersWhoDidNotPlay[i].position;
-                                    var subPosition = subsWhoPlayed[k].position;
-                                    startersWhoDidNotPlay[i].position = subPosition;
-                                    subsWhoPlayed[k].position = starterPosition;
+                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     break;
 
                                 }
 
+                                if (subsWhoPlayed[k].player.element_type == 4)
+                                {
+                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                                    gwTeam.automatic_subs.Add(autoSub);
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (startersWhoDidNotPlay[i].player.element_type == 3)
+                        {
+                            for (var k = 0; k < subsWhoPlayed.Count; k++)
+                            {
                                 if (subsWhoPlayed[k].player.element_type == 2)
                                 {
-                                    autoSub.element_out = startersWhoDidNotPlay[i].element;
-                                    autoSub.element_in = subsWhoPlayed[k].element;
-                                    autoSub.@event = eventStatus.status[0].@event;
-                                    autoSub.entry = teamId;
-                                    var starterPosition = startersWhoDidNotPlay[i].position;
-                                    var subPosition = subsWhoPlayed[k].position;
-                                    startersWhoDidNotPlay[i].position = subPosition;
-                                    subsWhoPlayed[k].position = starterPosition;
+                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                                    gwTeam.automatic_subs.Add(autoSub);
+                                    break;
+                                }
+
+                                if (subsWhoPlayed[k].player.element_type == 3)
+                                {
+                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                                    gwTeam.automatic_subs.Add(autoSub);
+                                    break;
+
+                                }
+
+                                if (subsWhoPlayed[k].player.element_type == 4)
+                                {
+                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                                    gwTeam.automatic_subs.Add(autoSub);
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (startersWhoDidNotPlay[i].player.element_type == 4)
+                        {
+                            for (var k = 0; k < subsWhoPlayed.Count; k++)
+                            {
+                                if (subsWhoPlayed[k].player.element_type == 2)
+                                {
+                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                                    gwTeam.automatic_subs.Add(autoSub);
+                                    break;
+                                }
+
+                                if (subsWhoPlayed[k].player.element_type == 3)
+                                {
+                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                                    gwTeam.automatic_subs.Add(autoSub);
+                                    break;
+
+                                }
+
+                                if (subsWhoPlayed[k].player.element_type == 4)
+                                {
+                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     break;
                                 }
@@ -671,6 +707,22 @@ namespace FPL.Controllers
                 }
             }
             return teamPicks;
+        }
+
+        private AutomaticSub MakeOutfieldAutoSub(Pick starter, Pick sub, int eventId, int teamId)
+        {
+            AutomaticSub autoSub = new AutomaticSub();
+
+            autoSub.element_out = starter.element;
+            autoSub.element_in = sub.element;
+            autoSub.@event = eventId;
+            autoSub.entry = teamId;
+            var starterPosition = starter.position;
+            var subPosition = sub.position;
+            starter.position = subPosition;
+            sub.position = starterPosition;
+
+            return autoSub;
         }
     }
 }
