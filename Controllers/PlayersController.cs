@@ -44,6 +44,7 @@ namespace FPL.Controllers
             foreach (var player in players)
             {
                 player.FplIndex = (float)player.bps + float.Parse(player.ict_index, CultureInfo.InvariantCulture.NumberFormat);
+                player.PointsPerMillion = Math.Round(player.total_points / (decimal)(player.now_cost / 10), 1);
             }
 
             //create stat for percentage of team goals scored by player
@@ -258,7 +259,6 @@ namespace FPL.Controllers
                 {
                     player.MinsPlayedPercentage = 0;
                 }
-
             }
 
             List<PlayerPosition> positions = new List<PlayerPosition>();

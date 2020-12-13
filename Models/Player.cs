@@ -21,6 +21,7 @@ namespace FPL.Models
         public decimal? MinsPlayedPercentage { get; set; }
         public int GamesPlayed { get; set; }
         public CostInterval CostInterval { get; set; }
+        public decimal PointsPerMillion { get; set; }
         //public int CostIntervalPositionRank { get; set; }
         //public int CostInterval { get; set; }
         //public int PointsRankingForCostInterval { get; set; }

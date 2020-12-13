@@ -42,12 +42,15 @@
                 <th>GW Price Change</th>
                 <th>Pts</th>
                 <th>PPG</th>
+                <th>PPM</th>
                 @*<th>Games played</th>*@
                 <th>Mins</th>
                 <th>Goals</th>
                 <th>Assists</th>
                 <th>Clean Sheets</th>
                 <th>Saves</th>
+                <th><i class="yellow square icon"></i></th>
+                <th><i class="red square icon"></i></th>
                 <th><i class="star icon"></i></th>
                 <th class="natural-sorter">ICT Index</th>
                 <th class="natural-sorter">ICT Rank</th>
@@ -111,6 +114,9 @@
                 <td>
                     <span data-bind="text: points_per_game"></span>
                 </td>
+                <td>
+                    <span data-bind="text: PointsPerMillion"></span>
+                </td>
                 @*<td>
             <span data-bind="text: Team.Results.length"></span>
         </td>*@
@@ -128,6 +134,12 @@
                 </td>
                 <td>
                     <span data-bind="text: saves"></span>
+                </td>
+                <td>
+                    <span data-bind="text: yellow_cards"></span>
+                </td>
+                <td>
+                    <span data-bind="text: red_cards"></span>
                 </td>
                 <td>
                     <span data-bind="text: dreamteam_count"></span>
