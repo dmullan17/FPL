@@ -19,12 +19,18 @@ namespace FPL.Controllers
             return "https://users.premierleague.com/accounts/login/";
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var viewModel = new LoginViewModel();
-
-            return View(viewModel);
+            return await Index(new LoginViewModel { Email = "dannymullan17@gmail.com", Password = "eRx%90zVSWQo", Redirect = "Yes" });
         }
+
+        //public IActionResult Index()
+        //{
+        //    var viewModel = new LoginViewModel();
+
+
+        //    return View(viewModel);
+        //}
 
         [HttpPost]
         public async Task<IActionResult> Index([FromBody] LoginViewModel model)
@@ -58,17 +64,31 @@ namespace FPL.Controllers
 
             if (currentGameweek.finished)
             {
-                return Json(new LoginViewModel
+                if (model.Redirect == "Yes")
                 {
-                    Redirect = "/myteam"
-                });
+                    return RedirectToAction("Index", "MyTeam");
+                }
+                else
+                {
+                    return Json(new LoginViewModel
+                    {
+                        Redirect = "/myteam"
+                    });
+                }
             }
             else
             {
-                return Json(new LoginViewModel
+                if (model.Redirect == "Yes")
                 {
-                    Redirect = "/points"
-                });
+                    return RedirectToAction("Index", "Points");
+                }
+                else
+                {
+                    return Json(new LoginViewModel
+                    {
+                        Redirect = "/points"
+                    });
+                }
             }
         }
     }
