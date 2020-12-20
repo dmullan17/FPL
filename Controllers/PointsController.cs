@@ -306,6 +306,8 @@ namespace FPL.Controllers
 
                         if (startersWhoDidNotPlay[i].player.element_type == 2)
                         {
+                            var startingDefenders = starters.FindAll(x => x.player.element_type == 2);
+
                             for (var k = 0; k < subsWhoPlayed.Count; k++)
                             {
                                 if (subsWhoPlayed[k].player.element_type == 2)
@@ -315,7 +317,7 @@ namespace FPL.Controllers
                                     break;
                                 }
 
-                                if (subsWhoPlayed[k].player.element_type == 3)
+                                if (subsWhoPlayed[k].player.element_type == 3 && startingDefenders.Count > 3)
                                 {
                                     var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
@@ -323,7 +325,7 @@ namespace FPL.Controllers
 
                                 }
 
-                                if (subsWhoPlayed[k].player.element_type == 4)
+                                if (subsWhoPlayed[k].player.element_type == 4 && startingDefenders.Count > 3)
                                 {
                                     var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
