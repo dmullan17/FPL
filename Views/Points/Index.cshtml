@@ -33,7 +33,7 @@
                     <th data-bind="visible: $root.GWTeam().automatic_subs.length > 0"></th>
                     <th>Position</th>
                     <th>Opposition</th>
-                    <th>Time</th>
+                    @*<th>Time</th>*@
                     <th>Mins</th>
                     <th>GF</th>
                     <th>CS</th>
@@ -67,10 +67,10 @@
                     <td>
                         <span data-bind="text: $root.HomeOrAway($data)"></span>
                     </td>
-                    <td data-bind="class: GWGame.finished_provisional || !GWGame.started ? '' : 'center aligned'">
-                        <span data-bind="text: $root.GetTime($data), visible: GWGame.finished_provisional || !GWGame.started"></span>
-                        <span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>
-                    </td>
+                    <!--<td data-bind="class: GWGame.finished_provisional || !GWGame.started ? '' : 'center aligned'">-->
+                        @*<span data-bind="text: $root.GetTime($data), visible: GWGame.finished_provisional || !GWGame.started"></span>*@
+                        <!--<span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>
+                    </td>-->
                     <td>
                         <span data-bind="text: GWPlayer.stats.minutes"></span>
                     </td>
@@ -101,9 +101,16 @@
                     <td>
                         <span data-bind="text: $root.GetPoints($data)"></span>
                     </td>
-                    <td>
-                        <span data-bind="visible: GWGame.finished_provisional"><i class="check icon"></i></span>
+                    <td data-bind="class: $root.GetResult($data, $data.GWGame)" class="center aligned">
                         @*<span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>*@
+                        <span data-bind="visible: GWGame.started, text: GWGame.team_h_score + ' - ' + GWGame.team_a_score">
+                        </span>
+                        <span data-bind="visible: GWGame.finished_provisional">
+                            <i class="small check icon"></i>
+                        </span>
+                        <span data-bind="text: $root.GetTime($data), visible: !GWGame.started"></span>
+                        @*<span data-bind="visible: GWGame.finished_provisional"><i class="check icon"></i></span>*@
+
                     </td>
                 </tr>
             </tbody>

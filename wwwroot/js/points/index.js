@@ -30,6 +30,40 @@
         }
     };
 
+    self.GetResult = function (pick, game) {
+
+        var playerTeamId = pick.player.Team.id;
+
+        if (game.team_h_score != null && game.team_a_score != null) {
+
+            if (game.HomeTeam.id == playerTeamId) {
+
+                if (game.team_h_score > game.team_a_score) {
+                    return "positive";
+                }
+                else if (game.team_a_score > game.team_h_score) {
+                    return "negative";
+                }
+                else if (game.team_h_score == game.team_a_score) {
+                    return "warning";
+                }
+            }
+            else if (game.AwayTeam.id == playerTeamId) {
+
+                if (game.team_a_score > game.team_h_score) {
+                    return "positive";
+                }
+                else if (game.team_h_score > game.team_a_score) {
+                    return "negative";
+                }
+                else if (game.team_h_score == game.team_a_score) {
+                    return "warning";
+                }
+            }
+        }
+
+    };
+
     self.SubOn = function (player) {
         for (var i = 0; i < self.GWTeam().automatic_subs.length; i++) {
             if (self.GWTeam().automatic_subs[i].element_in == player.element) {
