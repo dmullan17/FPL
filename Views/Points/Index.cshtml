@@ -41,8 +41,8 @@
                     <th>Assists</th>
                     <th>Saves</th>
                     <th>Bonus</th>
-                    <th>Bps</th>
-                    <th>Bps Rank</th>
+                    <th>Bps (Rank)</th>
+                    @*<th>Bps Rank</th>*@
                     <th>GW Points</th>
                     <th></th>
                 </tr>
@@ -93,11 +93,11 @@
                         <span data-bind="text: $root.GetBonus($data)"></span>
                     </td>
                     <td>
-                        <span data-bind="text: GWPlayer.stats.bps"></span>
+                        <span data-bind="text: GWPlayer.stats.bps + ' (' + $root.GetBonusRank($data) + ')'"></span>
                     </td>
-                    <td>
+                    @*<td>
                         <span data-bind="text: $root.GetBonusRank($data)"></span>
-                    </td>
+                    </td>*@
                     <td>
                         <span data-bind="text: $root.GetPoints($data)"></span>
                     </td>
