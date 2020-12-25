@@ -1,0 +1,50 @@
+﻿@using Newtonsoft.Json;
+
+@model FPL.ViewModels.FPL.LeaguesViewModel
+
+@{ var data = JsonConvert.SerializeObject(Model); }
+
+@section PageScripts {
+    <script src="~/js/leagues/index.js"></script>
+    <script type="text/javascript">
+        const viewModel = new LeaguesViewModel(@Html.Raw(data));
+        ko.applyBindings(viewModel, document.getElementById("app"));
+    </script>
+}
+
+<div id="app">
+    <div class="ui container">
+        <div class="ui grid">
+            <div class="four wide column">
+                <div class="ui vertical menu">
+                    <div data-bind="foreach: $root.ClassicLeagues">
+                        <a class="item" data-bind="text: name, click: $root.changeLeague.bind($data)"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="twelve wide column">
+                <h3 class="ui top attached header" data-bind="text: $root.SelectedLeague().name"></h3>
+                <div class="ui attached segment">
+                    <table class="ui table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Team</th>
+                                <th>Manager</th>
+                                <th>Points</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: $root.SelectedLeague().Standings.results">
+                            <tr>
+                                <td data-bind="text: rank"></td>
+                                <td data-bind="text: entry_name"></td>
+                                <td data-bind="text: player_name"></td>
+                                <td data-bind="text: total"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -7,6 +7,11 @@ namespace FPL.Models.FPL
 {
     public class Classic
     {
+        public Classic()
+        {
+            Standings = new Standings();
+        }
+        public Standings Standings { get; set; }
         public int id { get; set; }
         public string name { get; set; }
         public string short_name { get; set; }
