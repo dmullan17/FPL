@@ -44,7 +44,7 @@
                     <th>Bps (Rank)</th>
                     @*<th>Bps Rank</th>*@
                     <th>GW Points</th>
-                    <th></th>
+                    <th colspan="2"></th>
                 </tr>
             </thead>
             <tbody data-bind="foreach: $root.GWTeam().picks">
@@ -101,16 +101,18 @@
                     <td>
                         <span data-bind="text: $root.GetPoints($data)"></span>
                     </td>
-                    <td data-bind="class: $root.GetResult($data, $data.GWGame)" class="center aligned">
+                    <td data-bind="class: $root.GetResult($data, $data.GWGame)" class="center aligned collapsing">
                         @*<span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>*@
                         <span data-bind="visible: GWGame.started, text: GWGame.team_h_score + ' - ' + GWGame.team_a_score">
                         </span>
+                        <span data-bind="text: $root.GetTime($data), visible: !GWGame.started"></span>
+                        @*<span data-bind="visible: GWGame.finished_provisional"><i class="check icon"></i></span>*@
+                    </td>
+                    <td data-bind="class: $root.GetResult($data, $data.GWGame)" class="center aligned collapsing">
+                        <span class="ui mini green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>
                         <span data-bind="visible: GWGame.finished_provisional">
                             <i class="small check icon"></i>
                         </span>
-                        <span data-bind="text: $root.GetTime($data), visible: !GWGame.started"></span>
-                        @*<span data-bind="visible: GWGame.finished_provisional"><i class="check icon"></i></span>*@
-
                     </td>
                 </tr>
             </tbody>
