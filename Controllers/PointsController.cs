@@ -71,10 +71,31 @@ namespace FPL.Controllers
 
             entryHistory = entryHistoryJSON.ToObject<EntryHistory>();
 
+            var activeChipsJSON = AllChildren(JObject.Parse(content))
+                .First(c => (c.Type == JTokenType.String || c.Type == JTokenType.Null || c.Type == JTokenType.Array) && c.Path.Contains("active_chip"));
+
+            List<string> activeChips = new List<string>();
+
+            if (activeChipsJSON.Type is JTokenType.String)
+            {
+                var activeChip = activeChipsJSON.ToString();
+                activeChips.Add(activeChip);
+            }
+            else if (activeChipsJSON.Type is JTokenType.Array)
+            {
+                foreach (JObject result in activeChipsJSON)
+                {
+                    var ac = result.ToObject<string>();
+                    activeChips.Add(ac);
+                }
+            }
+
+
             GWTeam gwTeam = new GWTeam
             {
                 picks = teamPicks,
-                automatic_subs = autoSubs
+                automatic_subs = autoSubs,
+                ActiveChips = activeChips
             };
 
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
@@ -164,10 +185,30 @@ namespace FPL.Controllers
 
             entryHistory = entryHistoryJSON.ToObject<EntryHistory>();
 
+            var activeChipsJSON = AllChildren(JObject.Parse(content))
+                .First(c => (c.Type == JTokenType.String || c.Type == JTokenType.Null || c.Type == JTokenType.Array) && c.Path.Contains("active_chip"));
+
+            List<string> activeChips = new List<string>();
+
+            if (activeChipsJSON.Type is JTokenType.String)
+            {
+                var activeChip = activeChipsJSON.ToString();
+                activeChips.Add(activeChip);
+            }
+            else if (activeChipsJSON.Type is JTokenType.Array)
+            {
+                foreach (JObject result in activeChipsJSON)
+                {
+                    var ac = result.ToObject<string>();
+                    activeChips.Add(ac);
+                }
+            }
+
             GWTeam gwTeam = new GWTeam
             {
                 picks = teamPicks,
-                automatic_subs = autoSubs
+                automatic_subs = autoSubs,
+                ActiveChips = activeChips
             };
 
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
@@ -218,7 +259,7 @@ namespace FPL.Controllers
 
             foreach (Pick pick in teamPicks)
             {
-                while (pick.position < 12)
+                while (pick.multiplier > 0)
                 {
                     if (!bonusAdded && !pick.GWGame.finished)
                     {

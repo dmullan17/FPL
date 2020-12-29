@@ -13,5 +13,7 @@ namespace FPL.Models.FPL
         public List<AutomaticSub> automatic_subs { get; set; }
 
         public List<Pick> picks { get; set; }
+
+        public List<string> ActiveChips { get; set; }
     }
 }

@@ -17,15 +17,28 @@
         <h3 class="ui header" data-bind="with: $root.Team()">
             <span data-bind="text: name"></span>
         </h3>
-        <h4 class="ui header">
-            Total Points: <span data-bind="text: $root.GetTotalPoints($root.TotalPoints())"></span>
-        </h4>
-        <h4 class="ui header">
-            GW<span data-bind="text: $root.GameweekId()"></span> Points: <span data-bind="text: $root.GetGWPoints($root.GWPoints())"></span>
-        </h4>
-        <h4 class="ui header">
-            GW Rank Percentile: <span data-bind="text: $root.EntryHistory().RankPercentile"></span>
-        </h4>
+        <div class="ui grid">
+            <div class="eight wide column">
+                <h4 class="ui header">
+                    Total Points: <span data-bind="text: $root.GetTotalPoints($root.TotalPoints())"></span>
+                </h4>
+                <h4 class="ui header">
+                    GW<span data-bind="text: $root.GameweekId()"></span> Points: <span data-bind="text: $root.GetGWPoints($root.GWPoints())"></span>
+                </h4>
+                <h4 class="ui header">
+                    GW Rank Percentile: <span data-bind="text: $root.EntryHistory().RankPercentile"></span>
+                </h4>
+            </div>
+            <div class="eight wide right aligned column">
+                <h4 class="ui header" data-bind="visible: $root.GWTeam().ActiveChips.length > 0">
+                    Active Chips:
+                    <!-- ko foreach: $root.GWTeam().ActiveChips -->
+                    <!-- ko if: $index() > 0 -->, <!-- /ko -->
+                    <span data-bind="text: $data"></span>
+                    <!-- /ko -->
+                </h4>
+            </div>
+        </div>
         <table class="ui table">
             <thead>
                 <tr>
@@ -68,9 +81,9 @@
                         <span data-bind="text: $root.HomeOrAway($data)"></span>
                     </td>
                     <!--<td data-bind="class: GWGame.finished_provisional || !GWGame.started ? '' : 'center aligned'">-->
-                        @*<span data-bind="text: $root.GetTime($data), visible: GWGame.finished_provisional || !GWGame.started"></span>*@
-                        <!--<span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>
-                    </td>-->
+                    @*<span data-bind="text: $root.GetTime($data), visible: GWGame.finished_provisional || !GWGame.started"></span>*@
+                    <!--<span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>
+                </td>-->
                     <td>
                         <span data-bind="text: GWPlayer.stats.minutes"></span>
                     </td>
