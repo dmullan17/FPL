@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -52,7 +53,9 @@ namespace FPL.Models
         public bool special { get; set; }
         public object squad_number { get; set; }
         public string status { get; set; }
-        public int team { get; set; }
+
+        [JsonProperty("team")]
+        public int TeamId { get; set; }
         public int team_code { get; set; }
         public int total_points { get; set; }
         public int transfers_in { get; set; }

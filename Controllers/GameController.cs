@@ -205,14 +205,14 @@ namespace FPL.Controllers
             {
                 Player p = result.ToObject<Player>();
 
-                if (p.team == teamId)
+                if (p.TeamId == teamId)
                 {
                     liverpoolPlayers.Add(p);
                 }
 
                 foreach (int id in nonLiverpoolTeamIds)
                 {
-                    if (p.team == id)
+                    if (p.TeamId == id)
                     {
                         nonLiverpoolPlayers.Add(p);
                     }

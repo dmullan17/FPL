@@ -507,7 +507,7 @@ namespace FPL.Controllers
 
                 foreach (Pick pick in teamPicks)
                 {
-                    if (t.id == pick.player.team)
+                    if (t.id == pick.player.TeamId)
                     {
                         pick.player.Team = t;
                     }
@@ -641,13 +641,13 @@ namespace FPL.Controllers
             {
                 foreach (Game g in gwGames)
                 {
-                    if (pick.player.team == g.team_h)
+                    if (pick.player.TeamId == g.team_h)
                     {
                         pick.GWOppositionName = g.AwayTeam.name;
                         pick.GWGame = g;
                         break;
                     }
-                    else if (pick.player.team == g.team_a)
+                    else if (pick.player.TeamId == g.team_a)
                     {
                         pick.GWOppositionName = g.HomeTeam.name;
                         pick.GWGame = g;

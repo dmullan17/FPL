@@ -185,7 +185,7 @@ namespace FPL.Controllers
                 }
                 foreach (Team team in teams)
                 {
-                    if (gwplayer.player.team == team.id)
+                    if (gwplayer.player.TeamId == team.id)
                     {
                         gwplayer.team = team;
                     }

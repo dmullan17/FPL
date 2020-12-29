@@ -107,7 +107,7 @@ namespace FPL.Controllers
 
                 foreach (Player player in players)
                 {
-                    if (t.id == player.team)
+                    if (t.id == player.TeamId)
                     {
                         player.Team = t;
                     }
@@ -132,7 +132,7 @@ namespace FPL.Controllers
 
                 foreach (Game fixture in fixtures)
                 {
-                    if (player.team == fixture.team_h || player.team == fixture.team_a)
+                    if (player.TeamId == fixture.team_h || player.TeamId == fixture.team_a)
                     {
                         player.Team.Fixtures.Add(fixture);
                     }
@@ -156,7 +156,7 @@ namespace FPL.Controllers
 
                 foreach (Game result in results)
                 {
-                    if (player.team == result.team_h || player.team == result.team_a)
+                    if (player.TeamId == result.team_h || player.TeamId == result.team_a)
                     {
                         player.Team.Results.Add(result);
                     }
@@ -220,7 +220,7 @@ namespace FPL.Controllers
             {
                 foreach (Game result in player.Team.Results)
                 {
-                    if (player.team == result.team_h)
+                    if (player.TeamId == result.team_h)
                     {
                         List<PlayerStat> bps = result.stats[9].h;
 
@@ -232,7 +232,7 @@ namespace FPL.Controllers
                             }
                         }
                     }
-                    else if (player.team == result.team_a)
+                    else if (player.TeamId == result.team_a)
                     {
                         List<PlayerStat> bps = result.stats[9].a;
 

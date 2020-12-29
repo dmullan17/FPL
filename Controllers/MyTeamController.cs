@@ -199,7 +199,7 @@ namespace FPL.Controllers
 
                 foreach (Pick pick in teamPicks)
                 {
-                    if (t.id == pick.player.team)
+                    if (t.id == pick.player.TeamId)
                     {
                         pick.player.Team = t;
                     }
@@ -224,7 +224,7 @@ namespace FPL.Controllers
 
                 foreach (Game fixture in fixtures)
                 {
-                    if (pick.player.team == fixture.team_h || pick.player.team == fixture.team_a)
+                    if (pick.player.TeamId == fixture.team_h || pick.player.TeamId == fixture.team_a)
                     {
                         pick.player.Team.Fixtures.Add(fixture);
                     }
@@ -248,7 +248,7 @@ namespace FPL.Controllers
 
                 foreach (Game result in results)
                 {
-                    if (pick.player.team == result.team_h || pick.player.team == result.team_a)
+                    if (pick.player.TeamId == result.team_h || pick.player.TeamId == result.team_a)
                     {
                         pick.player.Team.Results.Add(result);
                     }
