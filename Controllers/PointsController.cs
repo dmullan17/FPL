@@ -91,6 +91,7 @@ namespace FPL.Controllers
             }
 
 
+
             GWTeam gwTeam = new GWTeam
             {
                 picks = teamPicks,
@@ -731,23 +732,46 @@ namespace FPL.Controllers
             //totalling a players total gw stats
             for (var i = 0; i < teamPicks.Count; i++)
             {
-                for (var j = 0; j < teamPicks[i].GWPlayer.explain.Count; j++)
+                if (teamPicks[i].GWGame.minutes != 0)
                 {
-                    for (var k = 0; k < teamPicks[i].GWPlayer.explain[j].stats.Count; k++)
+                    for (var j = 0; j < teamPicks[i].GWPlayer.explain.Count; j++)
                     {
-                        if (teamPicks[i].GWPlayer.explain[j].stats[k].points != 0)
+                        for (var k = 0; k < teamPicks[i].GWPlayer.explain[j].stats.Count; k++)
                         {
-                            if (teamPicks[i].is_captain)
+                            if (teamPicks[i].GWPlayer.explain[j].stats[k].points != 0)
                             {
-                                teamPicks[i].GWPlayer.stats.gw_points += teamPicks[i].GWPlayer.explain[j].stats[k].points * teamPicks[i].multiplier;
+                                if (teamPicks[i].is_captain)
+                                {
+                                    teamPicks[i].GWPlayer.stats.gw_points += teamPicks[i].GWPlayer.explain[j].stats[k].points * teamPicks[i].multiplier;
+                                }
+                                else
+                                {
+                                    teamPicks[i].GWPlayer.stats.gw_points += teamPicks[i].GWPlayer.explain[j].stats[k].points;
+                                }
                             }
                             else
                             {
-                                teamPicks[i].GWPlayer.stats.gw_points += teamPicks[i].GWPlayer.explain[j].stats[k].points;
+
                             }
                         }
                     }
                 }
+                else
+                {
+                    //if captain didnt play assign double points to vice
+                    if (teamPicks[i].is_captain)
+                    {
+                        var vc = teamPicks.Find(x => x.is_vice_captain);
+                        if (vc.GWGame.minutes != 0)
+                        {
+                            teamPicks[i].is_captain = false;
+                            vc.is_captain = true;
+                            vc.is_vice_captain = false;
+                            vc.GWPlayer.stats.gw_points += vc.GWPlayer.stats.gw_points;
+                        }
+                    }
+                }
+
             }
             return teamPicks;
         }
