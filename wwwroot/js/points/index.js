@@ -286,22 +286,26 @@
         var today = new Date();
         today.setUTCHours(0, 0, 0, 0);
 
-        if (self.EventStatus().status[0].event == self.GameweekId() && self.EventStatus().leagues != "Updated") {
-            for (var i = 0; i < self.EventStatus().status.length; i++) {
+        if (self.EventStatus().leagues != "Updated" && self.EventStatus().leagues != "Updated") {
+            if (self.EventStatus().status[0].event == self.GameweekId()) {
+                for (var i = 0; i < self.EventStatus().status.length; i++) {
 
-                var eventStatusDate = new Date(self.EventStatus().status[i].date);
-                eventStatusDate.setUTCHours(0, 0, 0, 0);
+                    var eventStatusDate = new Date(self.EventStatus().status[i].date);
+                    eventStatusDate.setUTCHours(0, 0, 0, 0);
 
-                if (today.getTime() == eventStatusDate.getTime()) {
+                    if (today.getTime() == eventStatusDate.getTime()) {
 
-                    if (self.EventStatus().status[i].bonus_added) {
+                        if (self.EventStatus().status[i].bonus_added) {
+                            return self.GWPoints();
+                        }
+                        else if (!self.EventStatus().status[i].bonus_added) {
+                            return points + "*";
+                        }
+                    } else {
                         return self.GWPoints();
                     }
-                    else if (!self.EventStatus().status[i].bonus_added) {
-                        return points + "*";
-                    }
                 }
-            }
+            } 
         } else {
             return self.GWPoints();
         }
