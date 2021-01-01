@@ -1,5 +1,6 @@
 ﻿using FPL.Attributes;
 using FPL.Http;
+using FPL.Models;
 using FPL.Models.FPL;
 using FPL.ViewModels.FPL;
 using Microsoft.AspNetCore.Mvc;
@@ -102,6 +103,62 @@ namespace FPL.Controllers
 
 
             return leagues;
+
+        }
+
+
+        public async Task<List<Pick>> GetPlayersTeam(int teamId)
+        {
+            var currentGameWeekId = await GetCurrentGameWeekId();
+
+            var client = new FPLHttpClient();
+
+            var response = await client.GetAsync($"entry/{teamId}/event/{currentGameWeekId}/picks/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var playerEntryJSON = JObject.Parse(content);
+
+            var playerGwPicksJSON = AllChildren(playerEntryJSON)
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("picks"))
+                .Children<JObject>();
+
+            List<Pick> team = new List<Pick>();
+
+            foreach (JObject result in playerGwPicksJSON)
+            {
+                Pick p = result.ToObject<Pick>();
+                team.Add(p);
+            }
+
+            response = await client.GetAsync("bootstrap-static/");
+
+            response.EnsureSuccessStatusCode();
+
+            content = await response.Content.ReadAsStringAsync();
+
+            var allPlayersJSON = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("elements"))
+                .Children<JObject>();
+
+            List<Player> allPlayers = new List<Player>();
+
+            foreach (JObject result in allPlayersJSON)
+            {
+                Player p = result.ToObject<Player>();
+
+                foreach (Pick pick in team)
+                {
+                    if (p.id == pick.element)
+                    {
+                        pick.player = p;
+                    }
+                }
+            }
+
+            return team;
 
         }
     }

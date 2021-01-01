@@ -6,6 +6,8 @@
 
 @section PageScripts {
     <script src="~/js/leagues/index.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
     <script type="text/javascript">
         const viewModel = new LeaguesViewModel(@Html.Raw(data));
         ko.applyBindings(viewModel, document.getElementById("app"));
@@ -18,27 +20,33 @@
             <div class="four wide column">
                 <div class="ui vertical menu">
                     <div data-bind="foreach: $root.ClassicLeagues">
-                        <a class="item" data-bind="text: name, click: $root.changeLeague.bind($data)"></a>
+                        <a class="item" data-bind="text: name, class: $root.getLeagueClass($data), click: $root.changeLeague.bind($data)"></a>
                     </div>
                 </div>
             </div>
             <div class="twelve wide column">
                 <h3 class="ui top attached header" data-bind="text: $root.SelectedLeague().name"></h3>
                 <div class="ui attached segment">
-                    <table class="ui table">
+                    <table id="example" class="ui table">
                         <thead>
                             <tr>
+                                <th class="no-sort" style="display:none"></th>
+                                <th class="no-sort"></th>
                                 <th>Rank</th>
-                                <th>Team</th>
-                                <th>Manager</th>
+                                <th class="no-sort">Team</th>
+                                <th class="no-sort">Manager</th>
+                                <th>GW Points</th>
                                 <th>Points</th>
                             </tr>
                         </thead>
                         <tbody data-bind="foreach: $root.SelectedLeague().Standings.results">
                             <tr>
+                                <td style="display:none" data-bind="text: entry"></td>
+                                <td class="details-control"></td>
                                 <td data-bind="text: rank"></td>
                                 <td data-bind="text: entry_name"></td>
                                 <td data-bind="text: player_name"></td>
+                                <td data-bind="text: event_total"></td>
                                 <td data-bind="text: total"></td>
                             </tr>
                         </tbody>

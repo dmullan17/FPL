@@ -74,6 +74,20 @@ body {
 	border-bottom: none !important;
 }
 
+td.details-control {
+	background: url('../img/open-row-icon.png') no-repeat center center;
+	cursor: pointer;
+}
+
+	td.details-control.loading {
+		background: url('../img/loading-icon.gif') no-repeat center center !important;
+		background-size: contain !important;
+	}
+
+tr.shown td.details-control {
+	background: url('../img/close-row-icon.png') no-repeat center center;
+}
+
 /*body {
 	margin: 0 auto;
 	background: #34495e;
