@@ -756,7 +756,7 @@ namespace FPL.Controllers
                         }
                     }
                 }
-                else
+                else if (teamPicks[i].GWGame.started ?? true)
                 {
                     //if captain didnt play assign double points to vice
                     if (teamPicks[i].is_captain)
