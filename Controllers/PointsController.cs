@@ -732,7 +732,7 @@ namespace FPL.Controllers
             //totalling a players total gw stats
             for (var i = 0; i < teamPicks.Count; i++)
             {
-                if (teamPicks[i].GWGame.minutes != 0)
+                if (teamPicks[i].GWPlayer.stats.minutes != 0)
                 {
                     for (var j = 0; j < teamPicks[i].GWPlayer.explain.Count; j++)
                     {
