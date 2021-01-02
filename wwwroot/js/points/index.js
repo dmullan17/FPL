@@ -286,6 +286,7 @@
         var today = new Date();
         today.setUTCHours(0, 0, 0, 0);
 
+        //var test = self.EventStatus().status.filter(x => x.date == "2021-01-02")[0].date;
 
         if (self.EventStatus().status[0].event == self.GameweekId() && self.EventStatus().leagues != "Updated") {
             for (var i = 0; i < self.EventStatus().status.length; i++) {
@@ -301,10 +302,12 @@
                     else if (!self.EventStatus().status[i].bonus_added) {
                         return points + "*";
                     }
-                } else {
-                    return self.GWPoints();
                 }
+                //else {
+                //    return self.GWPoints();
+                //}
             }
+            return self.GWPoints();
         }
         else {
             return self.GWPoints();

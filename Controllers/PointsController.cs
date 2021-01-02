@@ -264,7 +264,14 @@ namespace FPL.Controllers
                 {
                     if (!bonusAdded && !pick.GWGame.finished)
                     {
-                        gwpoints += pick.GWPlayer.stats.gw_points + pick.GWPlayer.stats.EstimatedBonus;
+                        if (pick.is_captain)
+                        {
+                            gwpoints += pick.GWPlayer.stats.gw_points + (pick.GWPlayer.stats.EstimatedBonus * 2);
+                        }
+                        else
+                        {
+                            gwpoints += pick.GWPlayer.stats.gw_points + pick.GWPlayer.stats.EstimatedBonus;
+                        }               
                     }
                     else
                     {
