@@ -17,6 +17,7 @@
     self.H2HLeagues = ko.observableArray(data.H2HLeagues);
     self.SelectedLeague = ko.observable();
     self.Cup = ko.observable(data.Cup);
+    self.IsEventLive = ko.observable(data.IsEventLive);
 
     self.viewPlayer = function (player) {
         self.SelectedPlayer(player);
@@ -43,6 +44,16 @@
         }
 
     };
+
+    self.GetRank = function (manager) {
+        //return live rank if event is live, otherwise return normal rank
+        if (self.IsEventLive()) {
+            return manager.LiveRank;
+        }
+        else {
+            return manager.rank;
+        }
+    }
    
     self.init = function () {
         //$('.menu .item').tab();
@@ -118,7 +129,7 @@
                 columnDefs: [
                     { orderable: false, targets: "no-sort" }
                 ],
-                order: [[1, "asc"]],
+                order: [[2, "asc"]],
                 responsive: true
             });
         });

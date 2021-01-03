@@ -4,6 +4,7 @@ using FPL.Models;
 using FPL.Models.FPL;
 using FPL.ViewModels.FPL;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -37,9 +38,11 @@ namespace FPL.Controllers
 
             JObject leaguesObject = (JObject)leaguesJSON["leagues"];
             Leagues leagues = leaguesObject.ToObject<Leagues>();
+            EventStatus eventStatus = await GetEventStatus();
 
             leagues = await AddPlayerStandingsToLeague(leagues);
 
+            viewModel.IsEventLive = IsEventLive(eventStatus); 
             viewModel.ClassicLeagues = leagues.classic;
             viewModel.H2HLeagues = leagues.h2h;
             viewModel.Cup = leagues.cup;
@@ -47,9 +50,23 @@ namespace FPL.Controllers
             return View(viewModel);
         }
 
+        private bool IsEventLive(EventStatus eventStatus)
+        {
+            if (eventStatus.leagues != "Updated")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public async Task<Leagues> AddPlayerStandingsToLeague(Leagues leagues)
         {
             var currentGameWeekId = await GetCurrentGameWeekId();
+
+            var eventStatus = await GetEventStatus();
 
             var client = new FPLHttpClient();
 
@@ -77,33 +94,50 @@ namespace FPL.Controllers
                     l.Standings.results.Add(r);
                 }
 
-                //foreach (var player in l.Standings.results)
-                //{
-                //    response = await client.GetAsync($"entry/{player.entry}/event/{currentGameWeekId}/picks/");
+                var today = DateTime.Now.ToString("yyyy-MM-dd");
 
-                //    response.EnsureSuccessStatusCode();
+                var currentEventDay = eventStatus.status.Find(x => x.date == today);
 
-                //    content = await response.Content.ReadAsStringAsync();
+                if (l.id == 666321  && (currentEventDay.points == "l" || currentEventDay.points == "p" || eventStatus.leagues == "Updating"))
+                {
+                    foreach (var player in l.Standings.results)
+                    {
+                        List<Pick> team = new List<Pick>();
 
-                //    var playerEntryJSON = JObject.Parse(content);
+                        team = await GetPlayersTeam(player.entry);
+                        team = await AddGameDataToPlayersTeam(team, currentGameWeekId);
 
-                //    var playerGwPicksJSON = AllChildren(playerEntryJSON)
-                //        .First(c => c.Type == JTokenType.Array && c.Path.Contains("picks"))
-                //        .Children<JObject>();
+                        foreach (var pick in team)
+                        {
+                            if (!pick.GWGame.finished && pick.multiplier > 0)
+                            {
+                                if (pick.GWGame.started ?? true)
+                                {
+                                    if (pick.is_captain)
+                                    {
+                                        player.event_total += (pick.player.event_points * 2);
+                                        player.total += (pick.player.event_points * 2);
+                                    }
+                                    else
+                                    {
+                                        player.event_total += pick.player.event_points;
+                                        player.total += pick.player.event_points;
+                                    }
+                                }
+                            }
+                        }
+                    }
 
-                //    foreach (JObject result in playerGwPicksJSON)
-                //    {
-                //        Pick p = result.ToObject<Pick>();
-                //        player.GwPicks.Add(p);
-                //    }
-                //}
+                    var standingsByLivePointsTotal = l.Standings.results.OrderByDescending(x => x.total).ToList();
+
+                    foreach (var player in l.Standings.results)
+                    {
+                        player.LiveRank = standingsByLivePointsTotal.IndexOf(player) + 1;
+                    }
+                }
             }
 
-
-
-
             return leagues;
-
         }
 
 
@@ -160,6 +194,44 @@ namespace FPL.Controllers
 
             return team;
 
+        }
+
+        public async Task<List<Pick>> AddGameDataToPlayersTeam(List<Pick> picks, int gameweekId)
+        {
+            var client = new FPLHttpClient();
+
+            var response = await client.GetAsync("fixtures/?event=" + gameweekId);
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            List<Game> gwGames = JsonConvert.DeserializeObject<List<Game>>(content);
+
+            foreach (Pick pick in picks)
+            {
+                foreach (Game g in gwGames)
+                {
+                    if (pick.player.TeamId == g.team_h)
+                    {
+                        //pick.GWOppositionName = g.AwayTeam.name;
+                        pick.GWGame = g;
+                        break;
+                    }
+                    else if (pick.player.TeamId == g.team_a)
+                    {
+                        //pick.GWOppositionName = g.HomeTeam.name;
+                        pick.GWGame = g;
+                        break;
+                    }
+                    else
+                    {
+                        pick.GWGame = new Game();
+                    }
+                }
+            }
+
+            return picks;
         }
     }
 }

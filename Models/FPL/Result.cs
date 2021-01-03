@@ -17,6 +17,8 @@ namespace FPL.Models.FPL
         public string player_name { get; set; }
         public int rank { get; set; }
         public int last_rank { get; set; }
+
+        public int LiveRank { get; set; }
         public int rank_sort { get; set; }
         public int total { get; set; }
         public int entry { get; set; }
