@@ -14,12 +14,18 @@ using System.Threading.Tasks;
 using Team = FPL.Models.Team;
 using FPLTeam = FPL.Models.FPL.Team;
 using System.Globalization;
+using FPL.Contracts;
 
 namespace FPL.Controllers
 {
     [FPLCookie]
     public class MyTeamController : BaseController
     {
+        public MyTeamController(IHttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -27,13 +33,11 @@ namespace FPL.Controllers
 
             HttpClientHandler handler = new HttpClientHandler();
 
-            var client = new FPLHttpClient();
-
             int currentGwId = await GetCurrentGameWeekId();
 
             int teamId = await GetTeamId();
 
-            var response = await client.GetAuthAsync(CreateHandler(handler), $"my-team/{teamId}");
+            var response = await _httpClient.GetAuthAsync(CreateHandler(handler), $"my-team/{teamId}");
 
             response.EnsureSuccessStatusCode();
 
@@ -88,9 +92,7 @@ namespace FPL.Controllers
 
         private async Task<List<Pick>> GetLastWeeksTeam(List<Pick> teamPicksLastWeek, int teamId, int currentGwId)
         {
-            var client = new FPLHttpClient();
-
-            var response = await client.GetAsync($"entry/{teamId}/event/{currentGwId}/picks/");
+            var response = await _httpClient.GetAsync($"entry/{teamId}/event/{currentGwId}/picks/");
 
             response.EnsureSuccessStatusCode();
 
@@ -113,9 +115,7 @@ namespace FPL.Controllers
 
         private async Task<List<Pick>> AddPlayerSummaryDataToTeam(List<Pick> teamPicks)
         {
-            var client = new FPLHttpClient();
-
-            var response = await client.GetAsync("bootstrap-static/");
+            var response = await _httpClient.GetAsync("bootstrap-static/");
 
             response.EnsureSuccessStatusCode();
 
@@ -206,7 +206,7 @@ namespace FPL.Controllers
                 }
             }
 
-            var response1 = await client.GetAsync("fixtures/");
+            var response1 = await _httpClient.GetAsync("fixtures/");
 
             response1.EnsureSuccessStatusCode();
 
@@ -302,8 +302,6 @@ namespace FPL.Controllers
 
         private async Task<List<Pick>> CalculateTotalPointsContributed(List<Pick> teamPicks, List<Transfer> teamTransfers)
         {
-            var client = new FPLHttpClient();
-
             int currentGwId = await GetCurrentGameWeekId();
 
             foreach (Pick pick in teamPicks)
@@ -340,7 +338,7 @@ namespace FPL.Controllers
 
             foreach (Pick pick in teamPicks)
             {
-                var response = await client.GetAsync($"element-summary/" + pick.element + "/");
+                var response = await _httpClient.GetAsync($"element-summary/" + pick.element + "/");
 
                 response.EnsureSuccessStatusCode();
 
@@ -405,11 +403,9 @@ namespace FPL.Controllers
 
         private async Task<List<Transfer>> GetTeamTransfers()
         {
-            var client = new FPLHttpClient();
-
             int teamId = await GetTeamId();
 
-            var response = await client.GetAsync($"entry/{teamId}/transfers/");
+            var response = await _httpClient.GetAsync($"entry/{teamId}/transfers/");
 
             response.EnsureSuccessStatusCode();
 
@@ -417,7 +413,7 @@ namespace FPL.Controllers
 
             List<Transfer> transfers = JsonConvert.DeserializeObject<List<Transfer>>(content);
 
-            var response1 = await client.GetAsync("bootstrap-static/");
+            var response1 = await _httpClient.GetAsync("bootstrap-static/");
 
             response1.EnsureSuccessStatusCode();
 
@@ -456,11 +452,9 @@ namespace FPL.Controllers
 
             handler = CreateHandler(handler);
 
-            var client = new FPLHttpClient();
-
             int teamId = await GetTeamId();
 
-            var response = await client.GetAuthAsync(handler, $"entry/{teamId}/");
+            var response = await _httpClient.GetAuthAsync(handler, $"entry/{teamId}/");
 
             response.EnsureSuccessStatusCode();
 

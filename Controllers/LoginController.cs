@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using FPL.Contracts;
 using FPL.Http;
 using FPL.Models;
 using FPL.ViewModels;
@@ -14,6 +15,11 @@ namespace FPL.Controllers
 {
     public class LoginController : BaseController
     {
+        public LoginController(IHttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
         public String GetFplLoginUrl()
         {
             return "https://users.premierleague.com/accounts/login/";
@@ -35,9 +41,8 @@ namespace FPL.Controllers
         [HttpPost]
         public async Task<IActionResult> Index([FromBody] LoginViewModel model)
         {
-            var client = new FPLHttpClient();
-
             CookieContainer cookies = new CookieContainer();
+
             HttpClientHandler handler = new HttpClientHandler
             {
                 CookieContainer = cookies
@@ -49,7 +54,7 @@ namespace FPL.Controllers
                 Password = model.Password
             };
 
-            var response = await client.PostLoginAsync(handler, loginAttempt);
+            var response = await _httpClient.PostLoginAsync(handler, loginAttempt);
 
             response.EnsureSuccessStatusCode();
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using FPL.Contracts;
 using FPL.Http;
 using FPL.Models;
 using FPL.ViewModels;
@@ -16,6 +17,7 @@ namespace FPL.Controllers
     public class BaseController : Controller
     {
         //public static readonly int TeamId = 2675560;
+        protected IHttpClient _httpClient;
 
         public string GetBaseUrl()
         {

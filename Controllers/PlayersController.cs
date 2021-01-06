@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using FPL.Contracts;
 using FPL.Http;
 using FPL.Models;
 using FPL.ViewModels;
@@ -14,13 +15,16 @@ namespace FPL.Controllers
 {
     public class PlayersController : BaseController
     {
+        public PlayersController(IHttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
         public async Task<IActionResult> Index()
         {
             var viewModel = new PlayersViewModel();
 
-            var client = new FPLHttpClient();
-
-            var response = await client.GetAsync("bootstrap-static/");
+            var response = await _httpClient.GetAsync("bootstrap-static/");
 
             response.EnsureSuccessStatusCode();
 
@@ -114,7 +118,7 @@ namespace FPL.Controllers
                 }
             }
 
-            var response1 = await client.GetAsync("fixtures/");
+            var response1 = await _httpClient.GetAsync("fixtures/");
 
             response1.EnsureSuccessStatusCode();
 

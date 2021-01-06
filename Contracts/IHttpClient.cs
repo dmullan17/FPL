@@ -24,5 +24,6 @@ namespace FPL.Contracts
         Task<HttpResponseMessage> PutAsync(string resource, string body);
 
         Task<HttpResponseMessage> DeleteAsync(string resource);
+        Task<HttpResponseMessage> GetAuthAsync(HttpClientHandler handler, string resource);
     }
 }

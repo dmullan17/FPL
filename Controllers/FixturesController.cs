@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FPL.Contracts;
 using FPL.Http;
 using FPL.Models;
 using FPL.Models.GWPlayerStats;
@@ -14,13 +15,16 @@ namespace FPL.Controllers
 {
     public class FixturesController : BaseController
     {
+        public FixturesController(IHttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
         public async Task<IActionResult> Index()
         {
             var viewModel = new FixturesViewModel();
 
-            var client = new FPLHttpClient();
-
-            var response = await client.GetAsync("fixtures/");
+            var response = await _httpClient.GetAsync("fixtures/");
 
             response.EnsureSuccessStatusCode();
 
@@ -88,9 +92,7 @@ namespace FPL.Controllers
         {
             var viewModel = new FixturesViewModel();
 
-            var client = new FPLHttpClient();
-
-            var response = await client.GetAsync("fixtures/");
+            var response = await _httpClient.GetAsync("fixtures/");
 
             response.EnsureSuccessStatusCode();
 
@@ -100,15 +102,13 @@ namespace FPL.Controllers
             List<Game> currentGameWeekGames = new List<Game>();
             List<Game> liveGames = new List<Game>();
 
-            
             foreach (Game g in games)
             {
                 if (g.Event == id)
                 {
                     currentGameWeekGames.Add(g);
                 }
-
-                
+       
                 if (g.started ?? false)
                 {
                     if (!g.finished || !g.finished_provisional)
@@ -149,10 +149,8 @@ namespace FPL.Controllers
 
         private async Task<List<GWPlayer>> AddGameweekDataToPlayerListByGameWeekId(List<Player> players, List<Team> teams, int gameWeekId)
         {
-            var client = new FPLHttpClient();
-
             //get player stats specific to the gameweek
-            var response = await client.GetAsync("event/" + gameWeekId + "/live/");
+            var response = await _httpClient.GetAsync("event/" + gameWeekId + "/live/");
 
             response.EnsureSuccessStatusCode();
 
@@ -200,9 +198,7 @@ namespace FPL.Controllers
         //populates a specified team's fixtures and results
         private async Task<(List<GWPlayer>, List<Game>)> PopulateFixtureListByGameWeekId(List<Game> games, int gameWeekId)
         {
-            var client = new FPLHttpClient();
-
-            var response = await client.GetAsync("bootstrap-static/");
+            var response = await _httpClient.GetAsync("bootstrap-static/");
 
             response.EnsureSuccessStatusCode();
 
