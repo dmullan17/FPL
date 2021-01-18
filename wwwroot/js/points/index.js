@@ -82,27 +82,150 @@
         return false;
     };
 
-    self.HomeOrAway = function (player) {
+    self.GetOpposition = function (player) {
 
-        if (player.GWGame.team_h == player.player.Team.id) {
-            return player.GWGame.AwayTeam.name + " (H)"
+        var team = player.player.Team;
+
+        var fixtures = team.Fixtures.filter(x => x.Event == self.GameweekId());
+        var results = team.Results.filter(x => x.Event == self.GameweekId());
+        var html = "";
+
+        //if (player.GWGame.team_h == player.player.Team.id) {
+        //    gwfixtures += player.GWGame.AwayTeam.name + " (H)<br/>"
+        //}
+        //else if (player.GWGame.team_a == player.player.Team.id) {
+        //    gwfixtures += player.GWGame.HomeTeam.name + " (A)<br/>";
+        //}
+        if (results.length > 0) {
+            for (var i = 0; i < results.length; i++) {
+                //if (player.GWGame.id != results[i].id) {
+                if (results[i].team_h_score > results[i].team_a_score) {
+                    if (team.id == results[i].team_h) {
+                        html += results[i].team_a_name + " (H)<br/>";
+                    }
+                    else if (team.id == results[i].team_a) {
+                        html += results[i].team_h_name + " (A) <br/>";
+                    }
+                }
+                else if (results[i].team_h_score == results[i].team_a_score) {
+                    if (team.id == results[i].team_h) {
+                        html += results[i].team_a_name + " (H) <br/>";
+                    }
+                    else if (team.id == results[i].team_a) {
+                        html += results[i].team_h_name + " (A) <br/>";
+                    }
+                }
+                else if (results[i].team_h_score < results[i].team_a_score) {
+                    if (team.id == results[i].team_h) {
+                        html += results[i].team_a_name + " (H) <br/>";
+                    }
+                    else if (team.id == results[i].team_a) {
+                        html += results[i].team_h_name + " (A) <br/>";
+                    }
+                }
+                //}
+
+            }
         }
-        else if (player.GWGame.team_a == player.player.Team.id) {
-            return player.GWGame.HomeTeam.name + " (A)";
+        if (fixtures.length > 0) {
+            for (var i = 0; i < fixtures.length; i++) {
+                //if (player.GWGame.id != fixtures[i].id) {
+                if (team.id == fixtures[i].team_h) {
+                    html += fixtures[i].team_a_name + " (H)<br/>";
+                }
+                else if (team.id == fixtures[i].team_a) {
+                    html += fixtures[i].team_h_name + " (A)<br/>";
+                }
+                //}
+            }
         }
-        else {
-            return "No Game";
-        }
+        //else {
+        //    gwfixtures += "No Game";
+        //}
+
+        return html;
+
+        //if (player.GWGame.team_h == player.player.Team.id) {
+        //    return player.GWGame.AwayTeam.name + " (H)"
+        //}
+        //else if (player.GWGame.team_a == player.player.Team.id) {
+        //    return player.GWGame.HomeTeam.name + " (A)";
+        //}
+        //else {
+        //    return "No Game";
+        //}
     };
 
-    self.GetTime = function (player) {
+    self.GetTimeOrResult = function (player) {
 
-        if (player.GWGame.id != 0) {
-            return getDayOfWeek(player.GWGame.kickoff_time) + " @ " + player.GWGame.kickoff_time.substring(11, 16);
+
+        var team = player.player.Team;
+
+        var fixtures = team.Fixtures.filter(x => x.Event == self.GameweekId());
+        var results = team.Results.filter(x => x.Event == self.GameweekId());
+        var html = "";
+
+        //if (player.GWGame.team_h == player.player.Team.id) {
+        //    gwfixtures += player.GWGame.AwayTeam.name + " (H)<br/>"
+        //}
+        //else if (player.GWGame.team_a == player.player.Team.id) {
+        //    gwfixtures += player.GWGame.HomeTeam.name + " (A)<br/>";
+        //}
+        if (results.length > 0) {
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].finished_provisional) {
+                    if (results[i].team_h_score > results[i].team_a_score) {
+                        if (team.id == results[i].team_h) {
+                            html += results[i].team_h_score + " - " + results[i].team_a_score + " <span class=\"result-label\" style=\"background-color: lawngreen\">W</span> <br/>";
+                        }
+                        else if (team.id == results[i].team_a) {
+                            html += results[i].team_h_score + " - " + results[i].team_a_score + " <span class=\"result-label\" style=\"background-color: red\">L</span> <br/>";
+                        }
+                    }
+                    else if (results[i].team_h_score == results[i].team_a_score) {
+                        if (team.id == results[i].team_h) {
+                            html += results[i].team_h_score + " - " + results[i].team_a_score + " <span class=\"result-label\" style=\"background-color: orange\">D</span> <br/>";
+                        }
+                        else if (team.id == results[i].team_a) {
+                            html += results[i].team_h_score + " - " + results[i].team_a_score + " <span class=\"result-label\" style=\"background-color: orange\">D</span> <br/>";
+                        }
+                    }
+                    else if (results[i].team_h_score < results[i].team_a_score) {
+                        if (team.id == results[i].team_h) {
+                            html += results[i].team_h_score + " - " + results[i].team_a_score + " <span class=\"result-label\" style=\"background-color: red\">L</span> <br/>";
+                        }
+                        else if (team.id == results[i].team_a) {
+                            html += results[i].team_h_score + " - " + results[i].team_a_score + " <span class=\"result-label\" style=\"background-color: lawngreen\">W</span> <br/>";
+                        }
+                    }
+                }
+                else {
+                    html += results[i].team_h_score + " - " + results[i].team_a_score + " <span class=\"ui mini green label\">Live</span> <br/>";
+                }
+
+            }
         }
-        else {
-            return "";
+        if (fixtures.length > 0) {
+            for (var i = 0; i < fixtures.length; i++) {
+                html += getDayOfWeek(fixtures[i].kickoff_time) + " @ " + fixtures[i].kickoff_time.substring(11, 16) + " <br/>";
+            }
         }
+
+        return html;
+
+        //var team = player.player.Team;
+
+        //var fixtures = team.Fixtures.filter(x => x.Event == self.GameweekId());
+        //var results = team.Results.filter(x => x.Event == self.GameweekId());
+        //var gwfixtures = "";
+
+        //if (fixtures.length > 0) {
+        //    for (var i = 0; i < fixtures.length; i++) {
+        //        gwfixtures += getDayOfWeek(fixtures[i].kickoff_time) + " @ " + fixtures[i].kickoff_time.substring(11, 16) + " <br/>";
+        //    }
+        //}
+
+        //return gwfixtures;
 
 
     };

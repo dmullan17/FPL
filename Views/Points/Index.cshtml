@@ -78,7 +78,7 @@
                         <span data-bind="text: $root.GetPosition(player.element_type)"></span>
                     </td>
                     <td>
-                        <span data-bind="text: $root.HomeOrAway($data)"></span>
+                        <span data-bind="html: $root.GetOpposition($data)"></span>
                     </td>
                     <!--<td data-bind="class: GWGame.finished_provisional || !GWGame.started ? '' : 'center aligned'">-->
                     @*<span data-bind="text: $root.GetTime($data), visible: GWGame.finished_provisional || !GWGame.started"></span>*@
@@ -114,19 +114,18 @@
                     <td>
                         <span data-bind="text: $root.GetPoints($data)"></span>
                     </td>
-                    <td data-bind="class: $root.GetResult($data, $data.GWGame)" class="center aligned collapsing">
+                    <td @*data-bind="class: $root.GetResult($data, $data.GWGame)"*@ class="center aligned collapsing">
                         @*<span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>*@
-                        <span data-bind="visible: GWGame.started, text: GWGame.team_h_score + ' - ' + GWGame.team_a_score">
-                        </span>
-                        <span data-bind="text: $root.GetTime($data), visible: !GWGame.started"></span>
+                        @*<span data-bind="visible: GWGame.started, text: GWGame.team_h_score + ' - ' + GWGame.team_a_score"></span>*@
+                        <span data-bind="html: $root.GetTimeOrResult($data) @*visible: !GWGame.started*@"></span>
                         @*<span data-bind="visible: GWGame.finished_provisional"><i class="check icon"></i></span>*@
                     </td>
-                    <td data-bind="class: $root.GetResult($data, $data.GWGame)" class="center aligned collapsing">
+                    @*<td data-bind="class: $root.GetResult($data, $data.GWGame)" class="center aligned collapsing">
                         <span class="ui mini green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>
                         <span data-bind="visible: GWGame.finished_provisional">
                             <i class="small check icon"></i>
                         </span>
-                    </td>
+                    </td>*@
                 </tr>
             </tbody>
         </table>

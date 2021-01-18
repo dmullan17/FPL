@@ -226,3 +226,11 @@ div.dt-buttons {
 .hover {
 	background-color: #B0BED9 !important;
 }
+
+.result-label {
+	color: white;
+	padding-left: 0.2rem;
+	padding-right: 0.2rem;
+	font-weight: bold;
+	border-radius: 3px;
+}

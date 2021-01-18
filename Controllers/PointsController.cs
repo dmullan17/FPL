@@ -101,10 +101,10 @@ namespace FPL.Controllers
                 ActiveChips = activeChips
             };
 
-            teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
+            teamPicks = await AddPlayerSummaryDataToTeam(teamPicks, teamId);
             teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, currentGameweekId);
             entryHistory = await AddExtraDatatoEntryHistory(entryHistory);
-            gwTeam = await AddAutoSubs(gwTeam, teamPicks);
+            gwTeam = await AddAutoSubs(gwTeam, teamPicks, teamId);
             EventStatus eventStatus = await GetEventStatus();
             int gwpoints = GetGameWeekPoints(teamPicks, eventStatus);
             FPLTeam teamDetails = await GetTeamInfo();
@@ -212,10 +212,10 @@ namespace FPL.Controllers
                 ActiveChips = activeChips
             };
 
-            teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
+            teamPicks = await AddPlayerSummaryDataToTeam(teamPicks, id);
             teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, id);
             entryHistory = await AddExtraDatatoEntryHistory(entryHistory);
-            gwTeam = await AddAutoSubs(gwTeam, teamPicks);
+            gwTeam = await AddAutoSubs(gwTeam, teamPicks, id);
             var liveGameCount = gwTeam.picks.FindAll(x => !x.GWGame.finished_provisional).Count();
             EventStatus eventStatus = await GetEventStatus();
             int gwpoints = GetGameWeekPoints(teamPicks, eventStatus);
@@ -242,7 +242,7 @@ namespace FPL.Controllers
 
         }
 
-        private int GetGameWeekPoints(List<Pick> teamPicks, EventStatus eventStatus)
+        public int GetGameWeekPoints(List<Pick> teamPicks, EventStatus eventStatus)
         {
             int gwpoints = 0;
             bool bonusAdded = true;
@@ -305,14 +305,22 @@ namespace FPL.Controllers
                 rankPercentile = Math.Round(((decimal)entryHistory.rank / (decimal)totalPlayers) * 100m, 0);
             }
 
-            entryHistory.RankPercentile = Convert.ToInt32(rankPercentile);
+            if (rankPercentile == 0)
+            {
+                entryHistory.RankPercentile = 1;
+            }
+            else
+            {
+                entryHistory.RankPercentile = Convert.ToInt32(rankPercentile);
+            }
 
             return entryHistory;
         }
 
-        private async Task<GWTeam> AddAutoSubs(GWTeam gwTeam, List<Pick> picks)
+        public async Task<GWTeam> AddAutoSubs(GWTeam gwTeam, List<Pick> picks, int teamId)
         {
             EventStatus eventStatus = await GetEventStatus();
+            //int teamId = await GetTeamId();
             var lastEvent = eventStatus.status.LastOrDefault();
             var starters = picks.FindAll(x => x.position < 12);
             var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && x.GWGame.finished_provisional);
@@ -347,8 +355,6 @@ namespace FPL.Controllers
                             }
 
                         }
-
-                        int teamId = await GetTeamId();
 
                         if (startersWhoDidNotPlay[i].player.element_type == 2)
                         {
@@ -468,7 +474,7 @@ namespace FPL.Controllers
 
         }
 
-        private async Task<List<Pick>> AddPlayerSummaryDataToTeam(List<Pick> teamPicks)
+        public async Task<List<Pick>> AddPlayerSummaryDataToTeam(List<Pick> teamPicks, int teamId)
         {
             var response = await _httpClient.GetAsync("bootstrap-static/");
 
@@ -515,72 +521,86 @@ namespace FPL.Controllers
                 }
             }
 
-            //var response1 = await client.GetAsync("fixtures/");
+            var response1 = await _httpClient.GetAsync("fixtures/");
 
-            //response1.EnsureSuccessStatusCode();
+            response1.EnsureSuccessStatusCode();
 
-            //var content1 = await response1.Content.ReadAsStringAsync();
+            var content1 = await response1.Content.ReadAsStringAsync();
 
-            //List<Game> games = JsonConvert.DeserializeObject<List<Game>>(content1);
+            List<Game> games = JsonConvert.DeserializeObject<List<Game>>(content1);
 
-            //List<Game> fixtures = games.FindAll(x => x.started == false);
-            //List<Game> results = games.FindAll(x => x.finished == true);
+            List<Game> fixtures = games.FindAll(x => x.started == false);
+            List<Game> results = games.FindAll(x => x.started == true);
 
-            //foreach (Pick pick in teamPicks)
-            //{
-            //    pick.player.Team.Fixtures = new List<Game>();
-            //    pick.player.Team.Results = new List<Game>();
+            foreach (Pick pick in teamPicks)
+            {
+                pick.player.Team.Fixtures = new List<Game>();
+                pick.player.Team.Results = new List<Game>();
 
-            //    foreach (Game fixture in fixtures)
-            //    {
-            //        if (pick.player.team == fixture.team_h || pick.player.team == fixture.team_a)
-            //        {
-            //            pick.player.Team.Fixtures.Add(fixture);
-            //        }
-            //    }
+                foreach (Game fixture in fixtures)
+                {
+                    if (pick.player.TeamId == fixture.team_h || pick.player.TeamId == fixture.team_a)
+                    {
+                        pick.player.Team.Fixtures.Add(fixture);
+                    }
+                }
 
-            //    foreach (Game playerFixture in pick.player.Team.Fixtures)
-            //    {
-            //        foreach (Team t in allTeams)
-            //        {
-            //            if (playerFixture.team_h == t.id)
-            //            {
-            //                playerFixture.team_h_name = t.name;
-            //            }
+                foreach (Game playerFixture in pick.player.Team.Fixtures)
+                {
+                    foreach (Team t in allTeams)
+                    {
+                        if (playerFixture.team_h == t.id)
+                        {
+                            playerFixture.team_h_name = t.name;
+                        }
 
-            //            if (playerFixture.team_a == t.id)
-            //            {
-            //                playerFixture.team_a_name = t.name;
-            //            }
-            //        }
-            //    }
+                        if (playerFixture.team_a == t.id)
+                        {
+                            playerFixture.team_a_name = t.name;
+                        }
+                    }
+                }
 
-            //    foreach (Game result in results)
-            //    {
-            //        if (pick.player.team == result.team_h || pick.player.team == result.team_a)
-            //        {
-            //            pick.player.Team.Results.Add(result);
-            //        }
-            //    }
+                foreach (Game result in results)
+                {
+                    if (pick.player.TeamId == result.team_h || pick.player.TeamId == result.team_a)
+                    {
+                        pick.player.Team.Results.Add(result);
+                    }
 
-            //    foreach (Game playerResult in pick.player.Team.Results)
-            //    {
-            //        foreach (Team t in allTeams)
-            //        {
-            //            if (playerResult.team_h == t.id)
-            //            {
-            //                playerResult.team_h_name = t.name;
-            //            }
+                    Stat totalBps = result.stats[9];
 
-            //            if (playerResult.team_a == t.id)
-            //            {
-            //                playerResult.team_a_name = t.name;
-            //            }
-            //        }
-            //    }
-            //}
+                    List<PlayerStat> homeBps = totalBps.h;
+                    List<PlayerStat> awayBps = totalBps.a;
+                    List<PlayerStat> allPlayersInGameBps = homeBps.Concat(awayBps).ToList();
+                    allPlayersInGameBps = allPlayersInGameBps.OrderByDescending(x => x.value).ToList();
 
-            int teamId = await GetTeamId();
+                    for (var i = 0; i < allPlayersInGameBps.Count; i++)
+                    {
+                        if (pick.element == allPlayersInGameBps[i].element)
+                        {
+                            //currently only calculates players total bps ranking - need to find away to get average
+                            pick.player.AvgBpsRank += allPlayersInGameBps.IndexOf(allPlayersInGameBps[i]) + 1;
+                        }
+                    }
+                }
+
+                foreach (Game playerResult in pick.player.Team.Results)
+                {
+                    foreach (Team t in allTeams)
+                    {
+                        if (playerResult.team_h == t.id)
+                        {
+                            playerResult.team_h_name = t.name;
+                        }
+
+                        if (playerResult.team_a == t.id)
+                        {
+                            playerResult.team_a_name = t.name;
+                        }
+                    }
+                }
+            }
 
             var response2 = await _httpClient.GetAsync($"entry/{teamId}/transfers/");
 
@@ -785,7 +805,9 @@ namespace FPL.Controllers
             var starterPosition = starter.position;
             var subPosition = sub.position;
             starter.position = subPosition;
+            starter.multiplier = 0;
             sub.position = starterPosition;
+            sub.multiplier = 1;
 
             return autoSub;
         }
