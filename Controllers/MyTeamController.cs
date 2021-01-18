@@ -215,7 +215,7 @@ namespace FPL.Controllers
             List<Game> games = JsonConvert.DeserializeObject<List<Game>>(content1);
 
             List<Game> fixtures = games.FindAll(x => x.started == false);
-            List<Game> results = games.FindAll(x => x.finished == true);
+            List<Game> results = games.FindAll(x => x.started == true);
 
             foreach (Pick pick in teamPicks)
             {

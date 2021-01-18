@@ -59,22 +59,114 @@
         return (value / 10).toFixed(1);
     };
 
-    self.GetPlayersNextFixture = function (team) {
+    self.GetNextGw = function () {
+        return "GW " + (self.CurrentGwId() + 1);
+    };
 
-        var firstFixture = team.Fixtures[0];
+    //self.GetPlayersNextFixture = function (team) {
 
-        if ((self.CurrentGwId() + 1) == firstFixture.Event || self.CurrentGwId() == firstFixture.Event) {
-            if (team.id == firstFixture.team_h) {
-                return "GW" + firstFixture.Event + " - " + firstFixture.team_a_name + " (H)";
+    //    var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId() + 1 || x.Event == self.CurrentGwId());
+    //    var firstFixture = team.Fixtures[0];
+
+    //    if (fixtures.length > 0) {
+    //        var gwfixtures = "";
+    //        for (var i = 0; i < fixtures.length; i++) {
+    //            if (team.id == fixtures[i].team_h) {
+    //                gwfixtures += "GW" + fixtures[i].Event + " - " + fixtures[i].team_a_name + " (H) <br/>";
+    //            }
+    //            else if (team.id == fixtures[i].team_a) {
+    //                gwfixtures += "GW" + fixtures[i].Event + " - " + fixtures[i].team_h_name + " (A) <br/>";
+    //            }
+
+    //        }
+    //        return gwfixtures;
+    //    }
+    //    else {
+    //        return "No Game";
+    //    }
+
+    //};
+
+    self.GetCurrentGWGames = function (player) {
+
+        var team = player.player.Team;
+
+        var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId());
+        var results = team.Results.filter(x => x.Event == self.CurrentGwId());
+        var html = "";
+
+        if (results.length > 0) {
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].team_h_score > results[i].team_a_score) {
+                    if (team.id == results[i].team_h) {
+                        html += results[i].team_a_name + " (H)<br/>";
+                    }
+                    else if (team.id == results[i].team_a) {
+                        html += results[i].team_h_name + " (A)<br/>";
+                    }
+                }
+                else if (results[i].team_h_score == results[i].team_a_score) {
+                    if (team.id == results[i].team_h) {
+                        html += results[i].team_a_name + " (H)<br/>";
+                    }
+                    else if (team.id == results[i].team_a) {
+                        html += results[i].team_h_name + " (A)<br/>";
+                    }
+                }
+                else if (results[i].team_h_score < results[i].team_a_score) {
+                    if (team.id == results[i].team_h) {
+                        html += results[i].team_a_name + " (H)<br/>";
+                    }
+                    else if (team.id == results[i].team_a) {
+                        html += results[i].team_h_name + " (A)<br/>";
+                    }
+                }
+
             }
-            else if (team.id == firstFixture.team_a) {
-                return "GW" + firstFixture.Event + " - " + firstFixture.team_h_name + " (A)";
+        }
+        if (fixtures.length > 0) {
+            for (var i = 0; i < fixtures.length; i++) {
+                if (team.id == fixtures[i].team_h) {
+                    html += fixtures[i].team_a_name + " (H)<br/>";
+                }
+                else if (team.id == fixtures[i].team_a) {
+                    html += fixtures[i].team_h_name + " (A)<br/>";
+                }
+
             }
+        }
+        //else {
+        //    return "No Game";
+        //}
+
+        return html;
+
+    };
+
+    self.GetNextGWGames = function (team) {
+
+        var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId() + 1);
+        var html = "";
+
+        if (fixtures.length > 0) {
+            for (var i = 0; i < fixtures.length; i++) {
+                if (team.id == fixtures[i].team_h) {
+                    html += fixtures[i].team_a_name + " (H) <br/>";
+                }
+                else if (team.id == fixtures[i].team_a) {
+                    html += fixtures[i].team_h_name + " (A) <br/>";
+                }
+
+            }
+            return html;
         }
         else {
             return "No Game";
         }
+
     };
+
+    
 
     self.CreateGWNetTransfers = function (player) {
         return nFormatter((player.transfers_in_event - player.transfers_out_event), 0)
