@@ -109,14 +109,17 @@ namespace FPL.Controllers
             int gwpoints = GetGameWeekPoints(teamPicks, eventStatus);
             FPLTeam teamDetails = await GetTeamInfo();
 
-            foreach (var g in gwTeam.picks)
+            foreach (var pick in gwTeam.picks)
             {
-                if (g.GWGame.started ?? true && g.GWGame.started != null)
+                foreach (var game in pick.player.Team.Results)
                 {
-                    if (!g.GWGame.finished_provisional)
+                    if ((game.started ?? true) && game.started != null && game.Event == currentGameweekId)
                     {
-                        viewModel.IsLive = true;
-                        break;
+                        if (!game.finished_provisional)
+                        {
+                            viewModel.IsLive = true;
+                            break;
+                        }
                     }
                 }
             }

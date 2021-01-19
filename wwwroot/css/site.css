@@ -237,4 +237,10 @@ div.dt-buttons {
 	width: 1.5rem;
 	height: 1.5rem;
 	margin-left: 0.3rem;
+	margin-bottom: 0.1rem;
+}
+
+.manager-name {
+	font-size: small;
+	font-weight: normal;
 }
