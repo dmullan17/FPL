@@ -139,6 +139,9 @@
                 //}
             }
         }
+        if (results.length == 0 && fixtures.length == 0) {
+            html += "No Game";
+        }
         //else {
         //    gwfixtures += "No Game";
         //}
@@ -176,31 +179,31 @@
                 if (results[i].finished_provisional) {
                     if (results[i].team_h_score > results[i].team_a_score) {
                         if (team.id == results[i].team_h) {
-                            html += results[i].team_h_score + " - " + results[i].team_a_score + " <span class=\"result-label\" style=\"background-color: lawngreen\">W</span> <br/>";
+                            html += results[i].team_h_score + " - " + results[i].team_a_score + " <div class=\"result-label\" style=\"background-color: limegreen\">W</div> <br/>";
                         }
                         else if (team.id == results[i].team_a) {
-                            html += results[i].team_h_score + " - " + results[i].team_a_score + " <span class=\"result-label\" style=\"background-color: red\">L</span> <br/>";
+                            html += results[i].team_h_score + " - " + results[i].team_a_score + " <div class=\"result-label\" style=\"background-color: red\">L</div> <br/>";
                         }
                     }
                     else if (results[i].team_h_score == results[i].team_a_score) {
                         if (team.id == results[i].team_h) {
-                            html += results[i].team_h_score + " - " + results[i].team_a_score + " <span class=\"result-label\" style=\"background-color: orange\">D</span> <br/>";
+                            html += results[i].team_h_score + " - " + results[i].team_a_score + " <div class=\"result-label\" style=\"background-color: orange\">D</div> <br/>";
                         }
                         else if (team.id == results[i].team_a) {
-                            html += results[i].team_h_score + " - " + results[i].team_a_score + " <span class=\"result-label\" style=\"background-color: orange\">D</span> <br/>";
+                            html += results[i].team_h_score + " - " + results[i].team_a_score + " <div class=\"result-label\" style=\"background-color: orange\">D</div> <br/>";
                         }
                     }
                     else if (results[i].team_h_score < results[i].team_a_score) {
                         if (team.id == results[i].team_h) {
-                            html += results[i].team_h_score + " - " + results[i].team_a_score + " <span class=\"result-label\" style=\"background-color: red\">L</span> <br/>";
+                            html += results[i].team_h_score + " - " + results[i].team_a_score + " <div class=\"result-label\" style=\"background-color: red\">L</div> <br/>";
                         }
                         else if (team.id == results[i].team_a) {
-                            html += results[i].team_h_score + " - " + results[i].team_a_score + " <span class=\"result-label\" style=\"background-color: lawngreen\">W</span> <br/>";
+                            html += results[i].team_h_score + " - " + results[i].team_a_score + " <div class=\"result-label\" style=\"background-color: limegreen\">W</div> <br/>";
                         }
                     }
                 }
                 else {
-                    html += results[i].team_h_score + " - " + results[i].team_a_score + " <span class=\"ui mini green label\">Live</span> <br/>";
+                    html += results[i].team_h_score + " - " + results[i].team_a_score + " <div class=\"ui mini green label\">Live</span> <br/>";
                 }
 
             }

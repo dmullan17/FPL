@@ -696,24 +696,24 @@ namespace FPL.Controllers
                             {
                                 if (topPlayersByBps[0].value == pick.GWPlayer.stats.bps && topPlayersByBps[1].value == pick.GWPlayer.stats.bps)
                                 {
-                                    pick.GWPlayer.stats.BpsRank = 1;
-                                    pick.GWPlayer.stats.EstimatedBonus = 3;
+                                    pick.GWPlayer.stats.BpsRank.Add(1);
+                                    pick.GWPlayer.stats.EstimatedBonus += 3;
                                 }
                                 else if (topPlayersByBps[1].value == pick.GWPlayer.stats.bps && topPlayersByBps[2].value == pick.GWPlayer.stats.bps)
                                 {
-                                    pick.GWPlayer.stats.BpsRank = 2;
-                                    pick.GWPlayer.stats.EstimatedBonus = 2;
+                                    pick.GWPlayer.stats.BpsRank.Add(2);
+                                    pick.GWPlayer.stats.EstimatedBonus += 2;
                                 }
                                 else if (topPlayersByBps[2].value == pick.GWPlayer.stats.bps && topPlayersByBps[3].value == pick.GWPlayer.stats.bps)
                                 {
-                                    pick.GWPlayer.stats.BpsRank = 3;
-                                    pick.GWPlayer.stats.EstimatedBonus = 1;
+                                    pick.GWPlayer.stats.BpsRank.Add(3);
+                                    pick.GWPlayer.stats.EstimatedBonus += 1;
                                 }
                                 break;
                             } 
                             else
                             {
-                                pick.GWPlayer.stats.BpsRank = allPlayersInGameBps.IndexOf(allPlayersInGameBps[i]) + 1;
+                                pick.GWPlayer.stats.BpsRank.Add(allPlayersInGameBps.IndexOf(allPlayersInGameBps[i]) + 1);
                                 break;
                             }
                         }
@@ -725,11 +725,11 @@ namespace FPL.Controllers
                         {
                             if (i == 3)
                             {
-                                pick.GWPlayer.stats.EstimatedBonus = 0;
+                                pick.GWPlayer.stats.EstimatedBonus += 0;
                             }
                             else
                             {
-                                pick.GWPlayer.stats.EstimatedBonus = 3 - i;
+                                pick.GWPlayer.stats.EstimatedBonus += 3 - i;
                             }
                             break;
                         }
