@@ -326,7 +326,7 @@ namespace FPL.Controllers
             //int teamId = await GetTeamId();
             var lastEvent = eventStatus.status.LastOrDefault();
             var starters = picks.FindAll(x => x.position < 12);
-            var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && x.GWGame.finished_provisional);
+            var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGame.finished_provisional || x.GWGame.id == 0));
             var subsWhoPlayed = picks.FindAll(x => x.position > 12 && x.GWPlayer.stats.minutes > 0);
 
             if (lastEvent.bonus_added && eventStatus.leagues != "Updating")
