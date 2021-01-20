@@ -326,7 +326,7 @@ namespace FPL.Controllers
             //int teamId = await GetTeamId();
             var lastEvent = eventStatus.status.LastOrDefault();
             var starters = picks.FindAll(x => x.position < 12);
-            var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGame.finished_provisional || x.GWGame.id == 0));
+            var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && !x.player.Team.Fixtures.Any(x => x.Event == eventStatus.status[0].@event) && (x.GWGame.finished_provisional || x.GWGame.id == 0));
             var subsWhoPlayed = picks.FindAll(x => x.position > 12 && x.GWPlayer.stats.minutes > 0);
 
             if (lastEvent.bonus_added && eventStatus.leagues != "Updating")
@@ -339,7 +339,9 @@ namespace FPL.Controllers
                 {
                     for (var i = 0; i < startersWhoDidNotPlay.Count; i++)
                     {
-                        if (startersWhoDidNotPlay[i].player.element_type == 1)
+                        bool IsSubAdded = false;
+                        subsWhoPlayed = subsWhoPlayed.FindAll(x => x.multiplier == 0);
+                        if (startersWhoDidNotPlay[i].player.element_type == 1 && !IsSubAdded)
                         {
                             if (subsWhoPlayed.Find(x => x.player.element_type == 1) != null)
                             {
@@ -350,6 +352,7 @@ namespace FPL.Controllers
                                     @event = eventStatus.status[0].@event
                                 };
                                 gwTeam.automatic_subs.Add(autoSub);
+                                IsSubAdded = true;
                                 break;
                             }
                             else
@@ -359,7 +362,7 @@ namespace FPL.Controllers
 
                         }
 
-                        if (startersWhoDidNotPlay[i].player.element_type == 2)
+                        if (startersWhoDidNotPlay[i].player.element_type == 2 && !IsSubAdded)
                         {
                             var startingDefenders = starters.FindAll(x => x.player.element_type == 2);
 
@@ -369,6 +372,7 @@ namespace FPL.Controllers
                                 {
                                     var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
+                                    IsSubAdded = true;
                                     break;
                                 }
 
@@ -376,6 +380,7 @@ namespace FPL.Controllers
                                 {
                                     var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
+                                    IsSubAdded = true;
                                     break;
 
                                 }
@@ -384,12 +389,13 @@ namespace FPL.Controllers
                                 {
                                     var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
+                                    IsSubAdded = true;
                                     break;
                                 }
                             }
                         }
 
-                        if (startersWhoDidNotPlay[i].player.element_type == 3)
+                        if (startersWhoDidNotPlay[i].player.element_type == 3 && !IsSubAdded)
                         {
                             for (var k = 0; k < subsWhoPlayed.Count; k++)
                             {
@@ -397,6 +403,7 @@ namespace FPL.Controllers
                                 {
                                     var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
+                                    IsSubAdded = true;
                                     break;
                                 }
 
@@ -404,6 +411,7 @@ namespace FPL.Controllers
                                 {
                                     var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
+                                    IsSubAdded = true;
                                     break;
 
                                 }
@@ -412,12 +420,13 @@ namespace FPL.Controllers
                                 {
                                     var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
+                                    IsSubAdded = true;
                                     break;
                                 }
                             }
                         }
 
-                        if (startersWhoDidNotPlay[i].player.element_type == 4)
+                        if (startersWhoDidNotPlay[i].player.element_type == 4 && !IsSubAdded)
                         {
                             for (var k = 0; k < subsWhoPlayed.Count; k++)
                             {
@@ -425,6 +434,7 @@ namespace FPL.Controllers
                                 {
                                     var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
+                                    IsSubAdded = true;
                                     break;
                                 }
 
@@ -432,6 +442,7 @@ namespace FPL.Controllers
                                 {
                                     var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
+                                    IsSubAdded = true;
                                     break;
 
                                 }
@@ -440,6 +451,7 @@ namespace FPL.Controllers
                                 {
                                     var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
+                                    IsSubAdded = true;
                                     break;
                                 }
                             }
