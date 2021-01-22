@@ -30,83 +30,21 @@ namespace FPL.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var currentGameweekId = await GetCurrentGameWeekId();
-
             var viewModel = new GameweekPointsViewModel();
 
-            HttpClientHandler handler = new HttpClientHandler();
+            var currentGameweekId = await GetCurrentGameWeekId();
 
             int teamId = await GetTeamId();
 
-            var response = await _httpClient.GetAuthAsync(CreateHandler(handler), $"entry/{teamId}/event/{currentGameweekId}/picks/");
+            GWTeam gwTeam = new GWTeam();
 
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-
-            var teamPicksJSON = AllChildren(JObject.Parse(content))
-                .First(c => c.Type == JTokenType.Array && c.Path.Contains("picks"))
-                .Children<JObject>();
-
-            List<Pick> teamPicks = new List<Pick>();
-
-            foreach (JObject result in teamPicksJSON)
-            {
-                Pick p = result.ToObject<Pick>();
-                teamPicks.Add(p);
-            }
-
-            var teamAutoSubsJSON = AllChildren(JObject.Parse(content))
-                .First(c => c.Type == JTokenType.Array && c.Path.Contains("automatic_subs"))
-                .Children<JObject>();
-
-            List<AutomaticSub> autoSubs = new List<AutomaticSub>();
-
-            foreach (JObject result in teamAutoSubsJSON)
-            {
-                AutomaticSub sub = result.ToObject<AutomaticSub>();
-                autoSubs.Add(sub);
-            }
-
-            var entryHistoryJSON = AllChildren(JObject.Parse(content))
-                .First(c => c.Type == JTokenType.Object && c.Path.Contains("entry_history"));
-
-            EntryHistory entryHistory = new EntryHistory();
-
-            entryHistory = entryHistoryJSON.ToObject<EntryHistory>();
-
-            var activeChipsJSON = AllChildren(JObject.Parse(content))
-                .First(c => (c.Type == JTokenType.String || c.Type == JTokenType.Null || c.Type == JTokenType.Array) && c.Path.Contains("active_chip"));
-
-            List<string> activeChips = new List<string>();
-
-            if (activeChipsJSON.Type is JTokenType.String)
-            {
-                var activeChip = activeChipsJSON.ToString();
-                activeChips.Add(activeChip);
-            }
-            else if (activeChipsJSON.Type is JTokenType.Array)
-            {
-                foreach (JObject result in activeChipsJSON)
-                {
-                    var ac = result.ToObject<string>();
-                    activeChips.Add(ac);
-                }
-            }
-
-            GWTeam gwTeam = new GWTeam
-            {
-                picks = teamPicks,
-                automatic_subs = autoSubs,
-                ActiveChips = activeChips
-            };
-
-            teamPicks = await AddPlayerSummaryDataToTeam(teamPicks, teamId);
-            teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, currentGameweekId);
-            entryHistory = await AddExtraDatatoEntryHistory(entryHistory);
-            gwTeam = await AddAutoSubs(gwTeam, teamPicks, teamId);
+            gwTeam = await PopulateGwTeam(gwTeam, currentGameweekId, teamId);
+            gwTeam.picks = await AddPlayerSummaryDataToTeam(gwTeam.picks, teamId);
+            gwTeam.picks = await AddPlayerGameweekDataToTeam(gwTeam.picks, currentGameweekId);
+            gwTeam.EntryHistory = await AddExtraDatatoEntryHistory(gwTeam.EntryHistory);
+            gwTeam = await AddAutoSubs(gwTeam, gwTeam.picks, teamId);
             EventStatus eventStatus = await GetEventStatus();
-            int gwpoints = GetGameWeekPoints(teamPicks, eventStatus);
+            int gwpoints = GetGameWeekPoints(gwTeam.picks, eventStatus);
             FPLTeam teamDetails = await GetTeamInfo();
 
             foreach (var pick in gwTeam.picks)
@@ -125,7 +63,7 @@ namespace FPL.Controllers
             }
 
             viewModel.GWTeam = gwTeam;
-            viewModel.EntryHistory = entryHistory;
+            viewModel.EntryHistory = gwTeam.EntryHistory;
             viewModel.EventStatus = eventStatus;
             viewModel.Team = teamDetails;
             viewModel.GWPoints = gwpoints;
@@ -141,18 +79,54 @@ namespace FPL.Controllers
         {
             var viewModel = new GameweekPointsViewModel();
 
-            HttpClientHandler handler = new HttpClientHandler();
-
             int currentGwId = await GetCurrentGameWeekId();
+
+            int teamId = await GetTeamId();
 
             if (id > currentGwId)
             {
                 return RedirectToAction("Index", new { id = currentGwId });
             }
 
-            int teamId = await GetTeamId();
+            GWTeam gwTeam = new GWTeam();
 
-            var response = await _httpClient.GetAuthAsync(CreateHandler(handler), $"entry/{teamId}/event/{id}/picks/");
+            gwTeam = await PopulateGwTeam(gwTeam, id, teamId);
+
+            gwTeam.picks = await AddPlayerSummaryDataToTeam(gwTeam.picks, id);
+            gwTeam.picks = await AddPlayerGameweekDataToTeam(gwTeam.picks, id);
+            gwTeam.EntryHistory = await AddExtraDatatoEntryHistory(gwTeam.EntryHistory);
+            gwTeam = await AddAutoSubs(gwTeam, gwTeam.picks, id);
+            var liveGameCount = gwTeam.picks.FindAll(x => !x.GWGames.Any(x => x.finished_provisional)).Count();
+            EventStatus eventStatus = await GetEventStatus();
+            int gwpoints = GetGameWeekPoints(gwTeam.picks, eventStatus);
+            FPLTeam teamDetails = await GetTeamInfo();
+
+            if (id == currentGwId)
+            {
+                viewModel.TotalPoints = (teamDetails.summary_overall_points - teamDetails.summary_event_points) + gwpoints;
+            }
+            else
+            {
+                viewModel.TotalPoints = teamDetails.summary_overall_points;
+            }
+
+            if (liveGameCount > 0) { viewModel.IsLive = true; }
+            viewModel.GWTeam = gwTeam;
+            viewModel.EntryHistory = gwTeam.EntryHistory;
+            viewModel.EventStatus = eventStatus;
+            viewModel.Team = teamDetails;
+            viewModel.GWPoints = gwpoints;
+            viewModel.GameweekId = id;
+
+            return View(viewModel);
+
+        }
+
+        public async Task<GWTeam> PopulateGwTeam(GWTeam gwTeam, int gameweekId, int teamId)
+        {
+            HttpClientHandler handler = new HttpClientHandler();
+
+            var response = await _httpClient.GetAuthAsync(CreateHandler(handler), $"entry/{teamId}/event/{gameweekId}/picks/");
 
             response.EnsureSuccessStatusCode();
 
@@ -208,41 +182,12 @@ namespace FPL.Controllers
                 }
             }
 
-            GWTeam gwTeam = new GWTeam
-            {
-                picks = teamPicks,
-                automatic_subs = autoSubs,
-                ActiveChips = activeChips
-            };
+            gwTeam.picks = teamPicks;
+            gwTeam.automatic_subs = autoSubs;
+            gwTeam.ActiveChips = activeChips;
+            gwTeam.EntryHistory = entryHistory;
 
-            teamPicks = await AddPlayerSummaryDataToTeam(teamPicks, id);
-            teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, id);
-            entryHistory = await AddExtraDatatoEntryHistory(entryHistory);
-            gwTeam = await AddAutoSubs(gwTeam, teamPicks, id);
-            var liveGameCount = gwTeam.picks.FindAll(x => !x.GWGames.Any(x => x.finished_provisional)).Count();
-            EventStatus eventStatus = await GetEventStatus();
-            int gwpoints = GetGameWeekPoints(teamPicks, eventStatus);
-            FPLTeam teamDetails = await GetTeamInfo();
-
-            if (id == currentGwId)
-            {
-                viewModel.TotalPoints = (teamDetails.summary_overall_points - teamDetails.summary_event_points) + gwpoints;
-            }
-            else
-            {
-                viewModel.TotalPoints = teamDetails.summary_overall_points;
-            }
-
-            if (liveGameCount > 0) { viewModel.IsLive = true; }
-            viewModel.GWTeam = gwTeam;
-            viewModel.EntryHistory = entryHistory;
-            viewModel.EventStatus = eventStatus;
-            viewModel.Team = teamDetails;
-            viewModel.GWPoints = gwpoints;
-            viewModel.GameweekId = id;
-
-            return View(viewModel);
-
+            return gwTeam;
         }
 
         public int GetGameWeekPoints(List<Pick> teamPicks, EventStatus eventStatus)

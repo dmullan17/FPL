@@ -241,10 +241,13 @@ namespace FPL.Controllers
             handler.CookieContainer = cookies;
             Uri target = new Uri(GetBaseUrl());
 
-            foreach (string s in Request.Cookies.Keys)
+            if (Request != null)
             {
-                string cookieValue = Request.Cookies[s];
-                cookies.Add(new Cookie(s, cookieValue) { Domain = target.Host });
+                foreach (string s in Request.Cookies.Keys)
+                {
+                    string cookieValue = Request.Cookies[s];
+                    cookies.Add(new Cookie(s, cookieValue) { Domain = target.Host });
+                }
             }
 
             return handler;
