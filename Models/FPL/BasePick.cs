@@ -10,7 +10,7 @@ namespace FPL.Models.FPL
     {
         public Player player { get; set; }
         public GWPlayer GWPlayer { get; set; }
-        public Game GWGame { get; set; }
+        public List<Game> GWGames { get; set; } = new List<Game>();
         public string GWOppositionName { get; set; }
 
         public List<Transfer> Transfer { get; set; }

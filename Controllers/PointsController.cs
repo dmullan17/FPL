@@ -219,7 +219,7 @@ namespace FPL.Controllers
             teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, id);
             entryHistory = await AddExtraDatatoEntryHistory(entryHistory);
             gwTeam = await AddAutoSubs(gwTeam, teamPicks, id);
-            var liveGameCount = gwTeam.picks.FindAll(x => !x.GWGame.finished_provisional).Count();
+            var liveGameCount = gwTeam.picks.FindAll(x => !x.GWGames.Any(x => x.finished_provisional)).Count();
             EventStatus eventStatus = await GetEventStatus();
             int gwpoints = GetGameWeekPoints(teamPicks, eventStatus);
             FPLTeam teamDetails = await GetTeamInfo();
@@ -264,7 +264,7 @@ namespace FPL.Controllers
             {
                 while (pick.multiplier > 0)
                 {
-                    if (!bonusAdded && !pick.GWGame.finished)
+                    if (!bonusAdded && !pick.GWGames.Any(x => x.finished))
                     {
                         if (pick.is_captain)
                         {
@@ -326,7 +326,7 @@ namespace FPL.Controllers
             //int teamId = await GetTeamId();
             var lastEvent = eventStatus.status.LastOrDefault();
             var starters = picks.FindAll(x => x.position < 12);
-            var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && !x.player.Team.Fixtures.Any(x => x.Event == eventStatus.status[0].@event) && (x.GWGame.finished_provisional || x.GWGame.id == 0));
+            var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0  && (x.GWGames.Any(x => x.finished_provisional) || x.GWGames.Count == 0));
             var subsWhoPlayed = picks.FindAll(x => x.position > 12 && x.GWPlayer.stats.minutes > 0);
 
             if (lastEvent.bonus_added && eventStatus.leagues != "Updating")
@@ -678,19 +678,22 @@ namespace FPL.Controllers
                     if (pick.player.TeamId == g.team_h)
                     {
                         pick.GWOppositionName = g.AwayTeam.name;
-                        pick.GWGame = g;
-                        break;
+                        //pick.GWGame = g;
+                        pick.GWGames.Add(g);
+                        continue;
                     }
                     else if (pick.player.TeamId == g.team_a)
                     {
                         pick.GWOppositionName = g.HomeTeam.name;
-                        pick.GWGame = g;
-                        break;
+                        //pick.GWGame = g;
+                        pick.GWGames.Add(g);
+                        continue;
                     }
-                    else
-                    {
-                        pick.GWGame = new Game();
-                    }
+                    //else
+                    //{
+                    //    //pick.GWGame = new Game();
+                    //    pick.GWGames.Add(new Game());
+                    //}
                 }
 
                 foreach (Game g in startedGames)
@@ -701,7 +704,27 @@ namespace FPL.Controllers
                     List<PlayerStat> allPlayersInGameBps = homeBps.Concat(awayBps).ToList();
                     allPlayersInGameBps = allPlayersInGameBps.OrderByDescending(x => x.value).ToList();
                     List<PlayerStat> topPlayersByBps = allPlayersInGameBps.Take(4).ToList();
-                    var IsBpsEqual = topPlayersByBps.FindAll(n => n.value == pick.GWPlayer.stats.bps).Count > 1;
+                    var playerBps = 0;
+                    var player = new PlayerStat();
+
+                    if (pick.player.TeamId == g.HomeTeam.id)
+                    {
+                        //playerBps = pick.GWGames.Find(x => x.id == g.id).stats[9].h.Find(y => y.element == pick.element).value;
+                        var homeStats = pick.GWGames.Find(x => x.id == g.id).stats[9].h;
+                        player = homeStats.FirstOrDefault(x => x.element == pick.element);
+                    }
+                    else if (pick.player.TeamId == g.AwayTeam.id)
+                    {
+                        var awayStats = pick.GWGames.Find(x => x.id == g.id).stats[9].a;
+                        player = awayStats.FirstOrDefault(x => x.element == pick.element);
+                    }
+
+                    if (player != null)
+                    {
+                        playerBps = player.value;
+                    }
+
+                    var IsBpsEqual = topPlayersByBps.FindAll(n => n.value == playerBps).Count > 1;
 
                     for (var i = 0; i < allPlayersInGameBps.Count; i++)
                     {
@@ -709,17 +732,17 @@ namespace FPL.Controllers
                         {
                             if (IsBpsEqual)
                             {
-                                if (topPlayersByBps[0].value == pick.GWPlayer.stats.bps && topPlayersByBps[1].value == pick.GWPlayer.stats.bps)
+                                if (topPlayersByBps[0].value == playerBps && topPlayersByBps[1].value == playerBps)
                                 {
                                     pick.GWPlayer.stats.BpsRank.Add(1);
                                     pick.GWPlayer.stats.EstimatedBonus += 3;
                                 }
-                                else if (topPlayersByBps[1].value == pick.GWPlayer.stats.bps && topPlayersByBps[2].value == pick.GWPlayer.stats.bps)
+                                else if (topPlayersByBps[1].value == playerBps && topPlayersByBps[2].value == playerBps)
                                 {
                                     pick.GWPlayer.stats.BpsRank.Add(2);
                                     pick.GWPlayer.stats.EstimatedBonus += 2;
                                 }
-                                else if (topPlayersByBps[2].value == pick.GWPlayer.stats.bps && topPlayersByBps[3].value == pick.GWPlayer.stats.bps)
+                                else if (topPlayersByBps[2].value == playerBps && topPlayersByBps[3].value == playerBps)
                                 {
                                     pick.GWPlayer.stats.BpsRank.Add(3);
                                     pick.GWPlayer.stats.EstimatedBonus += 1;
@@ -789,13 +812,13 @@ namespace FPL.Controllers
                         }
                     }
                 }
-                else if (teamPicks[i].GWGame.started ?? true)
+                else if (teamPicks[i].GWGames.Any(x => x.started ?? true))
                 {
                     //if captain didnt play assign double points to vice
                     if (teamPicks[i].is_captain)
                     {
                         var vc = teamPicks.Find(x => x.is_vice_captain);
-                        if (vc.GWGame.minutes != 0)
+                        if (vc.GWGames.Any(x => x.minutes != 0))
                         {
                             teamPicks[i].is_captain = false;
                             vc.is_captain = true;

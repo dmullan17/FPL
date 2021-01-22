@@ -203,7 +203,7 @@
                     }
                 }
                 else {
-                    html += results[i].team_h_score + " - " + results[i].team_a_score + " <div class=\"ui mini green label\">Live</span> <br/>";
+                    html += results[i].team_h_score + " - " + results[i].team_a_score + " <div class=\"ui mini green label\">Live</div> <br/>";
                 }
 
             }
@@ -279,55 +279,63 @@
 
     self.GetBonus = function (player) {
 
-        var kickoffDate = new Date(player.GWGame.kickoff_time);
-        kickoffDate.setUTCHours(0, 0, 0, 0);
+        for (var i = 0; i < player.GWGames.length; i++) {
+            var kickoffDate = new Date(player.GWGames[i].kickoff_time);
+            kickoffDate.setUTCHours(0, 0, 0, 0);
 
-        if (self.EventStatus().status[0].event == self.GameweekId() && player.GWGame.started) {
-            for (var i = 0; i < self.EventStatus().status.length; i++) {
+            if (self.EventStatus().status[0].event == self.GameweekId() && player.GWGames[i].started) {
+                for (var i = 0; i < self.EventStatus().status.length; i++) {
 
-                var eventStatusDate = new Date(self.EventStatus().status[i].date);
-                eventStatusDate.setUTCHours(0, 0, 0, 0);
+                    var eventStatusDate = new Date(self.EventStatus().status[i].date);
+                    eventStatusDate.setUTCHours(0, 0, 0, 0);
 
-                if (kickoffDate.getTime() == eventStatusDate.getTime()) {
+                    if (kickoffDate.getTime() == eventStatusDate.getTime()) {
 
-                    if (self.EventStatus().status[i].bonus_added) {
-                        return player.GWPlayer.stats.bonus;
-                    }
-                    else if (!self.EventStatus().status[i].bonus_added) {
-                        return player.GWPlayer.stats.EstimatedBonus + "*";
+                        if (self.EventStatus().status[i].bonus_added) {
+                            return player.GWPlayer.stats.bonus;
+                        }
+                        else if (!self.EventStatus().status[i].bonus_added) {
+                            return player.GWPlayer.stats.EstimatedBonus + "*";
+                        }
                     }
                 }
+            } else {
+                return player.GWPlayer.stats.bonus;
             }
-        } else {
-            return player.GWPlayer.stats.bonus;
         }
 
     };
 
     self.GetBonusRank = function (player) {
 
-        var kickoffDate = new Date(player.GWGame.kickoff_time);
-        kickoffDate.setUTCHours(0, 0, 0, 0);
+        for (var i = 0; i < player.GWGames.length; i++) {
 
-        if (self.EventStatus().status[0].event == self.GameweekId() && player.GWGame.started) {
-            for (var i = 0; i < self.EventStatus().status.length; i++) {
+            var kickoffDate = new Date(player.GWGames[i].kickoff_time);
+            kickoffDate.setUTCHours(0, 0, 0, 0);
 
-                var eventStatusDate = new Date(self.EventStatus().status[i].date);
+            for (var j = 0; j < self.EventStatus().status.length; j++) {
+
+                var eventStatusDate = new Date(self.EventStatus().status[j].date);
                 eventStatusDate.setUTCHours(0, 0, 0, 0);
 
-                if (kickoffDate.getTime() == eventStatusDate.getTime()) {
-
-                    if (self.EventStatus().status[i].bonus_added) {
+                if (kickoffDate.getTime() == eventStatusDate.getTime() && !player.GWGames[i].finished && player.GWGames[i].started) {
+                    if (self.EventStatus().status[j].bonus_added) {
                         return player.GWPlayer.stats.BpsRank;
                     }
-                    else if (!self.EventStatus().status[i].bonus_added) {
+                    else if (!self.EventStatus().status[j].bonus_added) {
                         return player.GWPlayer.stats.BpsRank + "*";
                     }
                 }
             }
-        } else {
-            return player.GWPlayer.stats.BpsRank;
+
+            //if (self.EventStatus().status[0].event == self.GameweekId() && player.GWGames[i].started) {
+
+            //} else {
+            //    return player.GWPlayer.stats.BpsRank;
+            //}
         }
+
+        return player.GWPlayer.stats.BpsRank;
 
     };
 
@@ -376,32 +384,34 @@
 
     self.GetPoints = function (player) {
 
-        var kickoffDate = new Date(player.GWGame.kickoff_time);
-        kickoffDate.setUTCHours(0, 0, 0, 0);
+        for (var i = 0; i < player.GWGames.length; i++) {
+            var kickoffDate = new Date(player.GWGames[i].kickoff_time);
+            kickoffDate.setUTCHours(0, 0, 0, 0);
 
-        if (self.EventStatus().status[0].event == self.GameweekId() && player.GWGame.started) {
-            for (var i = 0; i < self.EventStatus().status.length; i++) {
+            if (self.EventStatus().status[0].event == self.GameweekId() && player.GWGames[i].started) {
+                for (var i = 0; i < self.EventStatus().status.length; i++) {
 
-                var eventStatusDate = new Date(self.EventStatus().status[i].date);
-                eventStatusDate.setUTCHours(0, 0, 0, 0);
+                    var eventStatusDate = new Date(self.EventStatus().status[i].date);
+                    eventStatusDate.setUTCHours(0, 0, 0, 0);
 
-                if (kickoffDate.getTime() == eventStatusDate.getTime()) {
+                    if (kickoffDate.getTime() == eventStatusDate.getTime()) {
 
-                    if (self.EventStatus().status[i].bonus_added) {
-                        return player.GWPlayer.stats.gw_points;
-                    }
-                    else if (!self.EventStatus().status[i].bonus_added) {
-                        if (player.is_captain) {
-                            return player.GWPlayer.stats.gw_points + (player.GWPlayer.stats.EstimatedBonus * 2) + "*";
+                        if (self.EventStatus().status[i].bonus_added) {
+                            return player.GWPlayer.stats.gw_points;
                         }
-                        else {
-                            return player.GWPlayer.stats.gw_points + player.GWPlayer.stats.EstimatedBonus + "*";
+                        else if (!self.EventStatus().status[i].bonus_added) {
+                            if (player.is_captain) {
+                                return player.GWPlayer.stats.gw_points + (player.GWPlayer.stats.EstimatedBonus * 2) + "*";
+                            }
+                            else {
+                                return player.GWPlayer.stats.gw_points + player.GWPlayer.stats.EstimatedBonus + "*";
+                            }
                         }
                     }
                 }
+            } else {
+                return player.GWPlayer.stats.gw_points;
             }
-        } else {
-            return player.GWPlayer.stats.gw_points;
         }
 
     };
