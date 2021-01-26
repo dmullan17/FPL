@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using FPL.Attributes;
 using FPL.Contracts;
 using FPL.Http;
 using FPL.Models;
@@ -14,6 +15,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FPL.Controllers
 {
+    [FPLApiStatusCheck]
     public class BaseController : Controller
     {
         //public static readonly int TeamId = 2675560;
