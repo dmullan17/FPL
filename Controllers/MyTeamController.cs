@@ -321,6 +321,7 @@ namespace FPL.Controllers
                         {
                             pick.GWOnTeam = 1;
                         }
+                        break;
                     }
                 }
 
