@@ -203,7 +203,7 @@
                     }
                 }
                 else {
-                    html += results[i].team_h_score + " - " + results[i].team_a_score + " <div class=\"ui mini green label\">Live</div> <br/>";
+                    html += "<span style=\"font-weight: bold\">" + results[i].team_h_score + " - " + results[i].team_a_score + "</span> <span class=\"blinker\">'</span> <br/>";
                 }
 
             }

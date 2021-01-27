@@ -244,3 +244,14 @@ div.dt-buttons {
 	font-size: small;
 	font-weight: normal;
 }
+
+.blinker {
+	animation: blinker 2s linear infinite;
+	font-weight: bold;
+}
+
+@keyframes blinker {
+	50% {
+		opacity: 0;
+	}
+}
