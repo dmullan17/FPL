@@ -190,6 +190,52 @@ namespace FPL.Controllers
             return gwTeam;
         }
 
+        public async Task<CompleteEntryHistory> GetCompleteEntryHistory(CompleteEntryHistory completeEntryHistory, int teamId)
+        {
+            HttpClientHandler handler = new HttpClientHandler();
+
+            var response = await _httpClient.GetAuthAsync(CreateHandler(handler), $"entry/{teamId}/history/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var currentSeasonEntryHistoryJSON = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("current"))
+                .Children<JObject>();
+
+            List<EntryHistory> currentSeasonEntryHistory = new List<EntryHistory>();
+            int totalTransfers = 0;
+            int totalTransferCost = 0;
+
+            foreach (JObject result in currentSeasonEntryHistoryJSON)
+            {
+                EntryHistory eh = result.ToObject<EntryHistory>();
+                currentSeasonEntryHistory.Add(eh);
+                totalTransfers += eh.event_transfers;
+                totalTransferCost += eh.event_transfers_cost;
+            }
+
+            var chipsUsedJSON = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("chips"))
+                .Children<JObject>();
+
+            List<BasicChip> chipsUsed = new List<BasicChip>();
+
+            foreach (JObject result in chipsUsedJSON)
+            {
+                BasicChip bc = result.ToObject<BasicChip>();
+                chipsUsed.Add(bc);
+            }
+
+            completeEntryHistory.CurrentSeasonEntryHistory = currentSeasonEntryHistory;
+            completeEntryHistory.ChipsUsed = chipsUsed;
+            completeEntryHistory.TotalTransfersMade = totalTransfers;
+            completeEntryHistory.TotalTransfersCost = totalTransferCost;
+
+            return completeEntryHistory;
+        }
+
         public int GetGameWeekPoints(List<Pick> teamPicks, EventStatus eventStatus)
         {
             int gwpoints = 0;

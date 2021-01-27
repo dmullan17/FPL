@@ -17,40 +17,62 @@
 <div id="app">
     <div class="ui container">
         <div class="ui grid">
-            <div class="four wide column">
+            @*<div class="four wide column">
                 <div class="ui vertical menu">
                     <div data-bind="foreach: $root.ClassicLeagues">
                         <a class="item" data-bind="text: name, class: $root.getLeagueClass($data), click: $root.changeLeague.bind($data)"></a>
                     </div>
                 </div>
-            </div>
-            <div class="twelve wide column">
-                <h3 class="ui top attached header" data-bind="text: $root.SelectedLeague().name"></h3>
-                <div class="ui attached segment">
-                    <table id="example" class="ui table">
-                        <thead>
-                            <tr>
-                                <th class="no-sort" style="display:none"></th>
-                                <th class="no-sort"></th>
-                                <th>Rank</th>
-                                <th class="no-sort">Team</th>
-                                <th class="no-sort">Manager</th>
-                                <th>GW Points</th>
-                                <th>Points</th>
-                            </tr>
-                        </thead>
-                        <tbody data-bind="foreach: $root.SelectedLeague().Standings.results">
-                            <tr>
-                                <td style="display:none" data-bind="text: entry"></td>
-                                <td class="details-control"></td>
-                                <td data-bind="text: $root.GetRank($data)"></td>
-                                <td data-bind="text: entry_name"></td>
-                                <td data-bind="text: player_name"></td>
-                                <td data-bind="text: event_total"></td>
-                                <td data-bind="text: total"></td>
-                            </tr>
-                        </tbody>
-                    </table>
+            </div>*@
+            <div class="sixteen wide column">
+                <div class="row">
+                    <select data-bind="options: $root.ClassicLeagues,
+                                       optionsText: 'name',
+                                       value: $root.SelectedLeague">
+                    </select>
+                </div>
+                <div class="row">
+                    <h3 class="ui top attached header" data-bind="text: $root.SelectedLeague().name"></h3>
+                    <div class="ui attached segment">
+                        <table id="example" class="ui table">
+                            <thead>
+                                <tr>
+                                    <th class="no-sort" style="display:none"></th>
+                                    <th class="no-sort"></th>
+                                    <th>Rank</th>
+                                    <th class="no-sort single line">Team & Manager</th>
+                                    <th class="single line">GW<span data-bind="text: $root.CurrentGwId"></span></th>
+                                    <th>Total</th>
+                                    <th>Captain</th>
+                                    <th data-tooltip="Auto Subs">AS</th>
+                                    <th data-tooltip="Players Yet to Play">YTP</th>
+                                    <th data-tooltip="Active Chips">AC</th>
+                                    <th data-tooltip="GameWeek Transfers (Cost)">GWT (C)</th>
+                                    <th data-tooltip="Total Transfers (Cost)">TT (Cost)</th>
+                                    <th data-tooltip="Used Chips (GameWeek)">UC (GW)</th>
+                                    <th>Last 5</th>
+                                </tr>
+                            </thead>
+                            <tbody data-bind="foreach: $root.SelectedLeague().Standings.results">
+                                <tr>
+                                    <td style="display:none" data-bind="text: entry"></td>
+                                    <td class="details-control"></td>
+                                    <td class="center aligned" data-bind="text: $root.GetRank($data)"></td>
+                                    <td style="font-weight:bold" data-bind="html: $root.FormatNames(entry_name, player_name)"></td>
+                                    <td class="center aligned" data-bind="text: event_total"></td>
+                                    <td class="center aligned" data-bind="text: total"></td>
+                                    <td class="single line" data-bind="text: $root.GetCaptain($data.GWTeam.picks)"></td>
+                                    <td class="center aligned" data-bind="text: GWTeam.automatic_subs.length"></td>
+                                    <td class="center aligned" data-bind="text: PlayersYetToPlay"></td>
+                                    <td data-bind="html: $root.GetActiveChips($data.GWTeam.ActiveChips)"></td>
+                                    <td class="center aligned" data-bind="text: GWTeam.EntryHistory.event_transfers + ' (' + GWTeam.EntryHistory.event_transfers_cost + ')'"></td>
+                                    <td class="center aligned" data-bind="text: CompleteEntryHistory.TotalTransfersMade + ' (' + CompleteEntryHistory.TotalTransfersCost + ')'"></td>
+                                    <td class="single line" data-bind="html: $root.GetChipsUsed($data.CompleteEntryHistory.chips)"></td>
+                                    <td class="single line" data-bind="text: $root.FormatLast5GwPoints(Last5GwPoints)"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

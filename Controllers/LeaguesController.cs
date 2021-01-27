@@ -1,4 +1,5 @@
 ﻿using FPL.Attributes;
+using FPL.Contracts;
 using FPL.Http;
 using FPL.Models;
 using FPL.Models.FPL;
@@ -17,6 +18,11 @@ namespace FPL.Controllers
     [FPLCookie]
     public class LeaguesController : BaseController
     {
+        public LeaguesController(IHttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -24,11 +30,9 @@ namespace FPL.Controllers
 
             HttpClientHandler handler = new HttpClientHandler();
 
-            var client = new FPLHttpClient();
-
             int teamId = await GetTeamId();
 
-            var response = await client.GetAuthAsync(CreateHandler(handler), $"entry/{teamId}/");
+            var response = await _httpClient.GetAuthAsync(CreateHandler(handler), $"entry/{teamId}/");
 
             response.EnsureSuccessStatusCode();
 
@@ -46,6 +50,7 @@ namespace FPL.Controllers
             viewModel.ClassicLeagues = leagues.classic;
             viewModel.H2HLeagues = leagues.h2h;
             viewModel.Cup = leagues.cup;
+            viewModel.CurrentGwId = await GetCurrentGameWeekId();
 
             return View(viewModel);
         }
@@ -68,13 +73,13 @@ namespace FPL.Controllers
 
             var eventStatus = await GetEventStatus();
 
-            var client = new FPLHttpClient();
+            var PointsController = new PointsController(_httpClient);
 
             //var privateClassicLeagues = leagues.classic.FindAll(x => x.league_type == "x");
 
             foreach (var l in leagues.classic)
             {
-                var response = await client.GetAsync($"leagues-classic/{l.id}/standings");
+                var response = await _httpClient.GetAsync($"leagues-classic/{l.id}/standings");
 
                 response.EnsureSuccessStatusCode();
 
@@ -94,45 +99,36 @@ namespace FPL.Controllers
                     l.Standings.results.Add(r);
                 }
 
-                var today = DateTime.Now.ToString("yyyy-MM-dd");
-
-                var currentEventDay = eventStatus.status.Find(x => x.date == today);
-
-                if (l.id == 666321  && (currentEventDay.points == "l" || currentEventDay.points == "p" || eventStatus.leagues == "Updating"))
+                if (l.id == 666321 || l.id == 1018545|| l.id == 421502 /*&& eventStatus.leagues != "Updated"*/)
                 {
                     foreach (var player in l.Standings.results)
                     {
-                        List<Pick> team = new List<Pick>();
 
-                        team = await GetPlayersTeam(player.entry);
-                        team = await AddGameDataToPlayersTeam(team, currentGameWeekId);
+                        GWTeam gwTeam = new GWTeam();
 
-                        foreach (var pick in team)
-                        {
-                            if (!pick.GWGame.finished && pick.multiplier > 0)
-                            {
-                                if (pick.GWGame.started ?? true)
-                                {
-                                    if (pick.is_captain)
-                                    {
-                                        player.event_total += (pick.player.event_points * 2);
-                                        player.total += (pick.player.event_points * 2);
-                                    }
-                                    else
-                                    {
-                                        player.event_total += pick.player.event_points;
-                                        player.total += pick.player.event_points;
-                                    }
-                                }
-                            }
-                        }
+                        //gwTeam = await GetPlayersTeam(player.entry);
+                        //team = await AddGameDataToPlayersTeam(team, currentGameWeekId);
+                        gwTeam = await PointsController.PopulateGwTeam(gwTeam, currentGameWeekId, player.entry);
+                        gwTeam.picks = await PointsController.AddPlayerSummaryDataToTeam(gwTeam.picks, player.entry);
+                        gwTeam.picks = await PointsController.AddPlayerGameweekDataToTeam(gwTeam.picks, currentGameWeekId);
+                        gwTeam = await PointsController.AddAutoSubs(gwTeam, gwTeam.picks, player.entry);
+                        player.CompleteEntryHistory = await PointsController.GetCompleteEntryHistory(player.CompleteEntryHistory, player.entry);
+                        player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
+                        int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
+
+                        player.PlayersYetToPlay = gwTeam.picks.FindAll(x => x.GWPlayer.stats.minutes == 0 && x.multiplier > 0 && x.GWGames.Any(x => x.kickoff_time != null && !x.finished)).Count();
+                        player.total += (gwpoints - player.event_total);
+                        player.event_total += (gwpoints - player.event_total);
+                        player.GWTeam = gwTeam;
+
                     }
 
                     var standingsByLivePointsTotal = l.Standings.results.OrderByDescending(x => x.total).ToList();
 
                     foreach (var player in l.Standings.results)
                     {
-                        player.LiveRank = standingsByLivePointsTotal.IndexOf(player) + 1;
+                        player.rank = standingsByLivePointsTotal.IndexOf(player) + 1;
+                        //player.LiveRank = standingsByLivePointsTotal.IndexOf(player) + 1;
                     }
                 }
             }
@@ -141,13 +137,11 @@ namespace FPL.Controllers
         }
 
 
-        public async Task<List<Pick>> GetPlayersTeam(int teamId)
+        public async Task<GWTeam> GetPlayersTeam(int teamId)
         {
             var currentGameWeekId = await GetCurrentGameWeekId();
 
-            var client = new FPLHttpClient();
-
-            var response = await client.GetAsync($"entry/{teamId}/event/{currentGameWeekId}/picks/");
+            var response = await _httpClient.GetAsync($"entry/{teamId}/event/{currentGameWeekId}/picks/");
 
             response.EnsureSuccessStatusCode();
 
@@ -159,15 +153,22 @@ namespace FPL.Controllers
                 .First(c => c.Type == JTokenType.Array && c.Path.Contains("picks"))
                 .Children<JObject>();
 
-            List<Pick> team = new List<Pick>();
+            GWTeam team = new GWTeam();
 
             foreach (JObject result in playerGwPicksJSON)
             {
                 Pick p = result.ToObject<Pick>();
-                team.Add(p);
+                team.picks.Add(p);
+
             }
 
-            response = await client.GetAsync("bootstrap-static/");
+            //var playerEntryHistory = AllChildren(playerEntryJSON)
+            //.First(c => c.Type == JTokenType.Object && c.Path.Contains("entry_history"))
+            //.Children<JObject>();
+
+            team.EntryHistory = playerEntryJSON["entry_history"].ToObject<EntryHistory>();
+
+            response = await _httpClient.GetAsync("bootstrap-static/");
 
             response.EnsureSuccessStatusCode();
 
@@ -183,7 +184,7 @@ namespace FPL.Controllers
             {
                 Player p = result.ToObject<Player>();
 
-                foreach (Pick pick in team)
+                foreach (Pick pick in team.picks)
                 {
                     if (p.id == pick.element)
                     {
@@ -198,9 +199,7 @@ namespace FPL.Controllers
 
         public async Task<List<Pick>> AddGameDataToPlayersTeam(List<Pick> picks, int gameweekId)
         {
-            var client = new FPLHttpClient();
-
-            var response = await client.GetAsync("fixtures/?event=" + gameweekId);
+            var response = await _httpClient.GetAsync("fixtures/?event=" + gameweekId);
 
             response.EnsureSuccessStatusCode();
 
@@ -215,18 +214,21 @@ namespace FPL.Controllers
                     if (pick.player.TeamId == g.team_h)
                     {
                         //pick.GWOppositionName = g.AwayTeam.name;
-                        pick.GWGame = g;
+                        //pick.GWGame = g;
+                        pick.GWGames.Add(g);
                         break;
                     }
                     else if (pick.player.TeamId == g.team_a)
                     {
                         //pick.GWOppositionName = g.HomeTeam.name;
-                        pick.GWGame = g;
+                        //pick.GWGame = g;
+                        pick.GWGames.Add(g);
                         break;
                     }
                     else
                     {
-                        pick.GWGame = new Game();
+                        //pick.GWGame = new Game();
+                        pick.GWGames.Add(new Game());
                     }
                 }
             }

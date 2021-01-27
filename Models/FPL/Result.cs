@@ -7,11 +7,9 @@ namespace FPL.Models.FPL
 {
     public class Result
     {
-        public Result()
-        {
-            GwPicks = new List<Pick>();
-        }
-        public List<Pick> GwPicks { get; set; }
+        public CompleteEntryHistory CompleteEntryHistory { get; set; } = new CompleteEntryHistory();
+        public GWTeam GWTeam { get; set; }
+        public List<int> Last5GwPoints { get; set; } = new List<int>();
         public int id { get; set; }
         public int event_total { get; set; }
         public string player_name { get; set; }
@@ -19,6 +17,7 @@ namespace FPL.Models.FPL
         public int last_rank { get; set; }
 
         public int LiveRank { get; set; }
+        public int PlayersYetToPlay { get; set; }
         public int rank_sort { get; set; }
         public int total { get; set; }
         public int entry { get; set; }

@@ -18,6 +18,7 @@
     self.SelectedLeague = ko.observable();
     self.Cup = ko.observable(data.Cup);
     self.IsEventLive = ko.observable(data.IsEventLive);
+    self.CurrentGwId = ko.observable(data.CurrentGwId);
 
     self.viewPlayer = function (player) {
         self.SelectedPlayer(player);
@@ -45,7 +46,30 @@
 
     };
 
+    self.SelectedLeague.subscribe(function (league) {
+
+        if ($.fn.dataTable.isDataTable('#example')) {
+            $('#example').DataTable().clear().destroy();
+            self.SelectedLeague(league);
+            initialiseDatatable();
+            return;
+        }
+
+    });
+
     self.GetRank = function (manager) {
+        //return live rank if event is live, otherwise return normal rank
+        //if (self.IsEventLive()) {
+        //    return manager.LiveRank;
+        //}
+        //else {
+        //    return manager.rank;
+        //}
+
+        return manager.rank;
+    }
+
+    self.GetPlayersYetToPlay = function (manager) {
         //return live rank if event is live, otherwise return normal rank
         if (self.IsEventLive()) {
             return manager.LiveRank;
@@ -54,6 +78,73 @@
             return manager.rank;
         }
     }
+
+    self.FormatNames = function (teamName, managerName) {
+        var html = "";
+        html += teamName + "</br> <span class=\"manager-name\">" + managerName + "</span>"
+        return html;
+    }
+
+    self.GetCaptain = function (picks) {
+        var captain = picks.filter(x => x.is_captain);
+        return captain[0].player.web_name;
+    }
+
+    self.GetActiveChips = function (activeChips) {
+        var html = "";
+        if (activeChips.length == 0) {
+            html += "None"
+        }
+        else {
+            for (var i = 0; i < activeChips.length; i++) {
+                html += activeChips[i] + "</br>";
+            }
+        }
+        return html;
+    }
+
+    self.GetChipsUsed = function (chips) {
+        var html = "";
+        if (chips.length == 0) {
+            html += "None"
+        }
+        else {
+            for (var i = 0; i < chips.length; i++) {
+                if (chips[i].name == "wildcard") {
+                    html += "WC (GW" + chips[i].event + ")</br>";
+                    continue;
+                }
+                else if (chips[i].name == "freehit") {
+                    html += "FH (GW" + chips[i].event + ")</br>";
+                    continue;
+                }
+                else if (chips[i].name == "bboost") {
+                    html += "BB (GW" + chips[i].event + ")</br>";
+                    continue;
+                }
+                else if (chips[i].name == "3xc") {
+                    html += "TC (GW" + chips[i].event + ")</br>";
+                    continue;
+                }
+            }
+        }
+        return html;
+    }
+
+    self.FormatLast5GwPoints = function (last5) {
+        var html = "";
+        for (var i = 0; i < last5.length; i++) {
+            if (i == last5.length - 1) {
+                html += last5[i];
+            }
+            else {
+                html += last5[i] + " | ";
+            }
+        }
+
+        return html;
+    }
+
    
     self.init = function () {
         //$('.menu .item').tab();
@@ -162,7 +253,7 @@
                 },
                 success: function (json, status, xhr) {
                     if (xhr.readyState === 4 && xhr.status === 200) {
-                        row.child(format(json)).show();
+                        row.child(format(json.picks)).show();
                         tr.addClass('shown');
                     }
                 },
