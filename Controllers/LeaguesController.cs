@@ -99,7 +99,7 @@ namespace FPL.Controllers
                     l.Standings.results.Add(r);
                 }
 
-                if (l.id == 666321 || l.id == 1018545|| l.id == 421502 /*&& eventStatus.leagues != "Updated"*/)
+                if (l.id == 666321 /*|| l.id == 1018545|| l.id == 421502*/ /*&& eventStatus.leagues != "Updated"*/)
                 {
                     foreach (var player in l.Standings.results)
                     {
@@ -112,6 +112,7 @@ namespace FPL.Controllers
                         gwTeam.picks = await PointsController.AddPlayerSummaryDataToTeam(gwTeam.picks, player.entry);
                         gwTeam.picks = await PointsController.AddPlayerGameweekDataToTeam(gwTeam.picks, currentGameWeekId);
                         gwTeam = await PointsController.AddAutoSubs(gwTeam, gwTeam.picks, player.entry);
+                        //gwTeam.EntryHistory = await PointsController.AddExtraDatatoEntryHistory(gwTeam.EntryHistory);
                         player.CompleteEntryHistory = await PointsController.GetCompleteEntryHistory(player.CompleteEntryHistory, player.entry);
                         player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
                         int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);

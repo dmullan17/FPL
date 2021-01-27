@@ -7,7 +7,8 @@ namespace FPL.Models
 {
     public class EntryHistory
     {
-        public int RankPercentile { get; set; }
+        public int GwRankPercentile { get; set; }
+        public int TotalRankPercentile { get; set; }
         public int @event { get; set; }
         public int points { get; set; }
         public int total_points { get; set; }

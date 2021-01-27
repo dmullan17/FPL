@@ -277,7 +277,7 @@ namespace FPL.Controllers
             return gwpoints;
         }
 
-        private async Task<EntryHistory> AddExtraDatatoEntryHistory(EntryHistory entryHistory)
+        public async Task<EntryHistory> AddExtraDatatoEntryHistory(EntryHistory entryHistory)
         {
             var response = await _httpClient.GetAsync("bootstrap-static/");
 
@@ -292,20 +292,35 @@ namespace FPL.Controllers
 
             int totalPlayers = totalPlayersJson.ToObject<int>();
 
-            var rankPercentile = 0m;
+            var gwRankPercentile = 0m;
+            var overallRankPercentile = 0m;
 
             if (entryHistory.rank != null)
             {
-                rankPercentile = Math.Round(((decimal)entryHistory.rank / (decimal)totalPlayers) * 100m, 0);
+                gwRankPercentile = Math.Round(((decimal)entryHistory.rank / (decimal)totalPlayers) * 100m, 2);
             }
 
-            if (rankPercentile == 0)
+            if (entryHistory.overall_rank != null)
             {
-                entryHistory.RankPercentile = 1;
+                overallRankPercentile = Math.Round(((decimal)entryHistory.overall_rank / (decimal)totalPlayers) * 100m, 2);
+            }
+
+            if (gwRankPercentile < 1)
+            {
+                entryHistory.GwRankPercentile = 1;
             }
             else
             {
-                entryHistory.RankPercentile = Convert.ToInt32(rankPercentile);
+                entryHistory.GwRankPercentile = Convert.ToInt32(gwRankPercentile + 1);
+            }
+
+            if (overallRankPercentile < 1)
+            {
+                entryHistory.TotalRankPercentile = 1;
+            }
+            else
+            {
+                entryHistory.TotalRankPercentile = Convert.ToInt32(overallRankPercentile + 1);
             }
 
             return entryHistory;
