@@ -7,7 +7,9 @@
 @section PageScripts {
     <script src="~/js/leagues/index.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.23/fh-3.1.7/datatables.min.css" />
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.23/fh-3.1.7/datatables.min.js"></script>
     <script type="text/javascript">
         const viewModel = new LeaguesViewModel(@Html.Raw(data));
         ko.applyBindings(viewModel, document.getElementById("app"));
@@ -18,12 +20,12 @@
     <div class="ui container">
         <div class="ui grid">
             @*<div class="four wide column">
-                <div class="ui vertical menu">
-                    <div data-bind="foreach: $root.ClassicLeagues">
-                        <a class="item" data-bind="text: name, class: $root.getLeagueClass($data), click: $root.changeLeague.bind($data)"></a>
+                    <div class="ui vertical menu">
+                        <div data-bind="foreach: $root.ClassicLeagues">
+                            <a class="item" data-bind="text: name, class: $root.getLeagueClass($data), click: $root.changeLeague.bind($data)"></a>
+                        </div>
                     </div>
-                </div>
-            </div>*@
+                </div>*@
             <div class="sixteen wide column">
                 <div class="row">
                     <select data-bind="options: $root.ClassicLeagues,
@@ -33,27 +35,27 @@
                 </div>
                 <div class="row">
                     <h3 class="ui top attached header" data-bind="text: $root.SelectedLeague().name"></h3>
-                    <div class="ui attached segment">
-                        <table id="example" class="ui table">
+                    <div id="standings-segment" class="ui attached segment" style="min-height:10rem;">
+                        <table id="standings-table" class="ui unstackable table">
                             <thead>
                                 <tr>
                                     <th class="no-sort" style="display:none"></th>
                                     <th class="no-sort"></th>
                                     <th>Rank</th>
                                     <th class="no-sort single line">Team & Manager</th>
-                                    <th class="single line">GW<span data-bind="text: $root.CurrentGwId"></span></th>
-                                    <th>Total</th>
+                                    <th class="single line center aligned">GW<span data-bind="text: $root.CurrentGwId"></span></th>
+                                    <th class="center aligned">Total</th>
                                     <th>Captain</th>
-                                    <th data-tooltip="Auto Subs">AS</th>
-                                    <th data-tooltip="Players Yet to Play">YTP</th>
+                                    <th class="center aligned" data-tooltip="Auto Subs">AS</th>
+                                    <th class="center aligned" data-tooltip="Players Yet to Play">PYTP</th>
                                     <th data-tooltip="Active Chips">AC</th>
-                                    <th data-tooltip="GameWeek Transfers (Cost)">GWT (C)</th>
-                                    <th data-tooltip="Total Transfers (Cost)">TT (Cost)</th>
+                                    <th class="center aligned" data-tooltip="GameWeek Transfers (Cost)">GWT (C)</th>
+                                    <th class="center aligned" data-tooltip="Total Transfers (Cost)">TT (Cost)</th>
                                     <th data-tooltip="Used Chips (GameWeek)">UC (GW)</th>
                                     <th>Last 5</th>
                                 </tr>
                             </thead>
-                            <tbody data-bind="foreach: $root.SelectedLeague().Standings.results">
+                            <tbody data-bind="foreach: $root.SelectedLeagueStandings">
                                 <tr>
                                     <td style="display:none" data-bind="text: entry"></td>
                                     <td class="details-control"></td>
@@ -72,6 +74,11 @@
                                 </tr>
                             </tbody>
                         </table>
+                        <div id="standings-loader" class="ui inverted dimmer">
+                            <div class="ui text large loader">
+                                <h3 class="ui top attached header" data-bind="text: 'Loading ' + $root.SelectedLeague().Standings.results.length + ' fantasy teams from ' + $root.SelectedLeague().name"></h3>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

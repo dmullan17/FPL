@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,8 @@ namespace FPL.Models.FPL
     public class Result
     {
         public CompleteEntryHistory CompleteEntryHistory { get; set; } = new CompleteEntryHistory();
+
+        [JsonProperty("GWTeam")]
         public GWTeam GWTeam { get; set; }
         public List<int> Last5GwPoints { get; set; } = new List<int>();
         public int id { get; set; }

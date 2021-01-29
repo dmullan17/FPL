@@ -11,6 +11,7 @@ namespace FPL.Models.FPL
         {
             Standings = new Standings();
         }
+        public int PlayerCount { get; set; }
         public Standings Standings { get; set; }
         public int id { get; set; }
         public string name { get; set; }

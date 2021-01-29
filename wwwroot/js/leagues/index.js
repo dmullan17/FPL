@@ -1,24 +1,19 @@
 ﻿LeaguesViewModel = function (data) {
     "use strict";
 
-    var self = this;
+    var self = this,
+        standingsSegment = $('#standings-segment'),
+        standingsLoader = $('#standings-loader'),
+        standingsTable = $('#standings-table'),
+        standingsTableBody = $('#standings-table tbody');
 
-    //self.GWTeam = ko.observable(data.GWTeam);
-    //self.Team = ko.observable(data.Team);
-    //self.TotalPoints = ko.observable(data.TotalPoints);
-    //self.GWPoints = ko.observable(data.GWPoints);
-    //self.GameweekId = ko.observable(data.GameweekId);
-    //self.EventStatus = ko.observable(data.EventStatus);
-    //self.EntryHistory = ko.observable(data.EntryHistory);
-    //self.IsLive = ko.observable(data.IsLive);
-    //self.SelectedPlayer = ko.observable();
-    //self.SelectedPlayerStatus = ko.observable();
     self.ClassicLeagues = ko.observableArray(data.ClassicLeagues);
     self.H2HLeagues = ko.observableArray(data.H2HLeagues);
-    self.SelectedLeague = ko.observable();
+    self.SelectedLeague = ko.observable(data.SelectedLeague);
     self.Cup = ko.observable(data.Cup);
     self.IsEventLive = ko.observable(data.IsEventLive);
     self.CurrentGwId = ko.observable(data.CurrentGwId);
+    self.SelectedLeagueStandings = ko.observableArray(self.SelectedLeague().Standings.results);
 
     self.viewPlayer = function (player) {
         self.SelectedPlayer(player);
@@ -37,8 +32,8 @@
     self.changeLeague = function (league) {
         //self.SelectedLeague({});
         if (league != self.SelectedLeague()) {
-            if ($.fn.dataTable.isDataTable('#example')) {
-                $('#example').DataTable().clear().destroy();
+            if ($.fn.dataTable.isDataTable(standingsTable)) {
+                standingsTable.DataTable().clear().destroy();
             }
             initialiseDatatable();
             self.SelectedLeague(league);
@@ -48,13 +43,31 @@
 
     self.SelectedLeague.subscribe(function (league) {
 
-        if ($.fn.dataTable.isDataTable('#example')) {
-            $('#example').DataTable().clear().destroy();
-            self.SelectedLeague(league);
-            initialiseDatatable();
-            return;
-        }
+        if ($.fn.dataTable.isDataTable(standingsTable)) {
+            standingsTable.DataTable().clear().destroy();
 
+            $.ajax({
+                url: "/Leagues/GetPlayerStandingsForClassicLeague",
+                type: "GET",
+                cache: true,
+                data: { leagueId: league.id },
+                beforeSend: function () {
+                    standingsLoader.addClass("active");
+                },
+                success: function (json, status, xhr) {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        self.SelectedLeagueStandings(json.Standings.results);
+                        initialiseDatatable();
+                        return;
+                    }
+                },
+                complete: function (xhr, status) {
+                    standingsLoader.removeClass("active");
+                    if (xhr.readyState === 4 && xhr.status !== 200) {
+                    }
+                }
+            });
+        }
     });
 
     self.GetRank = function (manager) {
@@ -148,7 +161,14 @@
    
     self.init = function () {
         //$('.menu .item').tab();
-        self.SelectedLeague(self.ClassicLeagues()[4]);
+        ////self.SelectedLeague(self.ClassicLeagues()[4]);
+        for (var i = 0; i < self.ClassicLeagues().length; i++) {
+            if (self.ClassicLeagues()[i] = self.SelectedLeague()) {
+                self.SelectedLeague(self.ClassicLeagues()[i]);
+                break;
+            }
+        }
+
         initialiseDatatable();
     };
 
@@ -216,21 +236,22 @@
 
     function initialiseDatatable() {
         $(document).ready(function () {
-            var table = $('#example').DataTable({
+            var table = standingsTable.DataTable({
                 columnDefs: [
                     { orderable: false, targets: "no-sort" }
                 ],
                 order: [[2, "asc"]],
-                responsive: true
+                responsive: true,
+                fixedHeader: true
             });
         });
     }
 
     // Add event listener for opening and closing details
-    $('#example tbody').on('click', 'td.details-control', function () {
+    standingsTableBody.on('click', 'td.details-control', function () {
         var tr = $(this).closest('tr');
         var td = $(this).closest('td');
-        var row = $('#example').DataTable().row(tr);
+        var row = standingsTable.DataTable().row(tr);
 
         if (row.child.isShown()) {
             // This row is already open - close it
