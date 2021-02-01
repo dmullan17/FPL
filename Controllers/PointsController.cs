@@ -39,7 +39,7 @@ namespace FPL.Controllers
             GWTeam gwTeam = new GWTeam();
 
             gwTeam = await PopulateGwTeam(gwTeam, currentGameweekId, teamId);
-            gwTeam.picks = await AddPlayerSummaryDataToTeam(gwTeam.picks, teamId);
+            gwTeam = await AddPlayerSummaryDataToTeam(gwTeam, teamId, currentGameweekId);
             gwTeam.picks = await AddPlayerGameweekDataToTeam(gwTeam.picks, currentGameweekId);
             gwTeam.EntryHistory = await AddExtraDatatoEntryHistory(gwTeam.EntryHistory);
             gwTeam = await AddAutoSubs(gwTeam, gwTeam.picks, teamId);
@@ -92,7 +92,7 @@ namespace FPL.Controllers
 
             gwTeam = await PopulateGwTeam(gwTeam, id, teamId);
 
-            gwTeam.picks = await AddPlayerSummaryDataToTeam(gwTeam.picks, id);
+            gwTeam = await AddPlayerSummaryDataToTeam(gwTeam, id, currentGwId);
             gwTeam.picks = await AddPlayerGameweekDataToTeam(gwTeam.picks, id);
             gwTeam.EntryHistory = await AddExtraDatatoEntryHistory(gwTeam.EntryHistory);
             gwTeam = await AddAutoSubs(gwTeam, gwTeam.picks, id);
@@ -277,6 +277,42 @@ namespace FPL.Controllers
             return gwpoints;
         }
 
+        public List<Pick> AddEstimatedBonusToTeamPicks(List<Pick> teamPicks, EventStatus eventStatus)
+        {
+            bool bonusAdded = true;
+
+            //needs to be sorted
+
+            foreach (var status in eventStatus.status)
+            {
+                if (status.date == DateTime.Now.ToString("yyyy-MM-dd") && !status.bonus_added)
+                {
+                    bonusAdded = false;
+                }
+            }
+
+            foreach (Pick pick in teamPicks)
+            {
+                while (pick.multiplier > 0)
+                {
+                    if (!bonusAdded && !pick.GWGames.Any(x => x.finished))
+                    {
+                        if (pick.is_captain)
+                        {
+                            pick.GWPlayer.stats.gw_points += (pick.GWPlayer.stats.EstimatedBonus * 2);
+                        }
+                        else
+                        {
+                            pick.GWPlayer.stats.gw_points += pick.GWPlayer.stats.EstimatedBonus;
+                        }
+                    }
+                    break;
+                }
+            }
+
+            return teamPicks;
+        }
+
         public async Task<EntryHistory> AddExtraDatatoEntryHistory(EntryHistory entryHistory)
         {
             var response = await _httpClient.GetAsync("bootstrap-static/");
@@ -334,6 +370,7 @@ namespace FPL.Controllers
             var starters = picks.FindAll(x => x.position < 12);
             var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0  && (x.GWGames.Any(x => x.finished_provisional) || x.GWGames.Count == 0));
             var subsWhoPlayed = picks.FindAll(x => x.position > 12 && x.GWPlayer.stats.minutes > 0);
+            var subsYetToPlay = picks.FindAll(x => x.position > 12 && x.GWPlayer.stats.minutes == 0 && x.GWGames.Any(x => !x.finished_provisional));
 
             if (lastEvent.bonus_added && eventStatus.leagues != "Updating")
             {
@@ -465,7 +502,130 @@ namespace FPL.Controllers
 
                     }
                 }
+                else if (startersWhoDidNotPlay.Count > 0 && subsYetToPlay.Count() > 0)
+                {
+                    for (var i = 0; i < startersWhoDidNotPlay.Count; i++)
+                    {
+                        bool IsSubAdded = false;
+                        //subsWhoPlayed = subsWhoPlayed.FindAll(x => x.multiplier == 0);
+                        if (startersWhoDidNotPlay[i].player.element_type == 1 && !IsSubAdded)
+                        {
+                            if (subsYetToPlay.Find(x => x.player.element_type == 1) != null)
+                            {
+                                AutomaticSub autoSub = new AutomaticSub
+                                {
+                                    element_out = startersWhoDidNotPlay[i].element,
+                                    element_in = subsYetToPlay.Find(x => x.player.element_type == 1).element,
+                                    @event = eventStatus.status[0].@event
+                                };
+                                gwTeam.automatic_subs.Add(autoSub);
+                                IsSubAdded = true;
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
 
+                        }
+
+                        if (startersWhoDidNotPlay[i].player.element_type == 2 && !IsSubAdded)
+                        {
+                            var subDefenders = subsYetToPlay.FindAll(x => x.player.element_type == 2);
+
+                            for (var k = 0; k < subsYetToPlay.Count; k++)
+                            {
+                                if (subsYetToPlay[k].player.element_type == 2)
+                                {
+                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                                    gwTeam.automatic_subs.Add(autoSub);
+                                    IsSubAdded = true;
+                                    break;
+                                }
+
+                                if (subsYetToPlay[k].player.element_type == 3 && subDefenders.Count > 3)
+                                {
+                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                                    gwTeam.automatic_subs.Add(autoSub);
+                                    IsSubAdded = true;
+                                    break;
+
+                                }
+
+                                if (subsYetToPlay[k].player.element_type == 4 && subDefenders.Count > 3)
+                                {
+                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                                    gwTeam.automatic_subs.Add(autoSub);
+                                    IsSubAdded = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (startersWhoDidNotPlay[i].player.element_type == 3 && !IsSubAdded)
+                        {
+                            for (var k = 0; k < subsYetToPlay.Count; k++)
+                            {
+                                if (subsYetToPlay[k].player.element_type == 2)
+                                {
+                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                                    gwTeam.automatic_subs.Add(autoSub);
+                                    IsSubAdded = true;
+                                    break;
+                                }
+
+                                if (subsYetToPlay[k].player.element_type == 3)
+                                {
+                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                                    gwTeam.automatic_subs.Add(autoSub);
+                                    IsSubAdded = true;
+                                    break;
+
+                                }
+
+                                if (subsYetToPlay[k].player.element_type == 4)
+                                {
+                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                                    gwTeam.automatic_subs.Add(autoSub);
+                                    IsSubAdded = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (startersWhoDidNotPlay[i].player.element_type == 4 && !IsSubAdded)
+                        {
+                            for (var k = 0; k < subsWhoPlayed.Count; k++)
+                            {
+                                if (subsYetToPlay[k].player.element_type == 2)
+                                {
+                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                                    gwTeam.automatic_subs.Add(autoSub);
+                                    IsSubAdded = true;
+                                    break;
+                                }
+
+                                if (subsYetToPlay[k].player.element_type == 3)
+                                {
+                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                                    gwTeam.automatic_subs.Add(autoSub);
+                                    IsSubAdded = true;
+                                    break;
+
+                                }
+
+                                if (subsYetToPlay[k].player.element_type == 4)
+                                {
+                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                                    gwTeam.automatic_subs.Add(autoSub);
+                                    IsSubAdded = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                    }
+                }
 
             }
 
@@ -495,8 +655,18 @@ namespace FPL.Controllers
 
         }
 
-        public async Task<List<Pick>> AddPlayerSummaryDataToTeam(List<Pick> teamPicks, int teamId)
+        public async Task<GWTeam> AddPlayerSummaryDataToTeam(GWTeam gwTeam, int teamId, int currentGwId)
         {
+            var teamPicks = gwTeam.picks;
+
+            var response2 = await _httpClient.GetAsync($"entry/{teamId}/transfers/");
+
+            response2.EnsureSuccessStatusCode();
+
+            var content2 = await response2.Content.ReadAsStringAsync();
+
+            List<Transfer> transfers = JsonConvert.DeserializeObject<List<Transfer>>(content2);
+
             var response = await _httpClient.GetAsync("bootstrap-static/");
 
             response.EnsureSuccessStatusCode();
@@ -518,6 +688,23 @@ namespace FPL.Controllers
                     if (p.id == pick.element)
                     {
                         pick.player = p;
+                    }
+                }
+
+                if (transfers.Any(x => x.element_in == p.id || x.element_out == p.id))
+                {
+                    foreach (var transfer in transfers)
+                    {
+                        if (p.id == transfer.element_in)
+                        {
+                            transfer.PlayerIn = p;
+                            break;
+                        }
+                        else if (p.id == transfer.element_out)
+                        {
+                            transfer.PlayerOut = p;
+                            break;
+                        }
                     }
                 }
             }
@@ -623,15 +810,10 @@ namespace FPL.Controllers
                 }
             }
 
-            var response2 = await _httpClient.GetAsync($"entry/{teamId}/transfers/");
+            gwTeam.GWTransfers = transfers.FindAll(x => x.@event == currentGwId).ToList();
+            gwTeam.picks = teamPicks;
 
-            response2.EnsureSuccessStatusCode();
-
-            var content2 = await response2.Content.ReadAsStringAsync();
-
-            List<Transfer> transfers = JsonConvert.DeserializeObject<List<Transfer>>(content2);
-
-            return teamPicks;
+            return gwTeam;
         }
 
         public async Task<List<Pick>> AddPlayerGameweekDataToTeam(List<Pick> teamPicks, int gameweekId)

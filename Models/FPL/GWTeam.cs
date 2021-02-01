@@ -13,6 +13,7 @@ namespace FPL.Models.FPL
             picks = new List<Pick>();
             automatic_subs = new List<AutomaticSub>();
             ActiveChips = new List<string>();
+            GWTransfers = new List<Transfer>();
         }
         //public Player player { get; set; }
         //public GWPlayer GWPlayer { get; set; }
@@ -21,6 +22,8 @@ namespace FPL.Models.FPL
         public List<Pick> picks { get; set; }
 
         public List<string> ActiveChips { get; set; }
+
+        public List<Transfer> GWTransfers { get; set; }
 
         public EntryHistory EntryHistory { get; set; }
     }

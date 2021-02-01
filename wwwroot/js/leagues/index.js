@@ -175,7 +175,7 @@
     self.init();
 
     /* Formatting function for row details - modify as you need */
-    function format(gwTeam) {
+    function FormatChildRow(gwTeam) {
 
         var team = gwTeam.picks;
         var starters = gwTeam.picks.filter(x => x.position <= 11);
@@ -185,6 +185,7 @@
         var mids = gwTeam.picks.filter(x => x.player.element_type == 3 && x.multiplier > 0);
         var fwds = gwTeam.picks.filter(x => x.player.element_type == 4 && x.multiplier > 0);
         var autoSubs = gwTeam.automatic_subs;
+        var gwTransfers = gwTeam.GWTransfers;
 
         var teamHtml = "";
         var starterCells = "";
@@ -218,7 +219,7 @@
                 '<div class="item">' +
                 '<div class="content">' +
             '<h4 class="ui icon header">' +
-                '<i class="icons">' +
+                '<i class="small icons">' +
             '  <i class="' + icon + '"></i>' +
             '  <i class="' + subIcon + '"></i>' +
             '</i>' +
@@ -254,7 +255,7 @@
                 '<div class="item">' +
                 '<div class="content">' +
             '<h4 class="ui icon header">' +
-            '<i class="icons">' +
+            '<i class="small icons">' +
             '  <i class="' + icon + '"></i>' +
             '  <i class="' + subIcon + '"></i>' +
             '</i>' +
@@ -266,6 +267,33 @@
                 '</div>' +
                 '</div>'
         }  
+
+        var transfersHtml = "";
+
+        for (var i = 0; i < gwTransfers.length; i++) {
+
+            transfersHtml +=
+                '<div class="item">' +
+                    //'<i class="small arrow left icon"></i>' +
+            '<span>' + gwTransfers[i].PlayerIn.web_name + ' for ' + gwTransfers[i].PlayerOut.web_name + '</span>' +
+            //'<span>' + gwTransfers[i].PlayerOut.web_name + '</span>' +
+            //'<i class="small arrow right icon"></i>' +
+                '</div>';
+
+        }
+
+        return '<div class="ui grid">' +
+                '<div class="thirteen wide column">' +
+                    '<div class="ui horizontal list">' + starterCells + '</div>' +
+                    '</br>' +
+                    '<div class="ui horizontal list">' + subCells + '</div>' +
+                '</div>' +
+            '<div class="two wide column">' +
+                    '<h4 class="ui header">GW Transfers</h4>' +
+                    '<div class="ui list">' + transfersHtml + '</div>' +
+                    '</br' +
+                '</div>' +
+                '</div>';
 
         //for (var i = 0; i < starters.length; i++) {
         //    starterCells +=
@@ -289,54 +317,17 @@
         //        '</tr>'
         //}  
 
-        return '<div class="ui horizontal list">' +
-            starterCells +
-            '</div>' +
-            '</br>' +
-            '<div class="ui horizontal list">' +
-            subCells +
-            '</div>';
+        //return '<div class="ui horizontal list">' +
+        //    starterCells +
+        //    '</div>' +
+        //    '</br>' +
+        //    '<div class="ui horizontal list">' +
+        //    subCells +
+        //    '</div>';
 
 
         //return '<div class="ui fifteen statistics">' +
         //    teamHtml;
-        //    '</div>';
-
-        //return '<div class="ui grid">' +
-        //            '<div class="six wide column">' +
-        //                '<table class="ui very compact small table" style="width: auto !important">' +
-        //                    '<thead>' +
-        //                        '<tr>' +
-        //                            '<th>Name</th>' +
-        //                            //'<th></th>' +
-        //                            '<th>Position</th>' +
-        //                            //'<th>Bonus</th>' +
-        //                            '<th>Bps (Rank)</th>' +
-        //                            '<th>Points</th>' +
-        //                        '</tr>' +
-        //                    '</thead>' +
-        //                    '<tbody>' +
-        //                        starterCells +
-        //                    '</tbody>' +
-        //                '</table>' +
-        //            '</div>' +
-        //            '<div class="six wide column">' +
-        //                '<table class="ui very compact small table" style="width: auto !important">' +
-        //                    '<thead>' +
-        //                        '<tr>' +
-        //                            '<th>Name</th>' +
-        //                            //'<th></th>' +
-        //                            '<th>Position</th>' +
-        //                            //'<th>Bonus</th>' +
-        //                            '<th>Bps (Rank)</th>' +
-        //                            '<th>Points</th>' +
-        //                        '</tr>' +
-        //                    '</thead>' +
-        //                    '<tbody>' +
-        //                        subCells +
-        //                    '</tbody>' +
-        //                '</table>' +
-        //            '</div>' +
         //    '</div>';
     }
 
@@ -383,7 +374,7 @@
                 },
                 success: function (json, status, xhr) {
                     if (xhr.readyState === 4 && xhr.status === 200) {
-                        row.child(format(json)).show();
+                        row.child(FormatChildRow(json)).show();
                         tr.addClass('shown');
                     }
                 },
