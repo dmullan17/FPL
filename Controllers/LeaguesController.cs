@@ -153,7 +153,7 @@ namespace FPL.Controllers
                 player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
                 int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
 
-                player.PlayersYetToPlay = gwTeam.picks.FindAll(x => x.GWPlayer.stats.minutes == 0 && x.multiplier > 0 && x.GWGames.Any(x => x.kickoff_time != null && !x.finished)).Count();
+                player.PlayersYetToPlay = gwTeam.picks.FindAll(x => x.GWPlayer.stats.minutes == 0 && x.multiplier > 0 && x.GWGames.Any(y => y.kickoff_time != null && !y.finished_provisional)).Count();
                 player.total += (gwpoints - player.event_total);
                 player.event_total += (gwpoints - player.event_total);
                 player.GWTeam = gwTeam;
@@ -233,6 +233,21 @@ namespace FPL.Controllers
             }
 
             return l;
+        }
+
+        public async Task<GWTeam> GetPlayersTeam(int teamId, int currentGameWeekId)
+        {
+            GWTeam gwTeam = new GWTeam();
+            EventStatus eventStatus = await GetEventStatus();
+            var PointsController = new PointsController(_httpClient);
+
+            gwTeam = await PointsController.PopulateGwTeam(gwTeam, currentGameWeekId, teamId);
+            gwTeam.picks = await PointsController.AddPlayerSummaryDataToTeam(gwTeam.picks, teamId);
+            gwTeam.picks = await PointsController.AddPlayerGameweekDataToTeam(gwTeam.picks, currentGameWeekId);
+            gwTeam = await PointsController.AddAutoSubs(gwTeam, gwTeam.picks, teamId);
+            gwTeam.picks = PointsController.AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
+
+            return gwTeam;
         }
 
     }

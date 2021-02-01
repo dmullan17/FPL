@@ -255,3 +255,11 @@ div.dt-buttons {
 		opacity: 0;
 	}
 }
+
+.ui.icon.header i.icons .corner.icon {
+	font-size: 1em !important;
+}
+
+.ui.horizontal.list .list > .item, .ui.horizontal.list > .item {
+	padding-right: 0.5rem;
+}

@@ -175,63 +175,169 @@
     self.init();
 
     /* Formatting function for row details - modify as you need */
-    function format(d) {
-        // `d` is the original data object for the row
-        var team = d.filter(x => x.multiplier > 0);
-        var starters = d.filter(x => x.position <= 11);
-        var subs = d.filter(x => x.position > 11);
-        var gks = d.filter(x => x.player.element_type == 1 && x.multiplier > 0);
-        var defs = d.filter(x => x.player.element_type == 2 && x.multiplier > 0);
-        var mids = d.filter(x => x.player.element_type == 3 && x.multiplier > 0);
-        var fwds = d.filter(x => x.player.element_type == 4 && x.multiplier > 0);
+    function format(gwTeam) {
 
+        var team = gwTeam.picks;
+        var starters = gwTeam.picks.filter(x => x.position <= 11);
+        var subs = gwTeam.picks.filter(x => x.position > 11);
+        var gks = gwTeam.picks.filter(x => x.player.element_type == 1 && x.multiplier > 0);
+        var defs = gwTeam.picks.filter(x => x.player.element_type == 2 && x.multiplier > 0);
+        var mids = gwTeam.picks.filter(x => x.player.element_type == 3 && x.multiplier > 0);
+        var fwds = gwTeam.picks.filter(x => x.player.element_type == 4 && x.multiplier > 0);
+        var autoSubs = gwTeam.automatic_subs;
+
+        var teamHtml = "";
         var starterCells = "";
         var subCells = "";
 
         for (var i = 0; i < starters.length; i++) {
+            var icon = "";
+            var subIcon = "";
+
+            if (starters[i].player.element_type == 1) {
+                icon += "user";
+            }
+            else {
+                icon += "user outline";
+            }
+
+            if (starters[i].is_captain) {
+                subIcon += "top right corner copyright";
+            }
+
+            for (var j = 0; j < autoSubs.length; j++) {
+                if (autoSubs[j].element_in == starters[i].player.id) {
+                    subIcon += "top right corner sync";
+                }
+            }
+
+            icon += " icon";
+            subIcon += " icon";
+
             starterCells +=
-                '<tr>' +
-                '<td>' + starters[i].player.web_name + '</td>' +
-                '<td>' + starters[i].player.event_points + '</td>' +
-                '</tr>'
+                '<div class="item">' +
+                '<div class="content">' +
+            '<h4 class="ui icon header">' +
+                '<i class="icons">' +
+            '  <i class="' + icon + '"></i>' +
+            '  <i class="' + subIcon + '"></i>' +
+            '</i>' +
+                '</br>' +
+            starters[i].player.web_name +
+                '</h4>' +
+                '<p style="text-align: center">' + starters[i].GWPlayer.stats.gw_points + '</p>' +
+                '</div>' +
+                '</div>'
         }  
 
         for (var i = 0; i < subs.length; i++) {
+            var icon = "";
+            var subIcon = "";
+
+            if (starters[i].player.element_type == 1) {
+                icon += "user";
+            }
+            else {
+                icon += "user outline";
+            }
+
+            for (var j = 0; j < autoSubs.length; j++) {
+                if (autoSubs[j].element_out == subs[i].player.id) {
+                    subIcon += "top right corner sync";
+                }
+            }
+
+            icon += " disabled icon";
+            subIcon += " icon";
+
             subCells +=
-                '<tr>' +
-                '<td>' + subs[i].player.web_name + '</td>' +
-                '<td>' + subs[i].player.event_points + '</td>' +
-                '</tr>'
+                '<div class="item">' +
+                '<div class="content">' +
+            '<h4 class="ui icon header">' +
+            '<i class="icons">' +
+            '  <i class="' + icon + '"></i>' +
+            '  <i class="' + subIcon + '"></i>' +
+            '</i>' +
+                '</br>' +
+            //'<i class="tiny ' + icon + ' disabled icon"></i>' +
+            subs[i].player.web_name +
+            '</h4>' +
+                '<p style="text-align: center">' + subs[i].GWPlayer.stats.gw_points + '</p>' +
+                '</div>' +
+                '</div>'
         }  
 
-        return '<div class="ui grid">' +
-                    '<div class="six wide column">' +
-                        '<table class="ui very compact small table" style="width: auto !important">' +
-                            '<thead>' +
-                                '<tr>' +
-                                    '<th>Name</th>' +
-                                    '<th>Points</th>' +
-                                '</tr>' +
-                            '</thead>' +
-                            '<tbody>' +
-                                starterCells +
-                            '</tbody>' +
-                        '</table>' +
-                    '</div>' +
-                    '<div class="six wide column">' +
-                        '<table class="ui very compact small table" style="width: auto !important">' +
-                            '<thead>' +
-                                '<tr>' +
-                                    '<th>Name</th>' +
-                                    '<th>Points</th>' +
-                                '</tr>' +
-                            '</thead>' +
-                            '<tbody>' +
-                                subCells +
-                            '</tbody>' +
-                        '</table>' +
-                    '</div>' +
+        //for (var i = 0; i < starters.length; i++) {
+        //    starterCells +=
+        //        '<tr>' +
+        //        '<td>' + starters[i].player.web_name + '</td>' +
+        //        '<td>' + starters[i].player.element_type + '</td>' +
+        //        //'<td>' + starters[i].GWPlayer.stats.EstimatedBonus + '</td>' +
+        //        '<td>' + starters[i].GWPlayer.stats.bps + ' (' + starters[i].GWPlayer.stats.BpsRank + ')' + '</td>' +
+        //        '<td>' + starters[i].GWPlayer.stats.gw_points + '</td>' +
+        //        '</tr>'
+        //}  
+
+        //for (var i = 0; i < subs.length; i++) {
+        //    subCells +=
+        //        '<tr>' +
+        //        '<td>' + subs[i].player.web_name + '</td>' +
+        //        '<td>' + subs[i].player.element_type + '</td>' +
+        //        //'<td>' + subs[i].GWPlayer.stats.EstimatedBonus + '</td>' +
+        //        '<td>' + subs[i].GWPlayer.stats.bps + ' (' + subs[i].GWPlayer.stats.BpsRank + ')' + '</td>' +
+        //        '<td>' + subs[i].GWPlayer.stats.gw_points + '</td>' +
+        //        '</tr>'
+        //}  
+
+        return '<div class="ui horizontal list">' +
+            starterCells +
+            '</div>' +
+            '</br>' +
+            '<div class="ui horizontal list">' +
+            subCells +
             '</div>';
+
+
+        //return '<div class="ui fifteen statistics">' +
+        //    teamHtml;
+        //    '</div>';
+
+        //return '<div class="ui grid">' +
+        //            '<div class="six wide column">' +
+        //                '<table class="ui very compact small table" style="width: auto !important">' +
+        //                    '<thead>' +
+        //                        '<tr>' +
+        //                            '<th>Name</th>' +
+        //                            //'<th></th>' +
+        //                            '<th>Position</th>' +
+        //                            //'<th>Bonus</th>' +
+        //                            '<th>Bps (Rank)</th>' +
+        //                            '<th>Points</th>' +
+        //                        '</tr>' +
+        //                    '</thead>' +
+        //                    '<tbody>' +
+        //                        starterCells +
+        //                    '</tbody>' +
+        //                '</table>' +
+        //            '</div>' +
+        //            '<div class="six wide column">' +
+        //                '<table class="ui very compact small table" style="width: auto !important">' +
+        //                    '<thead>' +
+        //                        '<tr>' +
+        //                            '<th>Name</th>' +
+        //                            //'<th></th>' +
+        //                            '<th>Position</th>' +
+        //                            //'<th>Bonus</th>' +
+        //                            '<th>Bps (Rank)</th>' +
+        //                            '<th>Points</th>' +
+        //                        '</tr>' +
+        //                    '</thead>' +
+        //                    '<tbody>' +
+        //                        subCells +
+        //                    '</tbody>' +
+        //                '</table>' +
+        //            '</div>' +
+        //    '</div>';
     }
 
     function initialiseDatatable() {
@@ -248,7 +354,7 @@
     }
 
     // Add event listener for opening and closing details
-    standingsTableBody.on('click', 'td.details-control', function () {
+    standingsTableBody.on('click', 'td.details-control', function (data, event) {
         var tr = $(this).closest('tr');
         var td = $(this).closest('td');
         var row = standingsTable.DataTable().row(tr);
@@ -266,7 +372,10 @@
                 url: "/Leagues/GetPlayersTeam",
                 type: "GET",
                 cache: false,
-                data: { teamId: teamId },
+                data: {
+                    teamId: teamId,
+                    currentGameWeekId: self.CurrentGwId()
+                },
                 contentType: "application/json",
                 beforeSend: function () {
                     tr.removeClass('shown');
@@ -274,7 +383,7 @@
                 },
                 success: function (json, status, xhr) {
                     if (xhr.readyState === 4 && xhr.status === 200) {
-                        row.child(format(json.picks)).show();
+                        row.child(format(json)).show();
                         tr.addClass('shown');
                     }
                 },
