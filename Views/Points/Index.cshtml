@@ -47,16 +47,16 @@
                     <th>Position</th>
                     <th>Opposition</th>
                     @*<th>Time</th>*@
-                    <th>Mins</th>
-                    <th>GF</th>
-                    <th>CS</th>
-                    <th>GA</th>
-                    <th>Assists</th>
-                    <th>Saves</th>
-                    <th>Bonus</th>
-                    <th>Bps (Rank)</th>
+                    <th class="center aligned">Mins</th>
+                    <th class="center aligned">GF</th>
+                    <th class="center aligned">CS</th>
+                    <th class="center aligned">GA</th>
+                    <th class="center aligned">Assists</th>
+                    <th class="center aligned">Saves</th>
+                    <th class="center aligned">Bonus</th>
+                    <th class="center aligned">Bps (Rank)</th>
                     @*<th>Bps Rank</th>*@
-                    <th>GW Points</th>
+                    <th class="center aligned">GW <span data-bind="text: $root.GameweekId()"></span></th>
                     <th colspan="2"></th>
                 </tr>
             </thead>
@@ -84,34 +84,34 @@
                     @*<span data-bind="text: $root.GetTime($data), visible: GWGame.finished_provisional || !GWGame.started"></span>*@
                     <!--<span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>
                 </td>-->
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: GWPlayer.stats.minutes"></span>
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: GWPlayer.stats.goals_scored"></span>
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: GWPlayer.stats.clean_sheets"></span>
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: GWPlayer.stats.goals_conceded"></span>
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: GWPlayer.stats.assists"></span>
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: GWPlayer.stats.saves"></span>
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: $root.GetBonus($data)"></span>
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: GWPlayer.stats.bps + ' (' + $root.GetBonusRank($data) + ')'"></span>
                     </td>
                     @*<td>
                         <span data-bind="text: $root.GetBonusRank($data)"></span>
                     </td>*@
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: $root.GetPoints($data)"></span>
                     </td>
                     <td @*data-bind="class: $root.GetResult($data, $data.GWGame)"*@ class="center aligned collapsing">

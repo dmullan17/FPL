@@ -170,6 +170,14 @@ namespace FPL.Controllers
                 player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
                 int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
 
+                var captain = gwTeam.picks.Find(x => x.is_captain);
+                smallestLeague.Captains.Add(captain);
+
+                foreach (var p in gwTeam.picks)
+                {
+                    smallestLeague.Players.Add(p);
+                }
+
                 player.PlayersYetToPlay = gwTeam.picks.FindAll(x => x.GWPlayer.stats.minutes == 0 && x.multiplier > 0 && x.GWGames.Any(y => y.kickoff_time != null && !y.finished_provisional)).Count();
                 player.total += (gwpoints - player.event_total);
                 player.event_total += (gwpoints - player.event_total);
@@ -183,6 +191,39 @@ namespace FPL.Controllers
             {
                 player.rank = standingsByLivePointsTotal.IndexOf(player) + 1;
             }
+
+            foreach (var captain in smallestLeague.Captains)
+            {
+                if (!smallestLeague.CaptainsTally.Any(x => x.Name == captain.player.web_name))
+                {
+                    var count = smallestLeague.Captains.FindAll(x => x.element == captain.element).Count();
+                    var pt = new PlayerTally()
+                    {
+                        Name = captain.player.web_name,
+                        Count = count
+                    };
+
+                    smallestLeague.CaptainsTally.Add(pt);
+                }
+            }
+
+            foreach (var player in smallestLeague.Players)
+            {
+                if (!smallestLeague.PlayersTally.Any(x => x.Name == player.player.web_name))
+                {
+                    var count = smallestLeague.Players.FindAll(x => x.element == player.element).Count();
+                    var pt = new PlayerTally()
+                    {
+                        Name = player.player.web_name,
+                        Count = count
+                    };
+
+                    smallestLeague.PlayersTally.Add(pt);
+                }
+            }
+
+            smallestLeague.CaptainsTally = smallestLeague.CaptainsTally.OrderByDescending(x => x.Count).ToList();
+            smallestLeague.PlayersTally = smallestLeague.PlayersTally.OrderByDescending(x => x.Count).ToList();
 
             return leagues;
         }
@@ -235,6 +276,14 @@ namespace FPL.Controllers
                 player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
                 int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
 
+                var captain = gwTeam.picks.Find(x => x.is_captain);
+                l.Captains.Add(captain);
+
+                foreach (var p in gwTeam.picks)
+                {
+                    l.Players.Add(p);
+                }
+
                 player.PlayersYetToPlay = gwTeam.picks.FindAll(x => x.GWPlayer.stats.minutes == 0 && x.multiplier > 0 && x.GWGames.Any(x => x.kickoff_time != null && !x.finished)).Count();
                 player.total += (gwpoints - player.event_total);
                 player.event_total += (gwpoints - player.event_total);
@@ -248,6 +297,40 @@ namespace FPL.Controllers
             {
                 player.rank = standingsByLivePointsTotal.IndexOf(player) + 1;
             }
+
+            foreach (var captain in l.Captains)
+            {
+                if (!l.CaptainsTally.Any(x => x.Name == captain.player.web_name))
+                {
+                    var count = l.Captains.FindAll(x => x.element == captain.element).Count();
+                    var pt = new PlayerTally()
+                    {
+                        Name = captain.player.web_name,
+                        Count = count
+                    };
+
+                    l.CaptainsTally.Add(pt);
+                }
+            }
+
+            foreach (var player in l.Players)
+            {
+                if (!l.PlayersTally.Any(x => x.Name == player.player.web_name))
+                {
+                    var count = l.Captains.FindAll(x => x.element == player.element).Count();
+                    var pt = new PlayerTally()
+                    {
+                        Name = player.player.web_name,
+                        Count = count
+                    };
+
+                    l.PlayersTally.Add(pt);
+                }
+            }
+
+
+            l.CaptainsTally = l.CaptainsTally.OrderByDescending(x => x.Count).ToList();
+            l.PlayersTally = l.PlayersTally.OrderByDescending(x => x.Count).ToList();
 
             return l;
         }

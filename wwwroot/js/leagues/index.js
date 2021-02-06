@@ -15,6 +15,9 @@
     self.CurrentGwId = ko.observable(data.CurrentGwId);
     self.TeamId = ko.observable(data.TeamId);
     self.SelectedLeagueStandings = ko.observableArray(self.SelectedLeague().Standings.results);
+    self.SelectedLeagueCaptainTally = ko.observableArray(self.SelectedLeague().CaptainsTally);
+    self.SelectedLeaguePlayersTally = ko.observableArray(self.SelectedLeague().PlayersTally);
+
 
     self.viewPlayer = function (player) {
         self.SelectedPlayer(player);
@@ -58,6 +61,8 @@
                 success: function (json, status, xhr) {
                     if (xhr.readyState === 4 && xhr.status === 200) {
                         self.SelectedLeagueStandings(json.Standings.results);
+                        self.SelectedLeagueCaptainTally(json.CaptainsTally);
+                        self.SelectedLeaguePlayersTally(json.PlayersTally)
                         initialiseDatatable();
                         return;
                     }
