@@ -21,6 +21,8 @@ namespace FPL.Controllers
     [FPLCookie]
     public class MyTeamController : BaseController
     {
+        private static int teamId;
+
         public MyTeamController(IHttpClient httpClient)
         {
             _httpClient = httpClient;
@@ -35,7 +37,14 @@ namespace FPL.Controllers
 
             int currentGwId = await GetCurrentGameWeekId();
 
-            int teamId = await GetTeamId();
+            if (Request.Cookies["teamId"] == null)
+            {
+                teamId = await GetTeamId();
+            }
+            else
+            {
+                teamId = Convert.ToInt32(Request.Cookies["teamId"]);
+            }
 
             var response = await _httpClient.GetAuthAsync(CreateHandler(handler), $"my-team/{teamId}");
 
@@ -73,12 +82,12 @@ namespace FPL.Controllers
                 }
             }
 
-            transfers = await GetTeamTransfers();
+            transfers = await GetTeamTransfers(teamId);
             positions = await GetPlayerPositionInfo();
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
             teamPicks = await CalculateTotalPointsContributed(teamPicks, transfers);
             teamPicks = teamPicks.OrderBy(x => x.position).ToList();
-            FPLTeam teamDetails = await GetTeamInfo();
+            FPLTeam teamDetails = await GetTeamInfo(teamId);
 
             viewModel.CurrentGwId = await GetCurrentGameWeekId();
             viewModel.Picks = teamPicks;
@@ -402,10 +411,8 @@ namespace FPL.Controllers
             return teamPicks;
         }
 
-        private async Task<List<Transfer>> GetTeamTransfers()
+        private async Task<List<Transfer>> GetTeamTransfers(int teamId)
         {
-            int teamId = await GetTeamId();
-
             var response = await _httpClient.GetAsync($"entry/{teamId}/transfers/");
 
             response.EnsureSuccessStatusCode();
@@ -447,13 +454,11 @@ namespace FPL.Controllers
             return transfers;
         }
 
-        private async Task<FPLTeam> GetTeamInfo()
+        private async Task<FPLTeam> GetTeamInfo(int teamId)
         {
             HttpClientHandler handler = new HttpClientHandler();
 
             handler = CreateHandler(handler);
-
-            int teamId = await GetTeamId();
 
             var response = await _httpClient.GetAuthAsync(handler, $"entry/{teamId}/");
 

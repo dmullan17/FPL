@@ -9,6 +9,7 @@ using FPL.Contracts;
 using FPL.Http;
 using FPL.Models;
 using FPL.ViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -44,6 +45,13 @@ namespace FPL.Controllers
             FplPlayer fplPlayer = new FplPlayer();
 
             fplPlayer = userDetailsJson.ToObject<FplPlayer>();
+
+            string cookie = Request.Cookies["teamId"];
+
+            if (cookie == null)
+            {
+                SetCookie("teamId", fplPlayer.entry.ToString(), null);
+            }
 
             return fplPlayer.entry;
         }
@@ -253,6 +261,28 @@ namespace FPL.Controllers
             }
 
             return handler;
+        }
+
+        /// <summary>  
+        /// set the cookie  
+        /// </summary>  
+        /// <param name="key">key (unique indentifier)</param>  
+        /// <param name="value">value to store in cookie object</param>  
+        /// <param name="expireTime">expiration time</param>  
+        public void SetCookie(string key, string value, int? expireTime)
+        {
+            CookieOptions option = new CookieOptions();
+
+            if (expireTime.HasValue)
+            {
+                option.Expires = DateTime.Now.AddMinutes(expireTime.Value);
+            }
+            else
+            {
+                option.Expires = DateTime.Now.AddYears(1);
+            }
+
+            Response.Cookies.Append(key, value, option);
         }
 
     }

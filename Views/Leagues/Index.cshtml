@@ -56,7 +56,7 @@
                                 </tr>
                             </thead>
                             <tbody data-bind="foreach: $root.SelectedLeagueStandings">
-                                <tr>
+                                <tr data-bind="class: $root.GetRowClass(entry)">
                                     <td style="display:none" data-bind="text: entry"></td>
                                     <td class="details-control"></td>
                                     <td class="center aligned" data-bind="text: $root.GetRank($data)"></td>

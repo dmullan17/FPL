@@ -18,6 +18,8 @@ namespace FPL.Controllers
     [FPLCookie]
     public class LeaguesController : BaseController
     {
+        private static int teamId;
+
         public LeaguesController(IHttpClient httpClient)
         {
             _httpClient = httpClient;
@@ -30,7 +32,14 @@ namespace FPL.Controllers
 
             HttpClientHandler handler = new HttpClientHandler();
 
-            int teamId = await GetTeamId();
+            if (Request.Cookies["teamId"] == null)
+            {
+                teamId = await GetTeamId();
+            }
+            else
+            {
+                teamId = Convert.ToInt32(Request.Cookies["teamId"]);
+            }
 
             var response = await _httpClient.GetAuthAsync(CreateHandler(handler), $"entry/{teamId}/");
 
@@ -53,6 +62,7 @@ namespace FPL.Controllers
             viewModel.H2HLeagues = leagues.h2h;
             viewModel.Cup = leagues.cup;
             viewModel.CurrentGwId = await GetCurrentGameWeekId();
+            viewModel.TeamId = teamId;
 
             return View(viewModel);
         }
@@ -65,7 +75,14 @@ namespace FPL.Controllers
 
             HttpClientHandler handler = new HttpClientHandler();
 
-            int teamId = await GetTeamId();
+            if (Request.Cookies["teamId"] == null)
+            {
+                teamId = await GetTeamId();
+            }
+            else
+            {
+                teamId = Convert.ToInt32(Request.Cookies["teamId"]);
+            }
 
             var response = await _httpClient.GetAuthAsync(CreateHandler(handler), $"entry/{teamId}/");
 

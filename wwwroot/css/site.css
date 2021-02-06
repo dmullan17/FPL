@@ -261,5 +261,7 @@ div.dt-buttons {
 }
 
 .ui.horizontal.list .list > .item, .ui.horizontal.list > .item {
-	padding-right: 0.5rem;
+	padding-right: 0.3rem;
+	padding-left: 0.3rem;
+	min-width: 3rem;
 }

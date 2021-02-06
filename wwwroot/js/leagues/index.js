@@ -13,6 +13,7 @@
     self.Cup = ko.observable(data.Cup);
     self.IsEventLive = ko.observable(data.IsEventLive);
     self.CurrentGwId = ko.observable(data.CurrentGwId);
+    self.TeamId = ko.observable(data.TeamId);
     self.SelectedLeagueStandings = ko.observableArray(self.SelectedLeague().Standings.results);
 
     self.viewPlayer = function (player) {
@@ -69,6 +70,14 @@
             });
         }
     });
+
+    self.GetRowClass = function (teamId) {
+        if (self.TeamId() == teamId) {
+            return "active";
+        }
+        return;
+
+    }
 
     self.GetRank = function (manager) {
         //return live rank if event is live, otherwise return normal rank
@@ -225,7 +234,7 @@
             '</i>' +
                 '</br>' +
             starters[i].player.web_name +
-                '</h4>' +
+                '</h5>' +
                 '<p style="text-align: center">' + starters[i].GWPlayer.stats.gw_points + '</p>' +
                 '</div>' +
                 '</div>'
@@ -254,7 +263,7 @@
             subCells +=
                 '<div class="item">' +
                 '<div class="content">' +
-            '<h4 class="ui icon header">' +
+            '<h5 class="ui icon header">' +
             '<i class="small icons">' +
             '  <i class="' + icon + '"></i>' +
             '  <i class="' + subIcon + '"></i>' +
@@ -262,7 +271,7 @@
                 '</br>' +
             //'<i class="tiny ' + icon + ' disabled icon"></i>' +
             subs[i].player.web_name +
-            '</h4>' +
+            '</h5>' +
                 '<p style="text-align: center">' + subs[i].GWPlayer.stats.gw_points + '</p>' +
                 '</div>' +
                 '</div>'
