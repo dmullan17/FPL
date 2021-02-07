@@ -5,7 +5,9 @@
         standingsSegment = $('#standings-segment'),
         standingsLoader = $('#standings-loader'),
         standingsTable = $('#standings-table'),
-        standingsTableBody = $('#standings-table tbody');
+        standingsTableBody = $('#standings-table tbody'),
+        captainTallyTable = $('#captain-tally-table'),
+        playerTallyTable = $('#player-tally-table');
 
     self.ClassicLeagues = ko.observableArray(data.ClassicLeagues);
     self.H2HLeagues = ko.observableArray(data.H2HLeagues);
@@ -174,7 +176,7 @@
 
    
     self.init = function () {
-        //$('.menu .item').tab();
+        $('.menu .item').tab();
         ////self.SelectedLeague(self.ClassicLeagues()[4]);
         for (var i = 0; i < self.ClassicLeagues().length; i++) {
             if (self.ClassicLeagues()[i] = self.SelectedLeague()) {
@@ -357,6 +359,9 @@
                 responsive: true,
                 fixedHeader: true
             });
+            //var captainTable = captainTallyTable.DataTable();
+            //var playerTable = playerTallyTable.DataTable();
+
         });
     }
 

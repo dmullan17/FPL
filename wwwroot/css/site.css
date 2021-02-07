@@ -266,3 +266,16 @@ div.dt-buttons {
 	min-width: 3rem;
 	max-width: 6rem;
 }
+
+.tally-table-container {
+	max-height: 30rem;
+	overflow-y: scroll;
+	overflow: auto;
+
+}
+
+.ui.table.sticky-header thead tr:first-child > th {
+	position: sticky !important;
+	top: 0;
+	z-index: 2;
+}

@@ -11,8 +11,6 @@ namespace FPL.Models.FPL
         {
             Standings = new Standings();
         }
-        public List<Pick> Captains { get; set; } = new List<Pick>();
-        public List<Pick> Players { get; set; } = new List<Pick>();
         public List<PlayerTally> CaptainsTally { get; set; } = new List<PlayerTally>();
         public List<PlayerTally> PlayersTally { get; set; } = new List<PlayerTally>();
         public int PlayerCount { get; set; }
