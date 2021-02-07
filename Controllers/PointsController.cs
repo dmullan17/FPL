@@ -22,6 +22,8 @@ namespace FPL.Controllers
     [FPLCookie]
     public class PointsController : BaseController
     {
+        private static int teamId;
+
         public PointsController(IHttpClient httpClient)
         {
             _httpClient = httpClient;
@@ -34,7 +36,14 @@ namespace FPL.Controllers
 
             var currentGameweekId = await GetCurrentGameWeekId();
 
-            int teamId = await GetTeamId();
+            if (Request.Cookies["teamId"] == null)
+            {
+                teamId = await GetTeamId();
+            }
+            else
+            {
+                teamId = Convert.ToInt32(Request.Cookies["teamId"]);
+            }
 
             GWTeam gwTeam = new GWTeam();
 
@@ -45,7 +54,7 @@ namespace FPL.Controllers
             gwTeam = await AddAutoSubs(gwTeam, gwTeam.picks, teamId);
             EventStatus eventStatus = await GetEventStatus();
             int gwpoints = GetGameWeekPoints(gwTeam.picks, eventStatus);
-            FPLTeam teamDetails = await GetTeamInfo();
+            FPLTeam teamDetails = await GetTeamInfo(teamId);
 
             foreach (var pick in gwTeam.picks)
             {
@@ -81,7 +90,14 @@ namespace FPL.Controllers
 
             int currentGwId = await GetCurrentGameWeekId();
 
-            int teamId = await GetTeamId();
+            if (Request.Cookies["teamId"] == null)
+            {
+                teamId = await GetTeamId();
+            }
+            else
+            {
+                teamId = Convert.ToInt32(Request.Cookies["teamId"]);
+            }
 
             if (id > currentGwId)
             {
@@ -99,7 +115,7 @@ namespace FPL.Controllers
             var liveGameCount = gwTeam.picks.FindAll(x => !x.GWGames.Any(x => x.finished_provisional)).Count();
             EventStatus eventStatus = await GetEventStatus();
             int gwpoints = GetGameWeekPoints(gwTeam.picks, eventStatus);
-            FPLTeam teamDetails = await GetTeamInfo();
+            FPLTeam teamDetails = await GetTeamInfo(teamId);
 
             if (id == currentGwId)
             {
@@ -293,20 +309,16 @@ namespace FPL.Controllers
 
             foreach (Pick pick in teamPicks)
             {
-                while (pick.multiplier > 0)
+                if (!bonusAdded && !pick.GWGames.Any(x => x.finished))
                 {
-                    if (!bonusAdded && !pick.GWGames.Any(x => x.finished))
+                    if (pick.is_captain)
                     {
-                        if (pick.is_captain)
-                        {
-                            pick.GWPlayer.stats.gw_points += (pick.GWPlayer.stats.EstimatedBonus * 2);
-                        }
-                        else
-                        {
-                            pick.GWPlayer.stats.gw_points += pick.GWPlayer.stats.EstimatedBonus;
-                        }
+                        pick.GWPlayer.stats.gw_points += (pick.GWPlayer.stats.EstimatedBonus * 2);
                     }
-                    break;
+                    else
+                    {
+                        pick.GWPlayer.stats.gw_points += pick.GWPlayer.stats.EstimatedBonus;
+                    }
                 }
             }
 
@@ -413,7 +425,7 @@ namespace FPL.Controllers
                             {
                                 if (subsWhoPlayed[k].player.element_type == 2)
                                 {
-                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     IsSubAdded = true;
                                     break;
@@ -421,7 +433,7 @@ namespace FPL.Controllers
 
                                 if (subsWhoPlayed[k].player.element_type == 3 && startingDefenders.Count > 3)
                                 {
-                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     IsSubAdded = true;
                                     break;
@@ -430,7 +442,7 @@ namespace FPL.Controllers
 
                                 if (subsWhoPlayed[k].player.element_type == 4 && startingDefenders.Count > 3)
                                 {
-                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     IsSubAdded = true;
                                     break;
@@ -444,7 +456,7 @@ namespace FPL.Controllers
                             {
                                 if (subsWhoPlayed[k].player.element_type == 2)
                                 {
-                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     IsSubAdded = true;
                                     break;
@@ -452,7 +464,7 @@ namespace FPL.Controllers
 
                                 if (subsWhoPlayed[k].player.element_type == 3)
                                 {
-                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     IsSubAdded = true;
                                     break;
@@ -461,7 +473,7 @@ namespace FPL.Controllers
 
                                 if (subsWhoPlayed[k].player.element_type == 4)
                                 {
-                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     IsSubAdded = true;
                                     break;
@@ -475,7 +487,7 @@ namespace FPL.Controllers
                             {
                                 if (subsWhoPlayed[k].player.element_type == 2)
                                 {
-                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     IsSubAdded = true;
                                     break;
@@ -483,7 +495,7 @@ namespace FPL.Controllers
 
                                 if (subsWhoPlayed[k].player.element_type == 3)
                                 {
-                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     IsSubAdded = true;
                                     break;
@@ -492,7 +504,7 @@ namespace FPL.Controllers
 
                                 if (subsWhoPlayed[k].player.element_type == 4)
                                 {
-                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     IsSubAdded = true;
                                     break;
@@ -502,12 +514,12 @@ namespace FPL.Controllers
 
                     }
                 }
-                else if (startersWhoDidNotPlay.Count > 0 && subsYetToPlay.Count() > 0)
+                else if (startersWhoDidNotPlay.Count > 0 && subsYetToPlay.Count > 0)
                 {
                     for (var i = 0; i < startersWhoDidNotPlay.Count; i++)
                     {
                         bool IsSubAdded = false;
-                        //subsWhoPlayed = subsWhoPlayed.FindAll(x => x.multiplier == 0);
+                        subsYetToPlay = subsWhoPlayed.FindAll(x => x.multiplier == 0);
                         if (startersWhoDidNotPlay[i].player.element_type == 1 && !IsSubAdded)
                         {
                             if (subsYetToPlay.Find(x => x.player.element_type == 1) != null)
@@ -537,7 +549,7 @@ namespace FPL.Controllers
                             {
                                 if (subsYetToPlay[k].player.element_type == 2)
                                 {
-                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     IsSubAdded = true;
                                     break;
@@ -545,7 +557,7 @@ namespace FPL.Controllers
 
                                 if (subsYetToPlay[k].player.element_type == 3 && subDefenders.Count > 3)
                                 {
-                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     IsSubAdded = true;
                                     break;
@@ -554,7 +566,7 @@ namespace FPL.Controllers
 
                                 if (subsYetToPlay[k].player.element_type == 4 && subDefenders.Count > 3)
                                 {
-                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     IsSubAdded = true;
                                     break;
@@ -568,7 +580,7 @@ namespace FPL.Controllers
                             {
                                 if (subsYetToPlay[k].player.element_type == 2)
                                 {
-                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     IsSubAdded = true;
                                     break;
@@ -576,7 +588,7 @@ namespace FPL.Controllers
 
                                 if (subsYetToPlay[k].player.element_type == 3)
                                 {
-                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     IsSubAdded = true;
                                     break;
@@ -585,7 +597,7 @@ namespace FPL.Controllers
 
                                 if (subsYetToPlay[k].player.element_type == 4)
                                 {
-                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     IsSubAdded = true;
                                     break;
@@ -599,7 +611,7 @@ namespace FPL.Controllers
                             {
                                 if (subsYetToPlay[k].player.element_type == 2)
                                 {
-                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     IsSubAdded = true;
                                     break;
@@ -607,7 +619,7 @@ namespace FPL.Controllers
 
                                 if (subsYetToPlay[k].player.element_type == 3)
                                 {
-                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     IsSubAdded = true;
                                     break;
@@ -616,7 +628,7 @@ namespace FPL.Controllers
 
                                 if (subsYetToPlay[k].player.element_type == 4)
                                 {
-                                    var autoSub = MakeOutfieldAutoSub(startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
                                     IsSubAdded = true;
                                     break;
@@ -635,13 +647,11 @@ namespace FPL.Controllers
 
         }
 
-        private async Task<FPLTeam> GetTeamInfo()
+        private async Task<FPLTeam> GetTeamInfo(int teamId)
         {
             HttpClientHandler handler = new HttpClientHandler();
 
             handler = CreateHandler(handler);
-
-            int teamId = await GetTeamId();
 
             var response = await _httpClient.GetAuthAsync(handler, $"entry/{teamId}/");
 
@@ -1023,20 +1033,44 @@ namespace FPL.Controllers
             return teamPicks;
         }
 
-        private AutomaticSub MakeOutfieldAutoSub(Pick starter, Pick sub, int eventId, int teamId)
+        private AutomaticSub MakeOutfieldAutoSub(List<Pick> picks, Pick starter, Pick sub, int eventId, int teamId)
         {
+            var starters = picks.FindAll(x => x.multiplier > 0);
+            var playersInStartersPosition = picks.FindAll(x => x.player.element_type == starter.player.element_type && x.multiplier > 0);
+            var playersInSubsPosition = picks.FindAll(x => x.player.element_type == sub.player.element_type && x.multiplier > 0);
+
             AutomaticSub autoSub = new AutomaticSub();
 
             autoSub.element_out = starter.element;
             autoSub.element_in = sub.element;
             autoSub.@event = eventId;
             autoSub.entry = teamId;
+
             var starterPosition = starter.position;
             var subPosition = sub.position;
             starter.position = subPosition;
-            starter.multiplier = 0;
             sub.position = starterPosition;
             sub.multiplier = 1;
+            starter.multiplier = 0;
+
+            //need to ensure when auto sub happens the sub comes into the correct position i.e. defender shouldnt come into midfield
+            //if ((starter.player.element_type == 2 && sub.player.element_type == 2) || (starter.player.element_type == 3 && sub.player.element_type == 3) || (starter.player.element_type == 4 && sub.player.element_type == 4))
+            //{
+            //    sub.position = starterPosition;
+            //}
+            //else
+            //{
+            //    sub.position = picks.FindAll(x => x.player.element_type == sub.player.element_type && x.multiplier > 0 && x.position < 12).FirstOrDefault().position;
+
+            //    var test = picks.FindAll(x => (x.position >= sub.position && x.player.element_type <= sub.player.element_type && x.multiplier > 0 && x.element != sub.element));
+
+            //    foreach (var t in test)
+            //    {
+            //        t.position += 1;
+            //    }
+            //}
+
+            //starter.position = subPosition;
 
             return autoSub;
         }
