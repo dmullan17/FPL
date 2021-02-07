@@ -286,13 +286,15 @@
 
         for (var i = 0; i < gwTransfers.length; i++) {
 
-            transfersHtml +=
-                '<div class="item">' +
+            if (gwTransfers[i].PlayerIn != null && gwTransfers[i].PlayerOut != null) {
+                transfersHtml +=
+                    '<div class="item">' +
                     //'<i class="small arrow left icon"></i>' +
-            '<span>' + gwTransfers[i].PlayerIn.web_name + ' for ' + gwTransfers[i].PlayerOut.web_name + '</span>' +
-            //'<span>' + gwTransfers[i].PlayerOut.web_name + '</span>' +
-            //'<i class="small arrow right icon"></i>' +
-                '</div>';
+                    '<span>' + gwTransfers[i].PlayerIn.web_name + ' for ' + gwTransfers[i].PlayerOut.web_name + '</span>' +
+                    //'<span>' + gwTransfers[i].PlayerOut.web_name + '</span>' +
+                    //'<i class="small arrow right icon"></i>' +
+                    '</div>';
+            }
 
         }
 
