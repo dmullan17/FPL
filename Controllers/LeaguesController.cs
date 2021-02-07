@@ -317,7 +317,7 @@ namespace FPL.Controllers
             {
                 if (!l.PlayersTally.Any(x => x.Name == player.player.web_name))
                 {
-                    var count = l.Captains.FindAll(x => x.element == player.element).Count();
+                    var count = l.Players.FindAll(x => x.element == player.element).Count();
                     var pt = new PlayerTally()
                     {
                         Name = player.player.web_name,
