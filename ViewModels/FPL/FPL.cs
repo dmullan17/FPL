@@ -14,5 +14,7 @@ namespace FPL.ViewModels.FPL
         public List<PlayerPosition> Positions { get; set; }
 
         public int TotalPoints { get; set; }
+
+        public bool IsEventFinished { get; set; }
     }
 }

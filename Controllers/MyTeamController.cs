@@ -82,19 +82,31 @@ namespace FPL.Controllers
                 }
             }
 
+            int gameweekId = await GetCurrentGameWeekId();
+            var eventStatus = await GetEventStatus();
+            var lastEvent = eventStatus.status.LastOrDefault();
+            var isEventFinished = false;
+
+            if (lastEvent.bonus_added && eventStatus.leagues != "Updating")
+            {
+                isEventFinished = true;
+            }
+
             transfers = await GetTeamTransfers(teamId);
             positions = await GetPlayerPositionInfo();
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
+            teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, gameweekId);
             teamPicks = await CalculateTotalPointsContributed(teamPicks, transfers);
             teamPicks = teamPicks.OrderBy(x => x.position).ToList();
             FPLTeam teamDetails = await GetTeamInfo(teamId);
 
-            viewModel.CurrentGwId = await GetCurrentGameWeekId();
+            viewModel.CurrentGwId = gameweekId;
             viewModel.Picks = teamPicks;
             viewModel.Team = teamDetails;
             viewModel.Positions = positions;
             viewModel.TotalPoints = teamDetails.summary_overall_points;
             viewModel.TransferInfo = transferInfo;
+            viewModel.IsEventFinished = isEventFinished;
 
             return View(viewModel);
         }
@@ -304,6 +316,42 @@ namespace FPL.Controllers
                 {
                     pick.player.MinsPlayedPercentage = 100;
                 }
+            }
+
+            return teamPicks;
+        }
+
+        public async Task<List<Pick>> AddPlayerGameweekDataToTeam(List<Pick> teamPicks, int gameweekId)
+        {
+            var response1 = await _httpClient.GetAsync("fixtures/?event=" + gameweekId);
+
+            response1.EnsureSuccessStatusCode();
+
+            var content1 = await response1.Content.ReadAsStringAsync();
+
+            List<Game> gwGames = JsonConvert.DeserializeObject<List<Game>>(content1);
+
+            gwGames = await PopulateGameListWithTeams(gwGames);
+            List<Game> startedGames = gwGames.FindAll(x => x.started == true);
+
+            foreach (Pick pick in teamPicks)
+            {
+                foreach (Game g in gwGames)
+                {
+                    if (pick.player.TeamId == g.team_h)
+                    {
+                        pick.GWOppositionName = g.AwayTeam.name;
+                        pick.GWGames.Add(g);
+                        continue;
+                    }
+                    else if (pick.player.TeamId == g.team_a)
+                    {
+                        pick.GWOppositionName = g.HomeTeam.name;
+                        pick.GWGames.Add(g);
+                        continue;
+                    }
+                }
+
             }
 
             return teamPicks;

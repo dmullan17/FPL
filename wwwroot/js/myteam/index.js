@@ -9,6 +9,7 @@
     self.TotalPoints = ko.observable(data.TotalPoints);
     self.TransferInfo = ko.observable(data.TransferInfo);
     self.CurrentGwId = ko.observable(data.CurrentGwId);
+    self.IsEventFinished = ko.observable(data.IsEventFinished);
 
 
     //self.getColor = ko.pureComputed(function (data) {
@@ -59,8 +60,22 @@
         return (value / 10).toFixed(1);
     };
 
+    self.GetCurrentGw = function () {
+        if (!self.IsEventFinished) {
+            return "GW " + (self.CurrentGwId());
+        }
+        else {
+            return "GW " + (self.CurrentGwId() + 1);
+        }
+    };
+
     self.GetNextGw = function () {
-        return "GW " + (self.CurrentGwId() + 1);
+        if (!self.IsEventFinished) {
+            return "GW " + (self.CurrentGwId() + 1);
+        }
+        else {
+            return "GW " + (self.CurrentGwId() + 2);
+        }
     };
 
     //self.GetPlayersNextFixture = function (team) {
@@ -89,55 +104,38 @@
 
     self.GetCurrentGWGames = function (player) {
 
+        var games = player.GWGames;
         var team = player.player.Team;
-
-        var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId());
-        var results = team.Results.filter(x => x.Event == self.CurrentGwId());
         var html = "";
 
-        if (results.length > 0) {
-            for (var i = 0; i < results.length; i++) {
-                if (results[i].team_h_score > results[i].team_a_score) {
-                    if (team.id == results[i].team_h) {
-                        html += results[i].team_a_name + " (H)<br/>";
-                    }
-                    else if (team.id == results[i].team_a) {
-                        html += results[i].team_h_name + " (A)<br/>";
-                    }
+        if (!self.IsEventFinished()) {
+            for (var i = 0; i < games.length; i++) {
+                if (team.id == games[i].team_h) {
+                    html += games[i].AwayTeam.name + " (H)<br/>";
                 }
-                else if (results[i].team_h_score == results[i].team_a_score) {
-                    if (team.id == results[i].team_h) {
-                        html += results[i].team_a_name + " (H)<br/>";
-                    }
-                    else if (team.id == results[i].team_a) {
-                        html += results[i].team_h_name + " (A)<br/>";
-                    }
+                else if (team.id == games[i].team_a) {
+                    html += games[i].HomeTeam.name + " (A)<br/>";
                 }
-                else if (results[i].team_h_score < results[i].team_a_score) {
-                    if (team.id == results[i].team_h) {
-                        html += results[i].team_a_name + " (H)<br/>";
-                    }
-                    else if (team.id == results[i].team_a) {
-                        html += results[i].team_h_name + " (A)<br/>";
-                    }
-                }
-
             }
         }
-        if (fixtures.length > 0) {
-            for (var i = 0; i < fixtures.length; i++) {
-                if (team.id == fixtures[i].team_h) {
-                    html += fixtures[i].team_a_name + " (H)<br/>";
-                }
-                else if (team.id == fixtures[i].team_a) {
-                    html += fixtures[i].team_h_name + " (A)<br/>";
-                }
+        else {
+            var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId() + 1);
 
+            if (fixtures.length > 0) {
+                for (var i = 0; i < fixtures.length; i++) {
+                    if (team.id == fixtures[i].team_h) {
+                        html += fixtures[i].team_a_name + " (H) <br/>";
+                    }
+                    else if (team.id == fixtures[i].team_a) {
+                        html += fixtures[i].team_h_name + " (A) <br/>";
+                    }
+
+                }
+            }
+            else {
+                html += "No Game";
             }
         }
-        //else {
-        //    return "No Game";
-        //}
 
         return html;
 
@@ -145,8 +143,14 @@
 
     self.GetNextGWGames = function (team) {
 
-        var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId() + 1);
         var html = "";
+
+        if (!self.IsEventFinished()) {
+            var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId() + 1);
+        }
+        else {
+            var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId() + 2);
+        }
 
         if (fixtures.length > 0) {
             for (var i = 0; i < fixtures.length; i++) {
@@ -158,11 +162,12 @@
                 }
 
             }
-            return html;
         }
         else {
-            return "No Game";
+            html += "No Game";
         }
+
+        return html;
 
     };
 

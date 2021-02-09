@@ -51,7 +51,8 @@
         <th>Pos Bps Rank</th>*@
                     <th>% Selected by</th>
                     <th>GW Net Transfers</th>
-                    <th data-bind="text: 'GW ' + $root.CurrentGwId()"></th>
+                    <th data-bind="text: $root.GetCurrentGw()"></th>
+                    @*<th data-bind="text: 'GW ' + $root.CurrentGwId()"></th>*@
                     <th data-bind="text: $root.GetNextGw()"></th>
                     @*<th>Next Game</th>*@
                     <th>Avg FDR Next 5</th>
