@@ -193,37 +193,88 @@
     /* Formatting function for row details - modify as you need */
     function FormatChildRow(gwTeam) {
 
-        var team = gwTeam.picks;
         var starters = gwTeam.picks.filter(x => x.position <= 11);
         var subs = gwTeam.picks.filter(x => x.position > 11);
-        var gks = gwTeam.picks.filter(x => x.player.element_type == 1 && x.multiplier > 0);
-        var defs = gwTeam.picks.filter(x => x.player.element_type == 2 && x.multiplier > 0);
-        var mids = gwTeam.picks.filter(x => x.player.element_type == 3 && x.multiplier > 0);
-        var fwds = gwTeam.picks.filter(x => x.player.element_type == 4 && x.multiplier > 0);
         var autoSubs = gwTeam.automatic_subs;
         var gwTransfers = gwTeam.GWTransfers;
 
-        var teamHtml = "";
-        var starterCells = "";
-        var subCells = "";
+        var startersHtml = CreateHtmlForPicks(starters, autoSubs);
+        var subHtml = CreateHtmlForPicks(subs, autoSubs);
 
-        for (var i = 0; i < starters.length; i++) {
+        var transfersHtml = "";
+
+        if (gwTransfers.length > 0) {
+            transfersHtml += '<h4 class="ui header" style="margin-bottom: 0.5rem">GW Transfers (' + gwTransfers.length + ')</h4>' +
+                '<div class="ui list" style="margin-top: 0rem">' 
+
+            for (var i = 0; i < gwTransfers.length; i++) {
+                if (gwTransfers[i].PlayerIn != null && gwTransfers[i].PlayerOut != null) {
+                    transfersHtml +=
+                        '<div class="item">' +
+                        '<span>' + gwTransfers[i].PlayerIn.web_name + ' for ' + gwTransfers[i].PlayerOut.web_name + '</span>' +
+                        '</div>';
+                }
+            }
+
+            transfersHtml += '</div>'
+        }
+
+        var autoSubsHtml = "";
+
+        if (autoSubs.length > 0) {
+
+            autoSubsHtml += '<h4 class="ui header" style="margin-bottom: 0.5rem">Auto Subs (' + autoSubs.length + ')</h4>' +
+                '<div class="ui list" style="margin-top: 0rem">'
+
+            for (var i = 0; i < autoSubs.length; i++) {
+
+                var playerIn = gwTeam.picks.filter(x => x.element == autoSubs[i].element_in)[0].player.web_name;
+                var playerOut = gwTeam.picks.filter(x => x.element == autoSubs[i].element_out)[0].player.web_name;
+
+                autoSubsHtml +=
+                    '<div class="item">' +
+                    '<span>' + playerIn + ' for ' + playerOut + '</span>' +
+                    '</div>';             
+            }
+
+            autoSubsHtml += '</div>'
+
+        }
+
+        return '<div class="ui grid">' +
+            '<div class="thirteen wide column">' +
+            '<div class="ui horizontal list">' + startersHtml + '</div>' +
+            '</br>' +
+            '<div class="ui horizontal list">' + subHtml + '</div>' +
+                '</div>' +
+            '<div class="two wide column" style="padding-left: 0; width: 14% !important">' +
+            transfersHtml +
+            autoSubsHtml +
+                '</div>' +
+                '</div>';
+    }
+
+    function CreateHtmlForPicks(picks, autoSubs) {
+
+        var html = "";
+
+        for (var i = 0; i < picks.length; i++) {
             var icon = "";
             var subIcon = "";
 
-            if (starters[i].player.element_type == 1) {
+            if (picks[i].player.element_type == 1) {
                 icon += "user";
             }
             else {
                 icon += "user outline";
             }
 
-            if (starters[i].is_captain) {
+            if (picks[i].is_captain) {
                 subIcon += "top right corner copyright";
             }
 
             for (var j = 0; j < autoSubs.length; j++) {
-                if (autoSubs[j].element_in == starters[i].player.id) {
+                if (autoSubs[j].element_in == picks[i].player.id || autoSubs[j].element_out == picks[i].player.id) {
                     subIcon += "top right corner sync";
                 }
             }
@@ -231,122 +282,28 @@
             icon += " icon";
             subIcon += " icon";
 
-            starterCells +=
+            if (picks.length == 4) {
+                icon += " disabled";
+            }
+
+            html +=
                 '<div class="item">' +
                 '<div class="content">' +
-            '<h4 class="ui icon header">' +
+                '<h4 class="ui icon header">' +
                 '<i class="small icons">' +
-            '  <i class="' + icon + '"></i>' +
-            '  <i class="' + subIcon + '"></i>' +
-            '</i>' +
+                '  <i class="' + icon + '"></i>' +
+                '  <i class="' + subIcon + '"></i>' +
+                '</i>' +
                 '</br>' +
-            starters[i].player.web_name +
+                picks[i].player.web_name +
                 '</h5>' +
-                '<p style="text-align: center">' + starters[i].GWPlayer.stats.gw_points + '</p>' +
+                '<p style="text-align: center">' + picks[i].GWPlayer.stats.gw_points + '</p>' +
                 '</div>' +
                 '</div>'
         }  
 
-        for (var i = 0; i < subs.length; i++) {
-            var icon = "";
-            var subIcon = "";
+        return html;
 
-            if (starters[i].player.element_type == 1) {
-                icon += "user";
-            }
-            else {
-                icon += "user outline";
-            }
-
-            for (var j = 0; j < autoSubs.length; j++) {
-                if (autoSubs[j].element_out == subs[i].player.id) {
-                    subIcon += "top right corner sync";
-                }
-            }
-
-            icon += " disabled icon";
-            subIcon += " icon";
-
-            subCells +=
-                '<div class="item">' +
-                '<div class="content">' +
-            '<h5 class="ui icon header">' +
-            '<i class="small icons">' +
-            '  <i class="' + icon + '"></i>' +
-            '  <i class="' + subIcon + '"></i>' +
-            '</i>' +
-                '</br>' +
-            //'<i class="tiny ' + icon + ' disabled icon"></i>' +
-            subs[i].player.web_name +
-            '</h5>' +
-                '<p style="text-align: center">' + subs[i].GWPlayer.stats.gw_points + '</p>' +
-                '</div>' +
-                '</div>'
-        }  
-
-        var transfersHtml = "";
-
-        for (var i = 0; i < gwTransfers.length; i++) {
-
-            if (gwTransfers[i].PlayerIn != null && gwTransfers[i].PlayerOut != null) {
-                transfersHtml +=
-                    '<div class="item">' +
-                    //'<i class="small arrow left icon"></i>' +
-                    '<span>' + gwTransfers[i].PlayerIn.web_name + ' for ' + gwTransfers[i].PlayerOut.web_name + '</span>' +
-                    //'<span>' + gwTransfers[i].PlayerOut.web_name + '</span>' +
-                    //'<i class="small arrow right icon"></i>' +
-                    '</div>';
-            }
-
-        }
-
-        return '<div class="ui grid">' +
-                '<div class="thirteen wide column">' +
-                    '<div class="ui horizontal list">' + starterCells + '</div>' +
-                    '</br>' +
-                    '<div class="ui horizontal list">' + subCells + '</div>' +
-                '</div>' +
-            '<div class="two wide column">' +
-                    '<h4 class="ui header">GW Transfers</h4>' +
-                    '<div class="ui list">' + transfersHtml + '</div>' +
-                    '</br' +
-                '</div>' +
-                '</div>';
-
-        //for (var i = 0; i < starters.length; i++) {
-        //    starterCells +=
-        //        '<tr>' +
-        //        '<td>' + starters[i].player.web_name + '</td>' +
-        //        '<td>' + starters[i].player.element_type + '</td>' +
-        //        //'<td>' + starters[i].GWPlayer.stats.EstimatedBonus + '</td>' +
-        //        '<td>' + starters[i].GWPlayer.stats.bps + ' (' + starters[i].GWPlayer.stats.BpsRank + ')' + '</td>' +
-        //        '<td>' + starters[i].GWPlayer.stats.gw_points + '</td>' +
-        //        '</tr>'
-        //}  
-
-        //for (var i = 0; i < subs.length; i++) {
-        //    subCells +=
-        //        '<tr>' +
-        //        '<td>' + subs[i].player.web_name + '</td>' +
-        //        '<td>' + subs[i].player.element_type + '</td>' +
-        //        //'<td>' + subs[i].GWPlayer.stats.EstimatedBonus + '</td>' +
-        //        '<td>' + subs[i].GWPlayer.stats.bps + ' (' + subs[i].GWPlayer.stats.BpsRank + ')' + '</td>' +
-        //        '<td>' + subs[i].GWPlayer.stats.gw_points + '</td>' +
-        //        '</tr>'
-        //}  
-
-        //return '<div class="ui horizontal list">' +
-        //    starterCells +
-        //    '</div>' +
-        //    '</br>' +
-        //    '<div class="ui horizontal list">' +
-        //    subCells +
-        //    '</div>';
-
-
-        //return '<div class="ui fifteen statistics">' +
-        //    teamHtml;
-        //    '</div>';
     }
 
     function initialiseDatatable() {
