@@ -86,6 +86,20 @@
 
     }
 
+    self.GetPointsMovement = function (manager) {
+        if (manager.rank > manager.last_rank) {
+            return "red arrow alternate circle down icon";
+        }
+        else if (manager.rank < manager.last_rank) {
+            return "green arrow alternate circle up icon";
+        }
+        else if (manager.rank == manager.last_rank) {
+            return "grey circle icon";
+        }
+        return;
+
+    }
+
     self.GetRank = function (manager) {
         //return live rank if event is live, otherwise return normal rank
         //if (self.IsEventLive()) {
@@ -312,7 +326,7 @@
                 columnDefs: [
                     { orderable: false, targets: "no-sort" }
                 ],
-                order: [[2, "asc"]],
+                order: [[$('th.default-sort').index(), "asc"]],
                 responsive: true,
                 fixedHeader: true
             });

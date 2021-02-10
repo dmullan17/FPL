@@ -53,7 +53,8 @@
                                     <tr>
                                         <th class="no-sort" style="display:none"></th>
                                         <th class="no-sort"></th>
-                                        <th>Rank</th>
+                                        @*<th></th>*@
+                                        <th class="default-sort">Rank</th>
                                         <th class="no-sort single line">Team & Manager</th>
                                         <th class="single line center aligned">GW<span data-bind="text: $root.CurrentGwId"></span></th>
                                         <th class="center aligned">Total</th>
@@ -66,12 +67,13 @@
                                         <th class="center aligned" data-tooltip="Total Transfers (Cost)">TT (Cost)</th>
                                         <th data-tooltip="Used Chips (GameWeek)">UC (GW)</th>
                                         <th>Last 5</th>
+                                        <th class="no-sort"></th>
                                     </tr>
                                 </thead>
                                 <tbody data-bind="foreach: $root.SelectedLeagueStandings">
                                     <tr data-bind="class: $root.GetRowClass(entry)">
                                         <td style="display:none" data-bind="text: entry"></td>
-                                        <td class="details-control"></td>
+                                        <td><i data-bind="class: $root.GetPointsMovement($data)"></i></td>
                                         <td class="center aligned" data-bind="text: $root.GetRank($data)"></td>
                                         <td style="font-weight:bold" data-bind="html: $root.FormatNames(entry_name, player_name)"></td>
                                         <td class="center aligned" data-bind="text: event_total"></td>
@@ -85,6 +87,7 @@
                                         <td class="center aligned" data-bind="text: CompleteEntryHistory.TotalTransfersMade + ' (' + CompleteEntryHistory.TotalTransfersCost + ')'"></td>
                                         <td class="single line" data-bind="html: $root.GetChipsUsed($data.CompleteEntryHistory.chips)"></td>
                                         <td class="single line" data-bind="text: $root.FormatLast5GwPoints(Last5GwPoints)"></td>
+                                        <td class="details-control"></td>
                                     </tr>
                                 </tbody>
                             </table>
