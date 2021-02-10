@@ -60,6 +60,7 @@
                                         <th>Captain</th>
                                         <th class="center aligned" data-tooltip="Auto Subs">AS</th>
                                         <th class="center aligned" data-tooltip="Players Yet to Play">PYTP</th>
+                                        <th class="center aligned" data-tooltip="Points From First">PFF</th>
                                         <th data-tooltip="Active Chips">AC</th>
                                         <th class="center aligned" data-tooltip="GameWeek Transfers (Cost)">GWT (C)</th>
                                         <th class="center aligned" data-tooltip="Total Transfers (Cost)">TT (Cost)</th>
@@ -78,6 +79,7 @@
                                         <td class="single line" data-bind="text: $root.GetCaptain($data.GWTeam.picks)"></td>
                                         <td class="center aligned" data-bind="text: GWTeam.automatic_subs.length"></td>
                                         <td class="center aligned" data-bind="text: PlayersYetToPlay"></td>
+                                        <td class="center aligned" data-bind="text: PointsFromFirst"></td>
                                         <td data-bind="html: $root.GetActiveChips($data.GWTeam.ActiveChips)"></td>
                                         <td class="center aligned" data-bind="text: GWTeam.EntryHistory.event_transfers + ' (' + GWTeam.EntryHistory.event_transfers_cost + ')'"></td>
                                         <td class="center aligned" data-bind="text: CompleteEntryHistory.TotalTransfersMade + ' (' + CompleteEntryHistory.TotalTransfersCost + ')'"></td>

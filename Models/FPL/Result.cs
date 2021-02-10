@@ -13,6 +13,7 @@ namespace FPL.Models.FPL
         [JsonProperty("GWTeam")]
         public GWTeam GWTeam { get; set; }
         public List<int> Last5GwPoints { get; set; } = new List<int>();
+        public int PointsFromFirst { get; set; }
         public int id { get; set; }
         public int event_total { get; set; }
         public string player_name { get; set; }
