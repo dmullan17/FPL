@@ -88,13 +88,13 @@
 
     self.GetPointsMovement = function (manager) {
         if (manager.rank > manager.last_rank) {
-            return "red arrow alternate circle down icon";
+            return "red arrow alternate circle down small icon";
         }
         else if (manager.rank < manager.last_rank) {
-            return "green arrow alternate circle up icon";
+            return "green arrow alternate circle up small icon";
         }
         else if (manager.rank == manager.last_rank) {
-            return "grey circle icon";
+            return "grey circle small icon";
         }
         return;
 
