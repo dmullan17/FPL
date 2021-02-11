@@ -100,6 +100,31 @@
 
     }
 
+    self.GetTeamBonusPoints = function (picks) {
+
+        var starters = picks.filter(x => x.multiplier > 0);
+        var bonusPoints = 0;
+
+        for (var i = 0; i < starters.length; i++) {
+            bonusPoints += starters[i].GWPlayer.stats.EstimatedBonus;
+        }
+
+        return bonusPoints;
+
+    }
+
+    self.GetGWBenchPoints = function (picks) {
+
+        var subs = picks.filter(x => x.position > 11);
+        var subsPoints = 0;
+
+        for (var i = 0; i < subs.length; i++) {
+            subsPoints += subs[i].GWPlayer.stats.gw_points;
+        }
+
+        return subsPoints;
+    }
+
     self.GetRank = function (manager) {
         //return live rank if event is live, otherwise return normal rank
         //if (self.IsEventLive()) {
