@@ -88,7 +88,7 @@
                                         <td class="center aligned" data-bind="text: PlayersYetToPlay"></td>
                                         <td class="center aligned" data-bind="text: PointsFromFirst"></td>
                                         <td data-bind="html: $root.GetActiveChips($data.GWTeam.ActiveChips)"></td>
-                                        <td class="center aligned" data-bind="text: GWTeam.EntryHistory.event_transfers + ' (' + GWTeam.EntryHistory.event_transfers_cost + ')'"></td>
+                                        <td class="center aligned" data-bind="text: $root.GetGwTransfers($data.GWTeam)"></td>
                                         <td class="center aligned" data-bind="text: CompleteEntryHistory.TotalTransfersMade + ' (' + CompleteEntryHistory.TotalTransfersCost + ')'"></td>
                                         <td class="single line" data-bind="html: $root.GetChipsUsed($data.CompleteEntryHistory.chips)"></td>
                                         <td class="single line" data-bind="text: $root.FormatLast5GwPoints(Last5GwPoints)"></td>

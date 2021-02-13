@@ -820,7 +820,7 @@ namespace FPL.Controllers
                 }
             }
 
-            gwTeam.GWTransfers = transfers.FindAll(x => x.@event == currentGwId).ToList();
+            gwTeam.GWTransfers = transfers.FindAll(x => x.@event == currentGwId && (x.PlayerIn != null && x.PlayerOut != null)).ToList();
             gwTeam.picks = teamPicks;
 
             return gwTeam;

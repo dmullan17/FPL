@@ -35,6 +35,17 @@
         }
     }
 
+    self.GetGwTransfers = function (gwTeam) {
+
+        if (gwTeam.ActiveChips.includes("wildcard")) {
+            return gwTeam.GWTransfers.length + ' (0)';
+        }
+        else {
+            return gwTeam.EntryHistory.event_transfers + ' (' + gwTeam.EntryHistory.event_transfers_cost + ')';
+        }
+
+    }
+
     self.changeLeague = function (league) {
         //self.SelectedLeague({});
         if (league != self.SelectedLeague()) {
