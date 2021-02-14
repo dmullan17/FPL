@@ -93,7 +93,7 @@
     });
 
     self.GetRowClass = function (teamId) {
-        if (self.TeamId() == teamId) {
+        if (self.TeamId() == teamId && self.SelectedLeague().Standings.results.length <= 10) {
             return "active";
         }
         return;
