@@ -381,6 +381,7 @@ namespace FPL.Controllers
             var lastEvent = eventStatus.status.LastOrDefault();
             var starters = picks.FindAll(x => x.position < 12);
             var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0  && (x.GWGames.Any(x => x.finished_provisional) || x.GWGames.Count == 0));
+            RemoveIfMultiGamesInGW(startersWhoDidNotPlay);
             var subsWhoPlayed = picks.FindAll(x => x.position > 12 && x.GWPlayer.stats.minutes > 0);
             var subsYetToPlay = picks.FindAll(x => x.position > 12 && x.GWPlayer.stats.minutes == 0 && x.GWGames.Any(x => !x.finished_provisional));
 
@@ -519,7 +520,7 @@ namespace FPL.Controllers
                     for (var i = 0; i < startersWhoDidNotPlay.Count; i++)
                     {
                         bool IsSubAdded = false;
-                        subsYetToPlay = subsWhoPlayed.FindAll(x => x.multiplier == 0);
+                        subsYetToPlay = subsYetToPlay.FindAll(x => x.multiplier == 0);
                         if (startersWhoDidNotPlay[i].player.element_type == 1 && !IsSubAdded)
                         {
                             if (subsYetToPlay.Find(x => x.player.element_type == 1) != null)
@@ -645,6 +646,18 @@ namespace FPL.Controllers
 
             return gwTeam;
 
+        }
+        public void RemoveIfMultiGamesInGW(List<Pick> startersWhoDidNotPlay)
+        {
+            var startersWhoDidNotPlayButHaveAnotherGame = startersWhoDidNotPlay.FindAll(x => x.GWGames.Count > 1);
+
+            if (startersWhoDidNotPlayButHaveAnotherGame.Count > 0)
+            {
+                foreach (var t in startersWhoDidNotPlayButHaveAnotherGame)
+                {
+                    startersWhoDidNotPlay.Remove(t);
+                }
+            }
         }
 
         private async Task<FPLTeam> GetTeamInfo(int teamId)

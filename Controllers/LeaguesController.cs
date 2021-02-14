@@ -183,7 +183,6 @@ namespace FPL.Controllers
                     CalculatePlayersYetToPlay(player, p);
                 }
 
-                //player.PlayersYetToPlay = gwTeam.picks.FindAll(x => x.GWPlayer.stats.minutes == 0 && x.multiplier > 0 && x.GWGames.Any(y => y.kickoff_time != null && !y.finished_provisional)).Count();
                 //player.PlayersYetToPlay = gwTeam.picks.FindAll(x => x.multiplier > 0 && x.GWGames.Any(y => y.kickoff_time != null && !y.finished_provisional)).Count();
                 player.PointsFromFirst = topOfLeaguePoints - player.total;
                 player.total += (gwpoints - player.event_total);
