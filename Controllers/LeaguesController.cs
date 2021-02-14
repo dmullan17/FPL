@@ -180,9 +180,11 @@ namespace FPL.Controllers
                 foreach (var p in gwTeam.picks)
                 {
                     players.Add(p);
+                    CalculatePlayersYetToPlay(player, p);
                 }
 
-                player.PlayersYetToPlay = gwTeam.picks.FindAll(x => x.GWPlayer.stats.minutes == 0 && x.multiplier > 0 && x.GWGames.Any(y => y.kickoff_time != null && !y.finished_provisional)).Count();
+                //player.PlayersYetToPlay = gwTeam.picks.FindAll(x => x.GWPlayer.stats.minutes == 0 && x.multiplier > 0 && x.GWGames.Any(y => y.kickoff_time != null && !y.finished_provisional)).Count();
+                //player.PlayersYetToPlay = gwTeam.picks.FindAll(x => x.multiplier > 0 && x.GWGames.Any(y => y.kickoff_time != null && !y.finished_provisional)).Count();
                 player.PointsFromFirst = topOfLeaguePoints - player.total;
                 player.total += (gwpoints - player.event_total);
                 player.event_total += (gwpoints - player.event_total);
@@ -290,9 +292,10 @@ namespace FPL.Controllers
                 foreach (var p in gwTeam.picks)
                 {
                     players.Add(p);
+                    CalculatePlayersYetToPlay(player, p);
                 }
 
-                player.PlayersYetToPlay = gwTeam.picks.FindAll(x => x.GWPlayer.stats.minutes == 0 && x.multiplier > 0 && x.GWGames.Any(x => x.kickoff_time != null && !x.finished)).Count();
+                //player.PlayersYetToPlay = gwTeam.picks.FindAll(x => x.GWPlayer.stats.minutes == 0 && x.multiplier > 0 && x.GWGames.Any(x => x.kickoff_time != null && !x.finished)).Count();
                 player.PointsFromFirst = topOfLeaguePoints - player.total;
                 player.total += (gwpoints - player.event_total);
                 player.event_total += (gwpoints - player.event_total);
@@ -358,6 +361,28 @@ namespace FPL.Controllers
             gwTeam.picks = PointsController.AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
 
             return gwTeam;
+        }
+
+        public void CalculatePlayersYetToPlay(Result player, Pick p)
+        {
+            if (p.multiplier > 0 && p.GWGames.Any(x => x.kickoff_time != null && !x.finished_provisional))
+            {
+                for (var i = 0; i < p.GWPlayer.explain.Count; i++)
+                {
+                    for (var j = 0; j < p.GWPlayer.explain[i].stats.Count; j++)
+                    {
+                        var g = p.GWGames.Find(x => x.id == p.GWPlayer.explain[i].fixture);
+
+                        if (p.GWPlayer.explain[i].stats[j].identifier == "minutes" && p.GWPlayer.explain[i].stats[j].value == 0)
+                        {
+                            if (!g.started ?? true)
+                            {
+                                player.PlayersYetToPlay += 1;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
     }

@@ -21,7 +21,7 @@ namespace FPL.Models.FPL
         public int last_rank { get; set; }
 
         public int LiveRank { get; set; }
-        public int PlayersYetToPlay { get; set; }
+        public int PlayersYetToPlay { get; set; } = 0;
         public int rank_sort { get; set; }
         public int total { get; set; }
         public int entry { get; set; }
