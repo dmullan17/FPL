@@ -6,6 +6,7 @@
         standingsLoader = $('#standings-loader'),
         standingsTable = $('#standings-table'),
         standingsTableBody = $('#standings-table tbody'),
+        standingsTableFooter = $('#standings-table tfoot'),
         captainTallyTable = $('#captain-tally-table'),
         playerTallyTable = $('#player-tally-table');
 
@@ -16,6 +17,7 @@
     self.IsEventLive = ko.observable(data.IsEventLive);
     self.CurrentGwId = ko.observable(data.CurrentGwId);
     self.TeamId = ko.observable(data.TeamId);
+    self.UserTeam = ko.observable(data.SelectedLeague.UserTeam);
     self.SelectedLeagueStandings = ko.observableArray(self.SelectedLeague().Standings.results);
     self.SelectedLeagueCaptainTally = ko.observableArray(self.SelectedLeague().CaptainsTally);
     self.SelectedLeaguePlayersTally = ko.observableArray(self.SelectedLeague().PlayersTally);
@@ -75,7 +77,8 @@
                     if (xhr.readyState === 4 && xhr.status === 200) {
                         self.SelectedLeagueStandings(json.Standings.results);
                         self.SelectedLeagueCaptainTally(json.CaptainsTally);
-                        self.SelectedLeaguePlayersTally(json.PlayersTally)
+                        self.SelectedLeaguePlayersTally(json.PlayersTally);
+                        self.UserTeam(json.UserTeam);
                         initialiseDatatable();
                         return;
                     }
@@ -365,6 +368,18 @@
                 order: [[$('th.default-sort').index(), "asc"]],
                 responsive: true,
                 fixedHeader: true
+                //fnDrawCallback: function () {
+                //    var test = standingsTable.DataTable();
+                //    var row = test.row(function (idx, data, node) {
+                //        return data[0] == self.TeamId();
+                //    });
+                //    if (row.length > 0) {
+                //        //row.select()
+                //        //    .show()
+                //        //    .draw(false);
+                //        test.fnAddData(row.data());
+                //    }
+                //}
             });
             //var captainTable = captainTallyTable.DataTable();
             //var playerTable = playerTallyTable.DataTable();
@@ -414,5 +429,47 @@
             });
         }
     });
+
+    standingsTableFooter.on('click', 'td.details-control', function (data, event) {
+        var tr = $(this).closest('tr');
+        var td = $(this).closest('td');
+        var row = standingsTable.DataTable().row(tr.data());
+
+        if (row.child.isShown()) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+        else {
+            // Open this row
+
+            $.ajax({
+                url: "/Leagues/GetPlayersTeam",
+                type: "GET",
+                cache: false,
+                data: {
+                    teamId: self.TeamId(),
+                    currentGameWeekId: self.CurrentGwId()
+                },
+                contentType: "application/json",
+                beforeSend: function () {
+                    tr.removeClass('shown');
+                    td.addClass('loading');
+                },
+                success: function (json, status, xhr) {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        row.child(FormatChildRow(json)).show();
+                        tr.addClass('shown');
+                    }
+                },
+                complete: function (xhr, status) {
+                    td.removeClass('loading');
+                    if (xhr.readyState === 4 && xhr.status !== 200) {
+                    }
+                }
+            });
+        }
+    });
+
 
 };

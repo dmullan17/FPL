@@ -57,6 +57,7 @@ namespace FPL.Controllers
             //leagues = await AddPlayerStandingsToLeague(leagues);
 
             viewModel.SelectedLeague = leagues.classic.FindAll(x => x.league_type == "x").OrderBy(i => i.PlayerCount).First();
+            viewModel.SelectedLeague.UserTeam = viewModel.SelectedLeague.Standings.results.Find(x => x.entry == teamId);
             viewModel.IsEventLive = IsEventLive(eventStatus); 
             viewModel.ClassicLeagues = leagues.classic;
             viewModel.H2HLeagues = leagues.h2h;
@@ -106,6 +107,7 @@ namespace FPL.Controllers
             viewModel.H2HLeagues = leagues.h2h;
             viewModel.Cup = leagues.cup;
             viewModel.CurrentGwId = await GetCurrentGameWeekId();
+            viewModel.TeamId = teamId;
 
             return View(viewModel);
         }
@@ -335,7 +337,7 @@ namespace FPL.Controllers
                 }
             }
 
-
+            l.UserTeam = l.Standings.results.Find(x => x.entry == teamId);
             l.CaptainsTally = l.CaptainsTally.OrderByDescending(x => x.Count).ToList();
             l.PlayersTally = l.PlayersTally.OrderByDescending(x => x.Count).ToList();
 

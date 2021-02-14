@@ -94,6 +94,30 @@
                                         <td class="single line" data-bind="text: $root.FormatLast5GwPoints(Last5GwPoints)"></td>
                                     </tr>
                                 </tbody>
+                                <tfoot data-bind="visible: $root.SelectedLeagueStandings().length > 10">
+                                    <tr class="active" data-bind="with: $root.UserTeam">
+                                        <td style="display:none" data-bind="text: entry"></td>
+                                        <td class="details-control"></td>
+                                        <td class="single line center aligned">
+                                            <i data-bind="class: $root.GetPointsMovement($data)"></i>
+                                            <span data-bind="text: $root.GetRank($data)"></span>
+                                        </td>
+                                        <td style="font-weight:bold" data-bind="html: $root.FormatNames(entry_name, player_name)"></td>
+                                        <td class="center aligned" data-bind="text: total"></td>
+                                        <td class="center aligned" data-bind="text: event_total"></td>
+                                        <td class="center aligned" data-bind="text: $root.GetTeamBonusPoints($data.GWTeam.picks)"></td>
+                                        <td class="center aligned" data-bind="text: $root.GetGWBenchPoints($data.GWTeam.picks)"></td>
+                                        <td class="single line" data-bind="text: $root.GetCaptain($data.GWTeam.picks)"></td>
+                                        <td class="center aligned" data-bind="text: GWTeam.automatic_subs.length"></td>
+                                        <td class="center aligned" data-bind="text: PlayersYetToPlay"></td>
+                                        <td class="center aligned" data-bind="text: PointsFromFirst"></td>
+                                        <td data-bind="html: $root.GetActiveChips($data.GWTeam.ActiveChips)"></td>
+                                        <td class="center aligned" data-bind="text: $root.GetGwTransfers($data.GWTeam)"></td>
+                                        <td class="center aligned" data-bind="text: CompleteEntryHistory.TotalTransfersMade + ' (' + CompleteEntryHistory.TotalTransfersCost + ')'"></td>
+                                        <td class="single line" data-bind="html: $root.GetChipsUsed($data.CompleteEntryHistory.chips)"></td>
+                                        <td class="single line" data-bind="text: $root.FormatLast5GwPoints(Last5GwPoints)"></td>
+                                    </tr>
+                                </tfoot>
                             </table>
                             @*</div>*@
                         </div>

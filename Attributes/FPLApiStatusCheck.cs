@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FPL.Controllers;
 
 namespace FPL.Attributes
 {
@@ -13,24 +14,37 @@ namespace FPL.Attributes
     {
         public override async void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            var client = new FPLHttpClient();
+            //var client = new FPLHttpClient();
 
-            var response = await client.GetAsync("bootstrap-static/");
+            //var BaseController = new BaseController();
 
-            //response.EnsureSuccessStatusCode();
+            //try
+            //{
+            //    var teamId = await BaseController.GetTeamId();
+            //}
+            //catch (Exception e)
+            //{
+            //    filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new
+            //    {
+            //        action = "Index",
+            //        controller = "Gameweek"
+            //    }));
 
-            var content = await response.Content.ReadAsStringAsync();
+            //    return;
+            //}
 
-            if (!response.IsSuccessStatusCode)
-            {
-                filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new
-                {
-                    action = "Index",
-                    controller = "Login"
-                }));
+            //var content = await response.Content.ReadAsStringAsync();
 
-                return;
-            }
+            //if (!response.IsSuccessStatusCode)
+            //{
+            //    filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new
+            //    {
+            //        action = "Index",
+            //        controller = "Login"
+            //    }));
+
+            //    return;
+            //}
             //if (filterContext.HttpContext.Request.Cookies.Count == 0)
             //{
             //    filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new
