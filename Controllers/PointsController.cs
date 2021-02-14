@@ -383,7 +383,7 @@ namespace FPL.Controllers
             var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0  && (x.GWGames.Any(x => x.finished_provisional) || x.GWGames.Count == 0));
             RemoveIfMultiGamesInGW(startersWhoDidNotPlay);
             var subsWhoPlayed = picks.FindAll(x => x.position > 12 && x.GWPlayer.stats.minutes > 0);
-            var subsYetToPlay = picks.FindAll(x => x.position > 12 && x.GWPlayer.stats.minutes == 0 && x.GWGames.Any(x => !x.finished_provisional));
+            var subsYetToPlay = picks.FindAll(x => x.position > 12 && x.GWPlayer.stats.minutes == 0 && x.player.status != "u" && x.GWGames.Any(x => !x.finished_provisional));
 
             if (lastEvent.bonus_added && eventStatus.leagues != "Updating")
             {
