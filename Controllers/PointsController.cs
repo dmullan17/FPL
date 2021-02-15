@@ -1023,10 +1023,11 @@ namespace FPL.Controllers
                         }
                     }
                 }
-                else if (teamPicks[i].GWGames.Any(x => x.started ?? true))
+                //else if (teamPicks[i].GWGames.Any(x => x.started ?? true))
+                else if (teamPicks[i].GWGames.LastOrDefault().started ?? true)
                 {
                     //if captain didnt play assign double points to vice
-                    if (teamPicks[i].is_captain)
+                    if (teamPicks[i].is_captain )
                     {
                         var vc = teamPicks.Find(x => x.is_vice_captain);
                         if (vc != null)
