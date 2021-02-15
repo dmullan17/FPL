@@ -61,7 +61,7 @@
     };
 
     self.GetCurrentGw = function () {
-        if (!self.IsEventFinished) {
+        if (self.IsEventFinished) {
             return "GW " + (self.CurrentGwId());
         }
         else {
@@ -70,7 +70,7 @@
     };
 
     self.GetNextGw = function () {
-        if (!self.IsEventFinished) {
+        if (self.IsEventFinished) {
             return "GW " + (self.CurrentGwId() + 1);
         }
         else {
