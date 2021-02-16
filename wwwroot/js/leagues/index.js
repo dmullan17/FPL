@@ -15,13 +15,22 @@
     self.SelectedLeague = ko.observable(data.SelectedLeague);
     self.Cup = ko.observable(data.Cup);
     self.IsEventLive = ko.observable(data.IsEventLive);
+    self.IsGameLive = ko.observable(data.IsGameLive);
     self.CurrentGwId = ko.observable(data.CurrentGwId);
     self.TeamId = ko.observable(data.TeamId);
     self.UserTeam = ko.observable(data.SelectedLeague.UserTeam);
+    self.EventStatus = ko.observable(data.EventStatus);
+    self.LastUpdatedTime = ko.observable(data.LastUpdated);
+
     self.SelectedLeagueStandings = ko.observableArray(self.SelectedLeague().Standings.results);
     self.SelectedLeagueCaptainTally = ko.observableArray(self.SelectedLeague().CaptainsTally);
     self.SelectedLeaguePlayersTally = ko.observableArray(self.SelectedLeague().PlayersTally);
 
+    self.LastUpdated = function () {
+        var lastUpdatedTime = new Date(self.LastUpdatedTime()).toLocaleString("en-GB");
+        var formattedTime = lastUpdatedTime.slice(0, -3);
+        return "Last updated: " + formattedTime;
+    }
 
     self.viewPlayer = function (player) {
         self.SelectedPlayer(player);

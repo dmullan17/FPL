@@ -34,15 +34,21 @@
                     </select>
                 </div>
                 <div class="row">
-                    <h3 class="ui top attached header" data-bind="text: $root.SelectedLeague().name"></h3>
+                    <h3 class="ui top attached header">
+                        <span data-bind="text: $root.SelectedLeague().name"></span>
+                    </h3>
                     <div id="standings-segment" class="ui attached segment" style="min-height:10rem;">
+                        <div class="ui top right attached label" data-bind="visible: IsGameLive">Live</div>
+                        <div class="ui top right attached label" data-bind="hidden: IsGameLive, text: $root.LastUpdated()"></div>
                         <div id="standings-loader" class="ui inverted dimmer">
                             <div class="ui text large loader">
                                 <h3 class="ui top attached header" data-bind="text: 'Loading ' + $root.SelectedLeague().Standings.results.length + ' fantasy teams from ' + $root.SelectedLeague().name"></h3>
                             </div>
                         </div>
                         <div class="ui attached tabular menu">
-                            <a class="item active" data-tab="first">Standings</a>
+                            <a class="item active" data-tab="first">
+                                Standings
+                            </a>
                             <a class="item" data-tab="second">Tallies</a>
                             <a class="item" data-tab="third">Third</a>
                         </div>

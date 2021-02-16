@@ -13,7 +13,10 @@ namespace FPL.ViewModels.FPL
         public List<object> H2HLeagues { get; set; }
         public Cup Cup { get; set; }
         public bool IsEventLive { get; set; }
+        public bool IsGameLive { get; set; }
         public int CurrentGwId { get; set; }
         public Classic SelectedLeague { get; set; }
+        public DateTime LastUpdated { get; set; }
+
     }
 }

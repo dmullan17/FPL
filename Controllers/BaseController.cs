@@ -194,6 +194,22 @@ namespace FPL.Controllers
             return currentGameweek.id;
         }
 
+        public async Task<List<Game>> GetGwFixtures(int gameweekId)
+        {
+            //var client = new FPLHttpClient();
+
+            var response = await _httpClient.GetAsync("fixtures/?event=" + gameweekId);
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            List<Game> games = JsonConvert.DeserializeObject<List<Game>>(content);
+
+            return games;
+        }
+
+
         public async Task<List<GameWeek>> GetAllGameWeeks()
         {
             var viewModel = new GameWeekViewModel();

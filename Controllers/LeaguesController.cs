@@ -54,16 +54,20 @@ namespace FPL.Controllers
             EventStatus eventStatus = await GetEventStatus();
 
             leagues = await AddBasicInfoToPrivateLeagues(leagues, eventStatus);
-            //leagues = await AddPlayerStandingsToLeague(leagues);
+            var gameweekId = await GetCurrentGameWeekId();
+            var gwGames = await GetGwFixtures(gameweekId);
 
             viewModel.SelectedLeague = leagues.classic.FindAll(x => x.league_type == "x").OrderBy(i => i.PlayerCount).First();
             viewModel.SelectedLeague.UserTeam = viewModel.SelectedLeague.Standings.results.Find(x => x.entry == teamId);
-            viewModel.IsEventLive = IsEventLive(eventStatus); 
+            viewModel.IsEventLive = IsEventLive(eventStatus);
+            viewModel.IsGameLive = IsGameLive(eventStatus);
             viewModel.ClassicLeagues = leagues.classic;
             viewModel.H2HLeagues = leagues.h2h;
             viewModel.Cup = leagues.cup;
-            viewModel.CurrentGwId = await GetCurrentGameWeekId();
+            viewModel.CurrentGwId = gameweekId;
             viewModel.TeamId = teamId;
+            viewModel.EventStatus = eventStatus;
+            viewModel.LastUpdated = GetLastTimeLeagueWasUpdated(gwGames);
 
             return View(viewModel);
         }
@@ -115,6 +119,29 @@ namespace FPL.Controllers
         private bool IsEventLive(EventStatus eventStatus)
         {
             if (eventStatus.leagues != "Updated")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private DateTime GetLastTimeLeagueWasUpdated(List<Game> gwGames)
+        {
+            DateTime lastUpdate = new DateTime();
+
+            var finishedGames = gwGames.FindAll(x => x.finished_provisional).ToList();
+            var lastFinishedGame = finishedGames.LastOrDefault();
+            lastUpdate = lastFinishedGame.kickoff_time.GetValueOrDefault().AddMinutes(110);
+
+            return lastUpdate;
+        }
+
+        private bool IsGameLive(EventStatus eventStatus)
+        {
+            if (eventStatus.status.Any(x => x.points == "l"))
             {
                 return true;
             }
