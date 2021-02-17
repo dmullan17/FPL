@@ -323,6 +323,8 @@
         for (var i = 0; i < picks.length; i++) {
             var icon = "";
             var subIcon = "";
+            var subIcon2 = "";
+            var captain = "";
 
             if (picks[i].player.element_type == 1) {
                 icon += "user";
@@ -332,17 +334,37 @@
             }
 
             if (picks[i].is_captain) {
-                subIcon += "top right corner copyright";
+                captain += "<i class='copyright icon' style='font-size: 0.9rem !important; display: inline !important; margin-left: 2px !important;'></i>";
             }
 
             for (var j = 0; j < autoSubs.length; j++) {
                 if (autoSubs[j].element_in == picks[i].player.id || autoSubs[j].element_out == picks[i].player.id) {
-                    subIcon += "top right corner sync";
+                    subIcon += "top left corner sync";
+                }
+            }
+
+            if (picks[i].player.status != "a") {
+                //injured
+                if (picks[i].player.status == "i") {
+                    subIcon2 += "top right corner plus circle";
+                }
+                //doubtful
+                else if (picks[i].player.status == "d") {
+                    subIcon2 += "top right corner help circle";
+                }
+                //not available or suspended
+                else if (picks[i].player.status == "n" || picks[i].player.status == "s") {
+                    subIcon2 += "top right corner warning circle";
+                }
+                //unavailable - left the club
+                else if (picks[i].player.status == "u") {
+                    subIcon2 += "top right corner warning sign";
                 }
             }
 
             icon += " icon";
             subIcon += " icon";
+            subIcon2 += " icon";
 
             if (picks.length == 4) {
                 icon += " disabled";
@@ -355,9 +377,10 @@
                 '<i class="small icons">' +
                 '  <i class="' + icon + '"></i>' +
                 '  <i class="' + subIcon + '"></i>' +
+                '  <i class="' + subIcon2 + '"></i>' +
                 '</i>' +
                 '</br>' +
-                picks[i].player.web_name +
+                picks[i].player.web_name + captain +
                 '</h5>' +
                 '<p style="text-align: center">' + picks[i].GWPlayer.stats.gw_points + '</p>' +
                 '</div>' +
