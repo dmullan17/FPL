@@ -187,7 +187,7 @@ namespace FPL.Controllers
             var smallestLeague = leagues.classic.FindAll(x => x.league_type == "x").OrderBy(i => i.PlayerCount).First();
             List<Pick> captains = new List<Pick>();
             List<Pick> players = new List<Pick>();
-            int topOfLeaguePoints = smallestLeague.Standings.results.FirstOrDefault().total;
+            //int topOfLeaguePoints = smallestLeague.Standings.results.FirstOrDefault().total;
 
             foreach (var player in smallestLeague.Standings.results)
             {
@@ -210,10 +210,10 @@ namespace FPL.Controllers
                     CalculatePlayersYetToPlay(player, p);
                 }
 
-                //player.PlayersYetToPlay = gwTeam.picks.FindAll(x => x.multiplier > 0 && x.GWGames.Any(y => y.kickoff_time != null && !y.finished_provisional)).Count();
-                player.PointsFromFirst = topOfLeaguePoints - player.total;
                 player.total += (gwpoints - player.event_total);
                 player.event_total += (gwpoints - player.event_total);
+                int topOfLeaguePoints = smallestLeague.Standings.results.FirstOrDefault().total;
+                player.PointsFromFirst = topOfLeaguePoints - player.total;
                 player.GWTeam = gwTeam;
 
             }
@@ -298,7 +298,6 @@ namespace FPL.Controllers
 
             List<Pick> captains = new List<Pick>();
             List<Pick> players = new List<Pick>();
-            int topOfLeaguePoints = l.Standings.results.FirstOrDefault().total;
 
             foreach (var player in l.Standings.results)
             {
@@ -321,10 +320,10 @@ namespace FPL.Controllers
                     CalculatePlayersYetToPlay(player, p);
                 }
 
-                //player.PlayersYetToPlay = gwTeam.picks.FindAll(x => x.GWPlayer.stats.minutes == 0 && x.multiplier > 0 && x.GWGames.Any(x => x.kickoff_time != null && !x.finished)).Count();
-                player.PointsFromFirst = topOfLeaguePoints - player.total;
                 player.total += (gwpoints - player.event_total);
                 player.event_total += (gwpoints - player.event_total);
+                int topOfLeaguePoints = l.Standings.results.FirstOrDefault().total;
+                player.PointsFromFirst = topOfLeaguePoints - player.total;
                 player.GWTeam = gwTeam;
 
             }
