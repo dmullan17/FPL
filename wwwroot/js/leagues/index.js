@@ -188,7 +188,23 @@
         }
         else {
             for (var i = 0; i < activeChips.length; i++) {
-                html += activeChips[i] + "</br>";
+                //html += activeChips[i] + "</br>";
+                if (activeChips[i] == "wildcard") {
+                    html += "WC</br>";
+                    continue;
+                }
+                else if (activeChips[i] == "freehit") {
+                    html += "FH</br>";
+                    continue;
+                }
+                else if (activeChips[i] == "bboost") {
+                    html += "BB</br>";
+                    continue;
+                }
+                else if (activeChips[i] == "3xc") {
+                    html += "TC</br>";
+                    continue;
+                }
             }
         }
         return html;
