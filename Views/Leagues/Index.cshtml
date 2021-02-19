@@ -39,7 +39,7 @@
                     </h3>
                     <div id="standings-segment" class="ui attached segment" style="min-height:10rem;">
                         @*<div class="ui top right attached label" data-bind="visible: IsGameLive">Live</div>*@
-                        <div class="ui top right attached label" data-bind="hidden: IsGameLive, text: $root.LastUpdated()"></div>
+                        <div class="ui top right attached label" style="font-size: 0.9rem !important" data-bind="hidden: IsGameLive, text: $root.LastUpdated()"></div>
                         <div id="standings-loader" class="ui inverted dimmer">
                             <div class="ui text large loader">
                                 <h3 class="ui top attached header" data-bind="text: 'Loading ' + $root.SelectedLeague().Standings.results.length + ' fantasy teams from ' + $root.SelectedLeague().name"></h3>
@@ -129,25 +129,27 @@
                             @*</div>*@
                         </div>
                         <div class="ui bottom attached tab segment" data-tab="second">
-                            <div class="ui two column grid">
-                                <div class="column">
+                            <div class="ui grid">
+                                @*<div class="column">
                                     <div class="tally-table-container">
                                         <table id="captain-tally-table" class="ui unstackable uncollapsing sticky-header table">
                                             <thead>
                                                 <tr>
                                                     <th>Captain</th>
                                                     <th class="center aligned">Count</th>
+                                                    <th class="center aligned">Selection %</th>
                                                 </tr>
                                             </thead>
                                             <tbody data-bind="foreach: $root.SelectedLeagueCaptainTally">
                                                 <tr>
                                                     <td data-bind="text: Name"></td>
                                                     <td class="center aligned" data-bind="text: Count"></td>
+                                                    <td class="center aligned" data-bind="text: Ownership"></td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
-                                </div>
+                                </div>*@
                                 <div class="column">
                                     <div class="tally-table-container">
                                         <table id="player-tally-table" class="ui unstackable uncollapsing sticky-header table">
@@ -155,12 +157,20 @@
                                                 <tr>
                                                     <th>Player</th>
                                                     <th class="center aligned">Count</th>
+                                                    <th class="center aligned">Ownership %</th>
+                                                    <th class="center aligned">Starting Ownership %</th>
+                                                    <th class="center aligned">Captain Selection %</th>
+                                                    <th class="center aligned">GW Points</th>
                                                 </tr>
                                             </thead>
                                             <tbody data-bind="foreach: $root.SelectedLeaguePlayersTally">
                                                 <tr>
-                                                    <td data-bind="text: Name"></td>
+                                                    <td data-bind="text: Pick.player.web_name"></td>
                                                     <td class="center aligned" data-bind="text: Count"></td>
+                                                    <td class="center aligned" data-bind="text: Ownership"></td>
+                                                    <td class="center aligned" data-bind="text: StartingOwnership"></td>
+                                                    <td class="center aligned" data-bind="text: CaptainSelection"></td>
+                                                    <td class="center aligned" data-bind="text: Pick.player.event_points"></td>
                                                 </tr>
                                             </tbody>
                                         </table>
