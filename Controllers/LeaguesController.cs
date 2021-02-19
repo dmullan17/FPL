@@ -104,14 +104,17 @@ namespace FPL.Controllers
             leagues = await AddBasicInfoToPrivateLeagues(leagues, eventStatus);
             Classic selectedLeague = await GetPlayerStandingsForClassicLeague(id);
             //leagues = await AddPlayerStandingsToLeague(leagues);
+            var gameweekId = await GetCurrentGameWeekId();
+            var gwGames = await GetGwFixtures(gameweekId);
 
             viewModel.SelectedLeague = selectedLeague;
             viewModel.IsEventLive = IsEventLive(eventStatus);
             viewModel.ClassicLeagues = leagues.classic;
             viewModel.H2HLeagues = leagues.h2h;
             viewModel.Cup = leagues.cup;
-            viewModel.CurrentGwId = await GetCurrentGameWeekId();
+            viewModel.CurrentGwId = gameweekId;
             viewModel.TeamId = teamId;
+            viewModel.LastUpdated = GetLastTimeLeagueWasUpdated(gwGames);
 
             return View(viewModel);
         }
@@ -185,9 +188,8 @@ namespace FPL.Controllers
             }
 
             var smallestLeague = leagues.classic.FindAll(x => x.league_type == "x").OrderBy(i => i.PlayerCount).First();
-            List<Pick> captains = new List<Pick>();
+            int leagueCount = Convert.ToInt32(smallestLeague.Standings.results.Count);
             List<Pick> players = new List<Pick>();
-            //int topOfLeaguePoints = smallestLeague.Standings.results.FirstOrDefault().total;
 
             foreach (var player in smallestLeague.Standings.results)
             {
@@ -201,8 +203,6 @@ namespace FPL.Controllers
                 player.CompleteEntryHistory = await PointsController.GetCompleteEntryHistory(player.CompleteEntryHistory, player.entry);
                 player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
                 int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
-
-                //captains.Add(gwTeam.picks.Find(x => x.is_captain));
 
                 foreach (var p in gwTeam.picks)
                 {
@@ -224,26 +224,6 @@ namespace FPL.Controllers
             {
                 player.rank = standingsByLivePointsTotal.IndexOf(player) + 1;
             }
-
-            int leagueCount = Convert.ToInt32(smallestLeague.Standings.results.Count);
-
-            //foreach (var captain in captains)
-            //{
-            //    if (!smallestLeague.CaptainsTally.Any(x => x.Name == captain.player.web_name))
-            //    {
-            //        int count = captains.FindAll(x => x.element == captain.element).Count();
-            //        var ownership = ((double)count / (double)leagueCount).ToString("0%");
-
-            //        var pt = new PlayerTally()
-            //        {
-            //            Pick = captain,
-            //            Count = count,
-            //            Ownership = ownership
-            //        };
-
-            //        smallestLeague.CaptainsTally.Add(pt);
-            //    }
-            //}
 
             foreach (var player in players)
             {
@@ -271,8 +251,7 @@ namespace FPL.Controllers
                 }
             }
 
-            //smallestLeague.CaptainsTally = smallestLeague.CaptainsTally.OrderByDescending(x => x.Count).ToList();
-            smallestLeague.PlayersTally = smallestLeague.PlayersTally.OrderByDescending(x => x.Count).ToList();
+            smallestLeague.PlayersTally = smallestLeague.PlayersTally.ToList();
 
             return leagues;
         }
@@ -312,7 +291,7 @@ namespace FPL.Controllers
                 l.Standings.results.Add(r);
             }
 
-            //List<Pick> captains = new List<Pick>();
+            int leagueCount = Convert.ToInt32(l.Standings.results.Count);
             List<Pick> players = new List<Pick>();
 
             foreach (var player in l.Standings.results)
@@ -327,8 +306,6 @@ namespace FPL.Controllers
                 player.CompleteEntryHistory = await PointsController.GetCompleteEntryHistory(player.CompleteEntryHistory, player.entry);
                 player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
                 int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
-
-                //captains.Add(gwTeam.picks.Find(x => x.is_captain));
 
                 foreach (var p in gwTeam.picks)
                 {
@@ -350,26 +327,6 @@ namespace FPL.Controllers
             {
                 player.rank = standingsByLivePointsTotal.IndexOf(player) + 1;
             }
-
-            int leagueCount = Convert.ToInt32(l.Standings.results.Count);
-
-            //foreach (var captain in captains)
-            //{
-            //    if (!l.CaptainsTally.Any(x => x.Name == captain.player.web_name))
-            //    {
-            //        var count = captains.FindAll(x => x.element == captain.element).Count();
-            //        var ownership = ((double)count / (double)leagueCount).ToString("0%");
-
-            //        var pt = new PlayerTally()
-            //        {
-            //            Pick = captain,
-            //            Count = count,
-            //            Ownership = ownership
-            //        };
-
-            //        l.CaptainsTally.Add(pt);
-            //    }
-            //}
 
             foreach (var player in players)
             {
@@ -398,8 +355,7 @@ namespace FPL.Controllers
             }
 
             l.UserTeam = l.Standings.results.Find(x => x.entry == teamId);
-            //l.CaptainsTally = l.CaptainsTally.OrderByDescending(x => x.Count).ToList();
-            l.PlayersTally = l.PlayersTally.OrderByDescending(x => x.Count).ToList();
+            l.PlayersTally = l.PlayersTally.ToList();
 
             return l;
         }

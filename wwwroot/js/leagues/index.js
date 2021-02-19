@@ -7,7 +7,6 @@
         standingsTable = $('#standings-table'),
         standingsTableBody = $('#standings-table tbody'),
         standingsTableFooter = $('#standings-table tfoot'),
-        captainTallyTable = $('#captain-tally-table'),
         playerTallyTable = $('#player-tally-table');
 
     self.ClassicLeagues = ko.observableArray(data.ClassicLeagues);
@@ -23,7 +22,6 @@
     self.LastUpdatedTime = ko.observable(data.LastUpdated);
 
     self.SelectedLeagueStandings = ko.observableArray(self.SelectedLeague().Standings.results);
-    self.SelectedLeagueCaptainTally = ko.observableArray(self.SelectedLeague().CaptainsTally);
     self.SelectedLeaguePlayersTally = ko.observableArray(self.SelectedLeague().PlayersTally);
 
     self.LastUpdated = function () {
@@ -73,6 +71,7 @@
 
         if ($.fn.dataTable.isDataTable(standingsTable)) {
             standingsTable.DataTable().clear().destroy();
+            playerTallyTable.DataTable().clear().destroy();
 
             $.ajax({
                 url: "/Leagues/GetPlayerStandingsForClassicLeague",
@@ -85,10 +84,10 @@
                 success: function (json, status, xhr) {
                     if (xhr.readyState === 4 && xhr.status === 200) {
                         self.SelectedLeagueStandings(json.Standings.results);
-                        //self.SelectedLeagueCaptainTally(json.CaptainsTally);
                         self.SelectedLeaguePlayersTally(json.PlayersTally);
                         self.UserTeam(json.UserTeam);
                         initialiseStandingsDatatable();
+                        initialiseTalliesDatatable();
                         return;
                     }
                 },
@@ -255,11 +254,14 @@
    
     self.init = function () {
         $('.menu .item').tab({
-            'onLoad': function (tabPath) {
-                if (tabPath == "second") {
-                    initialiseTalliesDatatable();
-                }
-            }
+            //'onLoad': function (tabPath) {
+            //    if (tabPath == "second") {
+            //        if (!$.fn.dataTable.isDataTable(playerTallyTable)) {
+            //            //playerTallyTable.DataTable().clear().destroy();
+            //            initialiseTalliesDatatable();
+            //        }
+            //    }
+            //}
         });
 
         ////self.SelectedLeague(self.ClassicLeagues()[4]);
@@ -271,6 +273,7 @@
         }
 
         initialiseStandingsDatatable();
+        initialiseTalliesDatatable();
     };
 
     self.init();
@@ -424,15 +427,16 @@
                 responsive: true,
                 fixedHeader: true
             });
-            //var captainTable = captainTallyTable.DataTable();
-            //var playerTable = playerTallyTable.DataTable();
 
         });
     }
 
     function initialiseTalliesDatatable() {
         $(document).ready(function () {
-            var table = playerTallyTable.DataTable();
+            var table = playerTallyTable.DataTable({
+                order: [[$('#player-tally-table th.default-sort').index(), "desc"]]
+
+            });
 
         });
     }

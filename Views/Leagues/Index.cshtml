@@ -54,7 +54,6 @@
                             <a class="item" data-tab="third">Third</a>
                         </div>
                         <div class="ui bottom attached tab segment active" data-tab="first">
-                            @*<div id="standings-segment" class="ui attached segment" style="min-height:10rem;">*@
                             <table id="standings-table" class="ui unstackable table">
                                 <thead>
                                     <tr class="single line">
@@ -126,55 +125,32 @@
                                     </tr>
                                 </tfoot>
                             </table>
-                            @*</div>*@
                         </div>
                         <div class="ui bottom attached tab segment" data-tab="second">
                             <div class="ui grid">
-                                @*<div class="column">
-                                    <div class="tally-table-container">
-                                        <table id="captain-tally-table" class="ui unstackable uncollapsing sticky-header table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Captain</th>
-                                                    <th class="center aligned">Count</th>
-                                                    <th class="center aligned">Selection %</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody data-bind="foreach: $root.SelectedLeagueCaptainTally">
-                                                <tr>
-                                                    <td data-bind="text: Name"></td>
-                                                    <td class="center aligned" data-bind="text: Count"></td>
-                                                    <td class="center aligned" data-bind="text: Ownership"></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>*@
                                 <div class="column">
-                                    <div class="tally-table-container">
-                                        <table id="player-tally-table" class="ui unstackable uncollapsing sticky-header table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Player</th>
-                                                    <th class="center aligned">Count</th>
-                                                    <th class="center aligned">Ownership %</th>
-                                                    <th class="center aligned">Starting Ownership %</th>
-                                                    <th class="center aligned">Captain Selection %</th>
-                                                    <th class="center aligned">GW Points</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody data-bind="foreach: $root.SelectedLeaguePlayersTally">
-                                                <tr>
-                                                    <td data-bind="text: Pick.player.web_name"></td>
-                                                    <td class="center aligned" data-bind="text: Count"></td>
-                                                    <td class="center aligned" data-bind="text: Ownership"></td>
-                                                    <td class="center aligned" data-bind="text: StartingOwnership"></td>
-                                                    <td class="center aligned" data-bind="text: CaptainSelection"></td>
-                                                    <td class="center aligned" data-bind="text: Pick.player.event_points"></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    <table id="player-tally-table" class="ui unstackable uncollapsing table">
+                                        <thead>
+                                            <tr>
+                                                <th>Player</th>
+                                                <th class="center aligned">Count</th>
+                                                <th class="center aligned">Ownership %</th>
+                                                <th class="center aligned">Starting Ownership %</th>
+                                                <th class="center aligned">Captain Selection %</th>
+                                                <th class="default-sort center aligned">GW Points</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-bind="foreach: $root.SelectedLeaguePlayersTally">
+                                            <tr>
+                                                <td data-bind="text: Pick.player.web_name"></td>
+                                                <td class="center aligned" data-bind="text: Count"></td>
+                                                <td class="center aligned" data-bind="text: Ownership"></td>
+                                                <td class="center aligned" data-bind="text: StartingOwnership"></td>
+                                                <td class="center aligned" data-bind="text: CaptainSelection"></td>
+                                                <td class="center aligned" data-bind="text: Pick.player.event_points"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
