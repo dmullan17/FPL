@@ -63,7 +63,7 @@
             if ($.fn.dataTable.isDataTable(standingsTable)) {
                 standingsTable.DataTable().clear().destroy();
             }
-            initialiseDatatable();
+            initialiseStandingsDatatable();
             self.SelectedLeague(league);
         }
 
@@ -85,10 +85,10 @@
                 success: function (json, status, xhr) {
                     if (xhr.readyState === 4 && xhr.status === 200) {
                         self.SelectedLeagueStandings(json.Standings.results);
-                        self.SelectedLeagueCaptainTally(json.CaptainsTally);
+                        //self.SelectedLeagueCaptainTally(json.CaptainsTally);
                         self.SelectedLeaguePlayersTally(json.PlayersTally);
                         self.UserTeam(json.UserTeam);
-                        initialiseDatatable();
+                        initialiseStandingsDatatable();
                         return;
                     }
                 },
@@ -238,7 +238,14 @@
 
    
     self.init = function () {
-        $('.menu .item').tab();
+        $('.menu .item').tab({
+            'onLoad': function (tabPath) {
+                if (tabPath == "second") {
+                    initialiseTalliesDatatable();
+                }
+            }
+        });
+
         ////self.SelectedLeague(self.ClassicLeagues()[4]);
         for (var i = 0; i < self.ClassicLeagues().length; i++) {
             if (self.ClassicLeagues()[i] = self.SelectedLeague()) {
@@ -247,7 +254,7 @@
             }
         }
 
-        initialiseDatatable();
+        initialiseStandingsDatatable();
     };
 
     self.init();
@@ -391,7 +398,7 @@
 
     }
 
-    function initialiseDatatable() {
+    function initialiseStandingsDatatable() {
         $(document).ready(function () {
             var table = standingsTable.DataTable({
                 columnDefs: [
@@ -400,21 +407,16 @@
                 order: [[$('th.default-sort').index(), "asc"]],
                 responsive: true,
                 fixedHeader: true
-                //fnDrawCallback: function () {
-                //    var test = standingsTable.DataTable();
-                //    var row = test.row(function (idx, data, node) {
-                //        return data[0] == self.TeamId();
-                //    });
-                //    if (row.length > 0) {
-                //        //row.select()
-                //        //    .show()
-                //        //    .draw(false);
-                //        test.fnAddData(row.data());
-                //    }
-                //}
             });
             //var captainTable = captainTallyTable.DataTable();
             //var playerTable = playerTallyTable.DataTable();
+
+        });
+    }
+
+    function initialiseTalliesDatatable() {
+        $(document).ready(function () {
+            var table = playerTallyTable.DataTable();
 
         });
     }

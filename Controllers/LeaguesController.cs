@@ -202,7 +202,7 @@ namespace FPL.Controllers
                 player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
                 int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
 
-                captains.Add(gwTeam.picks.Find(x => x.is_captain));
+                //captains.Add(gwTeam.picks.Find(x => x.is_captain));
 
                 foreach (var p in gwTeam.picks)
                 {
@@ -225,37 +225,53 @@ namespace FPL.Controllers
                 player.rank = standingsByLivePointsTotal.IndexOf(player) + 1;
             }
 
-            foreach (var captain in captains)
-            {
-                if (!smallestLeague.CaptainsTally.Any(x => x.Name == captain.player.web_name))
-                {
-                    var count = captains.FindAll(x => x.element == captain.element).Count();
-                    var pt = new PlayerTally()
-                    {
-                        Name = captain.player.web_name,
-                        Count = count
-                    };
+            int leagueCount = Convert.ToInt32(smallestLeague.Standings.results.Count);
 
-                    smallestLeague.CaptainsTally.Add(pt);
-                }
-            }
+            //foreach (var captain in captains)
+            //{
+            //    if (!smallestLeague.CaptainsTally.Any(x => x.Name == captain.player.web_name))
+            //    {
+            //        int count = captains.FindAll(x => x.element == captain.element).Count();
+            //        var ownership = ((double)count / (double)leagueCount).ToString("0%");
+
+            //        var pt = new PlayerTally()
+            //        {
+            //            Pick = captain,
+            //            Count = count,
+            //            Ownership = ownership
+            //        };
+
+            //        smallestLeague.CaptainsTally.Add(pt);
+            //    }
+            //}
 
             foreach (var player in players)
             {
-                if (!smallestLeague.PlayersTally.Any(x => x.Name == player.player.web_name))
+                if (!smallestLeague.PlayersTally.Any(x => x.Pick.element == player.element))
                 {
                     var count = players.FindAll(x => x.element == player.element).Count();
+                    var ownership = ((double)count / (double)leagueCount).ToString("0%");
+
+                    var startingCount = players.FindAll(x => x.element == player.element && x.multiplier > 0).Count();
+                    var startingOwnership = ((double)startingCount / (double)leagueCount).ToString("0%");
+
+                    int captainCount = players.FindAll(x => x.element == player.element && x.is_captain).Count();
+                    var captainSelection = ((double)captainCount / (double)leagueCount).ToString("0%");
+
                     var pt = new PlayerTally()
                     {
-                        Name = player.player.web_name,
-                        Count = count
+                        Pick = player,
+                        Count = count,
+                        Ownership = ownership,
+                        StartingOwnership = startingOwnership,
+                        CaptainSelection = captainSelection
                     };
 
                     smallestLeague.PlayersTally.Add(pt);
                 }
             }
 
-            smallestLeague.CaptainsTally = smallestLeague.CaptainsTally.OrderByDescending(x => x.Count).ToList();
+            //smallestLeague.CaptainsTally = smallestLeague.CaptainsTally.OrderByDescending(x => x.Count).ToList();
             smallestLeague.PlayersTally = smallestLeague.PlayersTally.OrderByDescending(x => x.Count).ToList();
 
             return leagues;
@@ -296,7 +312,7 @@ namespace FPL.Controllers
                 l.Standings.results.Add(r);
             }
 
-            List<Pick> captains = new List<Pick>();
+            //List<Pick> captains = new List<Pick>();
             List<Pick> players = new List<Pick>();
 
             foreach (var player in l.Standings.results)
@@ -312,7 +328,7 @@ namespace FPL.Controllers
                 player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
                 int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
 
-                captains.Add(gwTeam.picks.Find(x => x.is_captain));
+                //captains.Add(gwTeam.picks.Find(x => x.is_captain));
 
                 foreach (var p in gwTeam.picks)
                 {
@@ -335,30 +351,46 @@ namespace FPL.Controllers
                 player.rank = standingsByLivePointsTotal.IndexOf(player) + 1;
             }
 
-            foreach (var captain in captains)
-            {
-                if (!l.CaptainsTally.Any(x => x.Name == captain.player.web_name))
-                {
-                    var count = captains.FindAll(x => x.element == captain.element).Count();
-                    var pt = new PlayerTally()
-                    {
-                        Name = captain.player.web_name,
-                        Count = count
-                    };
+            int leagueCount = Convert.ToInt32(l.Standings.results.Count);
 
-                    l.CaptainsTally.Add(pt);
-                }
-            }
+            //foreach (var captain in captains)
+            //{
+            //    if (!l.CaptainsTally.Any(x => x.Name == captain.player.web_name))
+            //    {
+            //        var count = captains.FindAll(x => x.element == captain.element).Count();
+            //        var ownership = ((double)count / (double)leagueCount).ToString("0%");
+
+            //        var pt = new PlayerTally()
+            //        {
+            //            Pick = captain,
+            //            Count = count,
+            //            Ownership = ownership
+            //        };
+
+            //        l.CaptainsTally.Add(pt);
+            //    }
+            //}
 
             foreach (var player in players)
             {
-                if (!l.PlayersTally.Any(x => x.Name == player.player.web_name))
+                if (!l.PlayersTally.Any(x => x.Pick.element == player.element))
                 {
                     var count = players.FindAll(x => x.element == player.element).Count();
+                    var ownership = ((double)count / (double)leagueCount).ToString("0%");
+
+                    var startingCount = players.FindAll(x => x.element == player.element && x.multiplier > 0).Count();
+                    var startingOwnership = ((double)startingCount / (double)leagueCount).ToString("0%");
+
+                    int captainCount = players.FindAll(x => x.element == player.element && x.is_captain).Count();
+                    var captainSelection = ((double)captainCount / (double)leagueCount).ToString("0%");
+
                     var pt = new PlayerTally()
                     {
-                        Name = player.player.web_name,
-                        Count = count
+                        Pick = player,
+                        Count = count,
+                        Ownership = ownership,
+                        StartingOwnership = startingOwnership,
+                        CaptainSelection = captainSelection
                     };
 
                     l.PlayersTally.Add(pt);
@@ -366,7 +398,7 @@ namespace FPL.Controllers
             }
 
             l.UserTeam = l.Standings.results.Find(x => x.entry == teamId);
-            l.CaptainsTally = l.CaptainsTally.OrderByDescending(x => x.Count).ToList();
+            //l.CaptainsTally = l.CaptainsTally.OrderByDescending(x => x.Count).ToList();
             l.PlayersTally = l.PlayersTally.OrderByDescending(x => x.Count).ToList();
 
             return l;

@@ -12,7 +12,7 @@ namespace FPL.Models.FPL
             Standings = new Standings();
         }
         public Result UserTeam { get; set; }
-        public List<PlayerTally> CaptainsTally { get; set; } = new List<PlayerTally>();
+        //public List<PlayerTally> CaptainsTally { get; set; } = new List<PlayerTally>();
         public List<PlayerTally> PlayersTally { get; set; } = new List<PlayerTally>();
         public int PlayerCount { get; set; }
         public Standings Standings { get; set; }
