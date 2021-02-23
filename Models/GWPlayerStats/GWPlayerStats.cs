@@ -9,6 +9,7 @@ namespace FPL.Models.GWPlayerStats
             BpsRank = new List<int>();
         }
         public List<int> BpsRank { get; set; }
+        public List<int> EstimatedBonus { get; set; } = new List<int>();
         public int minutes { get; set; }
         public int goals_scored { get; set; }
         public int assists { get; set; }
@@ -21,7 +22,6 @@ namespace FPL.Models.GWPlayerStats
         public int red_cards { get; set; }
         public int saves { get; set; }
         public int bonus { get; set; }
-        public int EstimatedBonus { get; set; }
         public int bps { get; set; }
         public string influence { get; set; }
         public string creativity { get; set; }

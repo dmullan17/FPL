@@ -53,6 +53,7 @@ namespace FPL.Controllers
             gwTeam.EntryHistory = await AddExtraDatatoEntryHistory(gwTeam.EntryHistory);
             gwTeam = await AddAutoSubs(gwTeam, gwTeam.picks, teamId);
             EventStatus eventStatus = await GetEventStatus();
+            gwTeam.picks = AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
             int gwpoints = GetGameWeekPoints(gwTeam.picks, eventStatus);
             FPLTeam teamDetails = await GetTeamInfo(teamId);
 
@@ -114,6 +115,7 @@ namespace FPL.Controllers
             gwTeam = await AddAutoSubs(gwTeam, gwTeam.picks, id);
             var liveGameCount = gwTeam.picks.FindAll(x => !x.GWGames.Any(x => x.finished_provisional)).Count();
             EventStatus eventStatus = await GetEventStatus();
+            gwTeam.picks = AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
             int gwpoints = GetGameWeekPoints(gwTeam.picks, eventStatus);
             FPLTeam teamDetails = await GetTeamInfo(teamId);
 
@@ -264,6 +266,7 @@ namespace FPL.Controllers
                 if (status.date == DateTime.Now.ToString("yyyy-MM-dd") && !status.bonus_added)
                 {
                     bonusAdded = false;
+                    break;
                 }
             }
 
@@ -275,11 +278,12 @@ namespace FPL.Controllers
                     {
                         if (pick.is_captain)
                         {
-                            gwpoints += pick.GWPlayer.stats.gw_points + (pick.GWPlayer.stats.EstimatedBonus * 2);
+                            gwpoints += pick.GWPlayer.stats.gw_points;
+                            //gwpoints += pick.GWPlayer.stats.gw_points * pick.multiplier;
                         }
                         else
                         {
-                            gwpoints += pick.GWPlayer.stats.gw_points + pick.GWPlayer.stats.EstimatedBonus;
+                            gwpoints += pick.GWPlayer.stats.gw_points;
                         }               
                     }
                     else
@@ -304,22 +308,28 @@ namespace FPL.Controllers
                 if (status.date == DateTime.Now.ToString("yyyy-MM-dd") && !status.bonus_added)
                 {
                     bonusAdded = false;
+                    break;
                 }
             }
 
             foreach (Pick pick in teamPicks)
             {
-                if (!bonusAdded && !pick.GWGames.Any(x => x.finished))
+                if (!bonusAdded && !pick.GWGames.LastOrDefault().finished)
                 {
+                    //pick.GWPlayer.stats.gw_points += pick.GWPlayer.stats.EstimatedBonus;
                     if (pick.is_captain)
                     {
-                        pick.GWPlayer.stats.gw_points += (pick.GWPlayer.stats.EstimatedBonus * 2);
+                        pick.GWPlayer.stats.gw_points += (pick.GWPlayer.stats.EstimatedBonus.LastOrDefault() * pick.multiplier);
                     }
                     else
                     {
-                        pick.GWPlayer.stats.gw_points += pick.GWPlayer.stats.EstimatedBonus;
+                        pick.GWPlayer.stats.gw_points += pick.GWPlayer.stats.EstimatedBonus.LastOrDefault();
                     }
                 }
+                //else
+                //{
+                //    gwpoints += pick.GWPlayer.stats.gw_points;
+                //}
             }
 
             return teamPicks;
@@ -946,17 +956,17 @@ namespace FPL.Controllers
                                 if (topPlayersByBps[0].value == playerBps && topPlayersByBps[1].value == playerBps)
                                 {
                                     pick.GWPlayer.stats.BpsRank.Add(1);
-                                    pick.GWPlayer.stats.EstimatedBonus += 3;
+                                    pick.GWPlayer.stats.EstimatedBonus.Add(3);
                                 }
                                 else if (topPlayersByBps[1].value == playerBps && topPlayersByBps[2].value == playerBps)
                                 {
                                     pick.GWPlayer.stats.BpsRank.Add(2);
-                                    pick.GWPlayer.stats.EstimatedBonus += 2;
+                                    pick.GWPlayer.stats.EstimatedBonus.Add(2);
                                 }
                                 else if (topPlayersByBps[2].value == playerBps && topPlayersByBps[3].value == playerBps)
                                 {
                                     pick.GWPlayer.stats.BpsRank.Add(3);
-                                    pick.GWPlayer.stats.EstimatedBonus += 1;
+                                    pick.GWPlayer.stats.EstimatedBonus.Add(1);
                                 }
                                 break;
                             } 
@@ -974,11 +984,11 @@ namespace FPL.Controllers
                         {
                             if (i == 3)
                             {
-                                pick.GWPlayer.stats.EstimatedBonus += 0;
+                                pick.GWPlayer.stats.EstimatedBonus.Add(0);
                             }
                             else
                             {
-                                pick.GWPlayer.stats.EstimatedBonus += 3 - i;
+                                pick.GWPlayer.stats.EstimatedBonus.Add(3 - i);
                             }
                             break;
                         }

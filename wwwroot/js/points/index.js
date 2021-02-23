@@ -400,12 +400,13 @@
                             return player.GWPlayer.stats.gw_points;
                         }
                         else if (!self.EventStatus().status[i].bonus_added) {
-                            if (player.is_captain) {
-                                return player.GWPlayer.stats.gw_points + (player.GWPlayer.stats.EstimatedBonus * 2) + "*";
-                            }
-                            else {
-                                return player.GWPlayer.stats.gw_points + player.GWPlayer.stats.EstimatedBonus + "*";
-                            }
+                            //if (player.is_captain) {
+                            //    return player.GWPlayer.stats.gw_points + (player.GWPlayer.stats.EstimatedBonus * 2) + "*";
+                            //}
+                            //else {
+                            //    return player.GWPlayer.stats.gw_points + player.GWPlayer.stats.EstimatedBonus + "*";
+                            //}
+                            return player.GWPlayer.stats.gw_points + "*";
                         }
                     }
                 }

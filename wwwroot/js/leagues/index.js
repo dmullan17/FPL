@@ -128,7 +128,9 @@
         var bonusPoints = 0;
 
         for (var i = 0; i < starters.length; i++) {
-            bonusPoints += starters[i].GWPlayer.stats.EstimatedBonus;
+            for (var j = 0; j < starters[i].GWPlayer.stats.EstimatedBonus.length; j++) {
+                bonusPoints += starters[i].GWPlayer.stats.EstimatedBonus[j];
+            }         
         }
 
         return bonusPoints;

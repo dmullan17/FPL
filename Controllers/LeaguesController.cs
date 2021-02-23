@@ -136,8 +136,12 @@ namespace FPL.Controllers
             DateTime lastUpdate = new DateTime();
 
             var finishedGames = gwGames.FindAll(x => x.finished_provisional).ToList();
-            var lastFinishedGame = finishedGames.LastOrDefault();
-            lastUpdate = lastFinishedGame.kickoff_time.GetValueOrDefault().AddMinutes(110);
+            
+            if (finishedGames.Count > 0)
+            {
+                var lastFinishedGame = finishedGames.LastOrDefault();
+                lastUpdate = lastFinishedGame.kickoff_time.GetValueOrDefault().AddMinutes(110);
+            }
 
             return lastUpdate;
         }
@@ -202,6 +206,7 @@ namespace FPL.Controllers
                 //gwTeam.EntryHistory = await PointsController.AddExtraDatatoEntryHistory(gwTeam.EntryHistory);
                 player.CompleteEntryHistory = await PointsController.GetCompleteEntryHistory(player.CompleteEntryHistory, player.entry);
                 player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
+                gwTeam.picks = PointsController.AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
                 int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
 
                 foreach (var p in gwTeam.picks)
@@ -305,6 +310,7 @@ namespace FPL.Controllers
                 //gwTeam.EntryHistory = await PointsController.AddExtraDatatoEntryHistory(gwTeam.EntryHistory);
                 player.CompleteEntryHistory = await PointsController.GetCompleteEntryHistory(player.CompleteEntryHistory, player.entry);
                 player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
+                gwTeam.picks = PointsController.AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
                 int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
 
                 foreach (var p in gwTeam.picks)
@@ -315,17 +321,19 @@ namespace FPL.Controllers
 
                 player.total += (gwpoints - player.event_total);
                 player.event_total += (gwpoints - player.event_total);
-                int topOfLeaguePoints = l.Standings.results.FirstOrDefault().total;
-                player.PointsFromFirst = topOfLeaguePoints - player.total;
+                //int topOfLeaguePoints = l.Standings.results.FirstOrDefault().total;
+                //player.PointsFromFirst = topOfLeaguePoints - player.total;
                 player.GWTeam = gwTeam;
 
             }
 
             var standingsByLivePointsTotal = l.Standings.results.OrderByDescending(x => x.total).ToList();
+            int topOfLeaguePoints = l.Standings.results.OrderByDescending(x => x.total).FirstOrDefault().total;
 
             foreach (var player in l.Standings.results)
             {
                 player.rank = standingsByLivePointsTotal.IndexOf(player) + 1;
+                player.PointsFromFirst = topOfLeaguePoints - player.total;
             }
 
             foreach (var player in players)
