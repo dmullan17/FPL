@@ -55,6 +55,27 @@
 
     }
 
+    self.GetPlayerTallyGwPoints = function (tally) {
+
+        //ensuring the gw points shown in the player tally table includes the estimated bonus
+        var points = tally.Pick.GWPlayer.stats.total_points;
+
+        for (var i = 0; i < tally.Pick.GWGames.length; i++) {
+            for (var j = 0; j < tally.Pick.GWPlayer.explain.length; j++) {
+                if (tally.Pick.GWGames[i].id == tally.Pick.GWPlayer.explain[j].fixture) {
+                    if (!tally.Pick.GWGames[i].finished) {
+                        if (tally.Pick.GWPlayer.stats.EstimatedBonus.length > j) {
+                            points += tally.Pick.GWPlayer.stats.EstimatedBonus[j];
+                        }
+                    }
+                }
+            }
+        }
+
+        return points;
+
+    }
+
     self.changeLeague = function (league) {
         //self.SelectedLeague({});
         if (league != self.SelectedLeague()) {
