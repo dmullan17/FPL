@@ -299,24 +299,24 @@ namespace FPL.Controllers
 
         public List<Pick> AddEstimatedBonusToTeamPicks(List<Pick> teamPicks, EventStatus eventStatus)
         {
-            bool bonusAdded = true;
+            var picksWhosGameHasStarted = new List<Pick>();
 
-            //needs to be sorted
-
-            foreach (var status in eventStatus.status)
-            {
-                if (status.date == DateTime.Now.ToString("yyyy-MM-dd") && !status.bonus_added)
-                {
-                    bonusAdded = false;
-                    break;
-                }
-            }
-
+            //get picks whos gw games has started
             foreach (Pick pick in teamPicks)
             {
-                if (!bonusAdded && !pick.GWGames.LastOrDefault().finished)
+                var games = (pick.GWGames.FindAll(x => x.started ?? true).ToList());
+
+                if (games.Count > 0)
                 {
-                    //pick.GWPlayer.stats.gw_points += pick.GWPlayer.stats.EstimatedBonus;
+                    picksWhosGameHasStarted.Add(pick);              
+                }              
+            }
+
+            //add estimated bonus to picks whos games have started if bonus hasn't been applied by FPL yet
+            foreach (Pick pick in picksWhosGameHasStarted)
+            {
+                if (!pick.GWGames.FindAll(x => x.started ?? true).LastOrDefault().finished)
+                {
                     if (pick.is_captain)
                     {
                         pick.GWPlayer.stats.gw_points += (pick.GWPlayer.stats.EstimatedBonus.LastOrDefault() * pick.multiplier);
@@ -326,10 +326,6 @@ namespace FPL.Controllers
                         pick.GWPlayer.stats.gw_points += pick.GWPlayer.stats.EstimatedBonus.LastOrDefault();
                     }
                 }
-                //else
-                //{
-                //    gwpoints += pick.GWPlayer.stats.gw_points;
-                //}
             }
 
             return teamPicks;
