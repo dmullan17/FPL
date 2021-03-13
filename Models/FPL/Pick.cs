@@ -6,13 +6,20 @@ using System.Threading.Tasks;
 
 namespace FPL.Models.FPL
 {
-    public class Pick : BasePick
+    public class Pick
     {
         public Pick()
         {
             HadSinceGW = 1;
             IsNewTransfer = false;
         }
+
+        public Player player { get; set; }
+        public GWPlayer GWPlayer { get; set; }
+        public List<Game> GWGames { get; set; } = new List<Game>();
+        public string GWOppositionName { get; set; }
+
+        public List<Transfer> Transfer { get; set; }
 
         public int TotalPointsAccumulatedForTeam { get; set; }
         public int HadSinceGW { get; set; }

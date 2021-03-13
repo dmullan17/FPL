@@ -279,31 +279,38 @@
 
     self.GetBonus = function (player) {
 
-        for (var i = 0; i < player.GWGames.length; i++) {
-            var kickoffDate = new Date(player.GWGames[i].kickoff_time);
-            kickoffDate.setUTCHours(0, 0, 0, 0);
+        //if (player.GWGames.filter(x => !x.finished_provisional && x.started).length > 0) {
 
-            if (self.EventStatus().status[0].event == self.GameweekId() && player.GWGames[i].started) {
-                for (var i = 0; i < self.EventStatus().status.length; i++) {
+        //}
+        if (player.GWGames.filter(x => !x.finished && x.started).length > 0) {
 
-                    var eventStatusDate = new Date(self.EventStatus().status[i].date);
-                    eventStatusDate.setUTCHours(0, 0, 0, 0);
+            return player.GWPlayer.stats.EstimatedBonus.reduce((a, b) => a + b, 0);
 
-                    if (kickoffDate.getTime() == eventStatusDate.getTime()) {
+            //for (var i = 0; i < player.GWGames.length; i++) {
+            //    var kickoffDate = new Date(player.GWGames[i].kickoff_time);
+            //    kickoffDate.setUTCHours(0, 0, 0, 0);
 
-                        if (self.EventStatus().status[i].bonus_added) {
-                            return player.GWPlayer.stats.bonus;
-                        }
-                        else if (!self.EventStatus().status[i].bonus_added) {
-                            return player.GWPlayer.stats.EstimatedBonus + "*";
-                        }
-                    }
-                }
-            } else {
-                return player.GWPlayer.stats.bonus;
-            }
+            //    if (self.EventStatus().status[0].event == self.GameweekId() && player.GWGames[i].started) {
+            //        for (var j = 0; j < self.EventStatus().status.length; j++) {
+
+            //            var eventStatusDate = new Date(self.EventStatus().status[i].date);
+            //            eventStatusDate.setUTCHours(0, 0, 0, 0);
+
+            //            if (kickoffDate.getTime() == eventStatusDate.getTime()) {
+            //                if (self.EventStatus().status[j].bonus_added) {
+            //                    return player.GWPlayer.stats.bonus;
+            //                }
+            //                else if (!self.EventStatus().status[j].bonus_added) {
+            //                    return player.GWPlayer.stats.EstimatedBonus + "*";
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
         }
-
+        else {
+            return player.GWPlayer.stats.bonus;
+        }
     };
 
     self.GetBonusRank = function (player) {

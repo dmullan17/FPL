@@ -3,6 +3,7 @@ using FPL.Contracts;
 using FPL.Http;
 using FPL.Models;
 using FPL.Models.FPL;
+using FPL.Models.GWPlayerStats;
 using FPL.ViewModels.FPL;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -12,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Team = FPL.Models.Team;
 
 namespace FPL.Controllers
 {
@@ -28,6 +30,14 @@ namespace FPL.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            List<Player> allPlayers = await GetAllPlayers();
+            List<Team> allTeams = await GetAllTeams();
+            List<Game> allGames = await GetAllGames();
+            var currentGameweekId = await GetCurrentGameWeekId();
+            List<GWPlayer> allGwPlayers = await GetAllGwPlayers(currentGameweekId);
+            EventStatus eventStatus = await GetEventStatus();
+            List<Game> gwGames = await GetGwGames(currentGameweekId);
+
             var viewModel = new LeaguesViewModel();
 
             HttpClientHandler handler = new HttpClientHandler();
@@ -51,11 +61,9 @@ namespace FPL.Controllers
 
             JObject leaguesObject = (JObject)leaguesJSON["leagues"];
             Leagues leagues = leaguesObject.ToObject<Leagues>();
-            EventStatus eventStatus = await GetEventStatus();
 
-            leagues = await AddBasicInfoToPrivateLeagues(leagues, eventStatus);
-            var gameweekId = await GetCurrentGameWeekId();
-            var gwGames = await GetGwFixtures(gameweekId);
+            leagues = await AddBasicInfoToPrivateLeagues(gwGames, allPlayers, allTeams, allGames, allGwPlayers, leagues, eventStatus, currentGameweekId);
+            //var gwGames = await GetGwFixtures(currentGameweekId);
 
             viewModel.SelectedLeague = leagues.classic.FindAll(x => x.league_type == "x").OrderBy(i => i.PlayerCount).First();
             viewModel.SelectedLeague.UserTeam = viewModel.SelectedLeague.Standings.results.Find(x => x.entry == teamId);
@@ -64,7 +72,7 @@ namespace FPL.Controllers
             viewModel.ClassicLeagues = leagues.classic;
             viewModel.H2HLeagues = leagues.h2h;
             viewModel.Cup = leagues.cup;
-            viewModel.CurrentGwId = gameweekId;
+            viewModel.CurrentGwId = currentGameweekId;
             viewModel.TeamId = teamId;
             viewModel.EventStatus = eventStatus;
             viewModel.LastUpdated = GetLastTimeLeagueWasUpdated(gwGames);
@@ -76,6 +84,14 @@ namespace FPL.Controllers
         [Route("leagues/{id}")]
         public async Task<IActionResult> Index(int id)
         {
+            List<Player> allPlayers = await GetAllPlayers();
+            List<Team> allTeams = await GetAllTeams();
+            List<Game> allGames = await GetAllGames();
+            var currentGameweekId = await GetCurrentGameWeekId();
+            List<GWPlayer> allGwPlayers = await GetAllGwPlayers(currentGameweekId);
+            EventStatus eventStatus = await GetEventStatus();
+            List<Game> gwGames = await GetGwGames(currentGameweekId);
+
             var viewModel = new LeaguesViewModel();
 
             HttpClientHandler handler = new HttpClientHandler();
@@ -99,20 +115,17 @@ namespace FPL.Controllers
 
             JObject leaguesObject = (JObject)leaguesJSON["leagues"];
             Leagues leagues = leaguesObject.ToObject<Leagues>();
-            EventStatus eventStatus = await GetEventStatus();
 
-            leagues = await AddBasicInfoToPrivateLeagues(leagues, eventStatus);
-            Classic selectedLeague = await GetPlayerStandingsForClassicLeague(id);
-            //leagues = await AddPlayerStandingsToLeague(leagues);
-            var gameweekId = await GetCurrentGameWeekId();
-            var gwGames = await GetGwFixtures(gameweekId);
+            leagues = await AddBasicInfoToPrivateLeagues(gwGames, allPlayers, allTeams, allGames, allGwPlayers, leagues, eventStatus, currentGameweekId);
+            Classic selectedLeague = await GetPlayerStandingsForClassicLeague(id, currentGameweekId);
+            //var gwGames = await GetGwFixtures(currentGameweekId);
 
             viewModel.SelectedLeague = selectedLeague;
             viewModel.IsEventLive = IsEventLive(eventStatus);
             viewModel.ClassicLeagues = leagues.classic;
             viewModel.H2HLeagues = leagues.h2h;
             viewModel.Cup = leagues.cup;
-            viewModel.CurrentGwId = gameweekId;
+            viewModel.CurrentGwId = currentGameweekId;
             viewModel.TeamId = teamId;
             viewModel.LastUpdated = GetLastTimeLeagueWasUpdated(gwGames);
 
@@ -158,11 +171,9 @@ namespace FPL.Controllers
             }
         }
 
-        public async Task<Leagues> AddBasicInfoToPrivateLeagues(Leagues leagues, EventStatus eventStatus)
+        public async Task<Leagues> AddBasicInfoToPrivateLeagues(List<Game> gwGames, List<Player> allPlayers, List<Team> allTeams, List<Game> allGames, List<GWPlayer> allGwPlayers, Leagues leagues, EventStatus eventStatus, int gameweekId)
         {
             var privateClassicLeagues = leagues.classic.FindAll(x => x.league_type == "x");
-
-            var currentGameWeekId = await GetCurrentGameWeekId();
 
             var PointsController = new PointsController(_httpClient);
 
@@ -197,17 +208,14 @@ namespace FPL.Controllers
 
             foreach (var player in smallestLeague.Standings.results)
             {
-
                 GWTeam gwTeam = new GWTeam();
-                gwTeam = await PointsController.PopulateGwTeam(gwTeam, currentGameWeekId, player.entry);
-                gwTeam = await PointsController.AddPlayerSummaryDataToTeam(gwTeam, player.entry, currentGameWeekId);
-                gwTeam.picks = await PointsController.AddPlayerGameweekDataToTeam(gwTeam.picks, currentGameWeekId);
-                gwTeam = await PointsController.AddAutoSubs(gwTeam, gwTeam.picks, player.entry);
-                //gwTeam.EntryHistory = await PointsController.AddExtraDatatoEntryHistory(gwTeam.EntryHistory);
+                gwTeam = await PointsController.PopulateGwTeam(gwTeam, gameweekId, player.entry);
+                gwTeam = PointsController.AddPlayerSummaryDataToTeam(allPlayers, allTeams, allGames, gwTeam, player.entry, gameweekId);
+                gwTeam = await PointsController.AddTransfersToGwTeam(allPlayers, gwTeam, player.entry, gameweekId);
+                gwTeam.picks = PointsController.AddPlayerGameweekDataToTeam(gwGames, allGwPlayers, gwTeam.picks, gameweekId);
+                gwTeam = PointsController.AddAutoSubs(gwTeam, gwTeam.picks, player.entry, eventStatus);
                 player.CompleteEntryHistory = await PointsController.GetCompleteEntryHistory(player.CompleteEntryHistory, player.entry);
-                player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
                 gwTeam.picks = PointsController.AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
-                int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
 
                 foreach (var p in gwTeam.picks)
                 {
@@ -215,59 +223,32 @@ namespace FPL.Controllers
                     CalculatePlayersYetToPlay(player, p);
                 }
 
+                int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
+                player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
                 player.total += (gwpoints - player.event_total);
                 player.event_total += (gwpoints - player.event_total);
-                int topOfLeaguePoints = smallestLeague.Standings.results.FirstOrDefault().total;
-                player.PointsFromFirst = topOfLeaguePoints - player.total;
                 player.GWTeam = gwTeam;
 
             }
 
-            var standingsByLivePointsTotal = smallestLeague.Standings.results.OrderByDescending(x => x.total).ToList();
-
-            foreach (var player in smallestLeague.Standings.results)
-            {
-                player.rank = standingsByLivePointsTotal.IndexOf(player) + 1;
-            }
-
-            foreach (var player in players)
-            {
-                if (!smallestLeague.PlayersTally.Any(x => x.Pick.element == player.element))
-                {
-                    var count = players.FindAll(x => x.element == player.element).Count();
-                    var ownership = ((double)count / (double)leagueCount).ToString("0%");
-
-                    var startingCount = players.FindAll(x => x.element == player.element && x.multiplier > 0).Count();
-                    var startingOwnership = ((double)startingCount / (double)leagueCount).ToString("0%");
-
-                    int captainCount = players.FindAll(x => x.element == player.element && x.is_captain).Count();
-                    var captainSelection = ((double)captainCount / (double)leagueCount).ToString("0%");
-
-                    var pt = new PlayerTally()
-                    {
-                        Pick = player,
-                        Count = count,
-                        Ownership = ownership,
-                        StartingOwnership = startingOwnership,
-                        CaptainSelection = captainSelection
-                    };
-
-                    smallestLeague.PlayersTally.Add(pt);
-                }
-            }
+            CalculateRankAndPFF(smallestLeague);
+            CalculatePlayersTallyForLeague(smallestLeague, players, leagueCount);
 
             smallestLeague.PlayersTally = smallestLeague.PlayersTally.ToList();
 
             return leagues;
         }
 
-        public async Task<Classic> GetPlayerStandingsForClassicLeague(int leagueId)
+        public async Task<Classic> GetPlayerStandingsForClassicLeague(int leagueId, int gameweekId)
         {
+            List<Player> allPlayers = await GetAllPlayers();
+            List<Team> allTeams = await GetAllTeams();
+            List<Game> allGames = await GetAllGames();
+            EventStatus eventStatus = await GetEventStatus();
+            List<GWPlayer> allGwPlayers = await GetAllGwPlayers(gameweekId);
+            List<Game> gwGames = await GetGwGames(gameweekId);
+
             Classic l = new Classic();
-
-            var currentGameWeekId = await GetCurrentGameWeekId();
-
-            var eventStatus = await GetEventStatus();
 
             var PointsController = new PointsController(_httpClient);
 
@@ -301,17 +282,14 @@ namespace FPL.Controllers
 
             foreach (var player in l.Standings.results)
             {
-
                 GWTeam gwTeam = new GWTeam();
-                gwTeam = await PointsController.PopulateGwTeam(gwTeam, currentGameWeekId, player.entry);
-                gwTeam = await PointsController.AddPlayerSummaryDataToTeam(gwTeam, player.entry, currentGameWeekId);
-                gwTeam.picks = await PointsController.AddPlayerGameweekDataToTeam(gwTeam.picks, currentGameWeekId);
-                gwTeam = await PointsController.AddAutoSubs(gwTeam, gwTeam.picks, player.entry);
-                //gwTeam.EntryHistory = await PointsController.AddExtraDatatoEntryHistory(gwTeam.EntryHistory);
+                gwTeam = await PointsController.PopulateGwTeam(gwTeam, gameweekId, player.entry);
+                gwTeam = PointsController.AddPlayerSummaryDataToTeam(allPlayers, allTeams, allGames, gwTeam, player.entry, gameweekId);
+                gwTeam = await PointsController.AddTransfersToGwTeam(allPlayers, gwTeam, player.entry, gameweekId);
+                gwTeam.picks = PointsController.AddPlayerGameweekDataToTeam(gwGames, allGwPlayers, gwTeam.picks, gameweekId);
+                gwTeam = PointsController.AddAutoSubs(gwTeam, gwTeam.picks, player.entry, eventStatus);
                 player.CompleteEntryHistory = await PointsController.GetCompleteEntryHistory(player.CompleteEntryHistory, player.entry);
-                player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
                 gwTeam.picks = PointsController.AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
-                int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
 
                 foreach (var p in gwTeam.picks)
                 {
@@ -319,26 +297,63 @@ namespace FPL.Controllers
                     CalculatePlayersYetToPlay(player, p);
                 }
 
+                int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
+                player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
                 player.total += (gwpoints - player.event_total);
                 player.event_total += (gwpoints - player.event_total);
-                //int topOfLeaguePoints = l.Standings.results.FirstOrDefault().total;
-                //player.PointsFromFirst = topOfLeaguePoints - player.total;
                 player.GWTeam = gwTeam;
 
             }
 
-            var standingsByLivePointsTotal = l.Standings.results.OrderByDescending(x => x.total).ToList();
-            int topOfLeaguePoints = l.Standings.results.OrderByDescending(x => x.total).FirstOrDefault().total;
+            CalculateRankAndPFF(l);
+            CalculatePlayersTallyForLeague(l, players, leagueCount);
 
-            foreach (var player in l.Standings.results)
+            l.UserTeam = l.Standings.results.Find(x => x.entry == teamId);
+            l.PlayersTally = l.PlayersTally.ToList();
+
+            return l;
+        }
+
+        //called from js
+        public async Task<GWTeam> GetPlayersTeam(int teamId, int currentGameWeekId)
+        {
+            List<Player> allPlayers = await GetAllPlayers();
+            List<Team> allTeams = await GetAllTeams();
+            List<Game> allGames = await GetAllGames();
+            List<GWPlayer> allGwPlayers = await GetAllGwPlayers(currentGameWeekId);
+            List<Game> gwGames = await GetGwGames(currentGameWeekId);
+
+            GWTeam gwTeam = new GWTeam();
+            EventStatus eventStatus = await GetEventStatus();
+            var PointsController = new PointsController(_httpClient);
+
+            gwTeam = await PointsController.PopulateGwTeam(gwTeam, currentGameWeekId, teamId);
+            gwTeam = PointsController.AddPlayerSummaryDataToTeam(allPlayers, allTeams, allGames, gwTeam, teamId, currentGameWeekId);
+            gwTeam = await PointsController.AddTransfersToGwTeam(allPlayers, gwTeam, teamId, currentGameWeekId);
+            gwTeam.picks = PointsController.AddPlayerGameweekDataToTeam(gwGames, allGwPlayers, gwTeam.picks, currentGameWeekId);
+            gwTeam = PointsController.AddAutoSubs(gwTeam, gwTeam.picks, teamId, eventStatus);
+            gwTeam.picks = PointsController.AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
+
+            return gwTeam;
+        }
+
+        private void CalculateRankAndPFF(Classic league)
+        {
+            var standingsByLivePointsTotal = league.Standings.results.OrderByDescending(x => x.total).ToList();
+            int topOfLeaguePoints = league.Standings.results.OrderByDescending(x => x.total).FirstOrDefault().total;
+
+            foreach (var player in league.Standings.results)
             {
                 player.rank = standingsByLivePointsTotal.IndexOf(player) + 1;
                 player.PointsFromFirst = topOfLeaguePoints - player.total;
             }
+        }
 
+        private void CalculatePlayersTallyForLeague(Classic league, List<Pick> players, int leagueCount)
+        {
             foreach (var player in players)
             {
-                if (!l.PlayersTally.Any(x => x.Pick.element == player.element))
+                if (!league.PlayersTally.Any(x => x.Pick.element == player.element))
                 {
                     var count = players.FindAll(x => x.element == player.element).Count();
                     var ownership = ((double)count / (double)leagueCount).ToString("0%");
@@ -358,35 +373,14 @@ namespace FPL.Controllers
                         CaptainSelection = captainSelection
                     };
 
-                    l.PlayersTally.Add(pt);
+                    league.PlayersTally.Add(pt);
                 }
             }
-
-            l.UserTeam = l.Standings.results.Find(x => x.entry == teamId);
-            l.PlayersTally = l.PlayersTally.ToList();
-
-            return l;
-        }
-
-        public async Task<GWTeam> GetPlayersTeam(int teamId, int currentGameWeekId)
-        {
-            GWTeam gwTeam = new GWTeam();
-            EventStatus eventStatus = await GetEventStatus();
-            var PointsController = new PointsController(_httpClient);
-
-            gwTeam = await PointsController.PopulateGwTeam(gwTeam, currentGameWeekId, teamId);
-            gwTeam = await PointsController.AddPlayerSummaryDataToTeam(gwTeam, teamId, currentGameWeekId);
-            gwTeam.picks = await PointsController.AddPlayerGameweekDataToTeam(gwTeam.picks, currentGameWeekId);
-            gwTeam = await PointsController.AddAutoSubs(gwTeam, gwTeam.picks, teamId);
-            //gwTeam.picks = await PointsController.AddPlayerSummaryDataToTeam(gwTeam.picks, teamId);
-            gwTeam.picks = PointsController.AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
-
-            return gwTeam;
         }
 
         public void CalculatePlayersYetToPlay(Result player, Pick p)
         {
-            if (p.multiplier > 0 && p.GWGames.Any(x => x.kickoff_time != null && !x.finished_provisional))
+            if (p.multiplier > 0 && p.GWGames.Any(x => x.kickoff_time != null && !x.finished_provisional) && p.player.status != "i")
             {
                 for (var i = 0; i < p.GWPlayer.explain.Count; i++)
                 {

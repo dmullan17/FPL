@@ -8,6 +8,7 @@ using FPL.Attributes;
 using FPL.Contracts;
 using FPL.Http;
 using FPL.Models;
+using FPL.Models.GWPlayerStats;
 using FPL.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,13 +28,112 @@ namespace FPL.Controllers
             return "https://fantasy.premierleague.com/api/";
         }
 
+        public async Task<List<Game>> GetGwGames (int gameweekId)
+        {
+            var response = await _httpClient.GetAsync("fixtures/?event=" + gameweekId);
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            List<Game> gwGames = JsonConvert.DeserializeObject<List<Game>>(content);
+
+            gwGames = await PopulateGameListWithTeams(gwGames);
+
+            return gwGames;
+        }
+
+        public async Task<List<GWPlayer>> GetAllGwPlayers(int gameweekId)
+        {
+            var response = await _httpClient.GetAsync("event/" + gameweekId + "/live/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var allPlayersJSON = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("elements"))
+                .Children<JObject>();
+
+            List<GWPlayer> allGwPlayers = new List<GWPlayer>();
+
+            foreach (JObject result in allPlayersJSON)
+            {
+                GWPlayer p = result.ToObject<GWPlayer>();
+                allGwPlayers.Add(p);
+            }
+
+            return allGwPlayers;
+        }
+
+        public async Task<List<Player>> GetAllPlayers()
+        {
+            var response = await _httpClient.GetAsync("bootstrap-static/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var allPlayersJSON = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("elements"))
+                .Children<JObject>();
+
+            List<Player> allPlayers = new List<Player>();
+
+            foreach (JObject result in allPlayersJSON)
+            {
+                Player p = result.ToObject<Player>();
+                allPlayers.Add(p);
+            }
+
+            return allPlayers;
+        }
+
+        public async Task<List<Team>> GetAllTeams()
+        {
+            var response = await _httpClient.GetAsync("bootstrap-static/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var allTeamsJSON = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("teams"))
+                .Children<JObject>();
+
+            List<Team> allTeams = new List<Team>();
+
+            foreach (JObject result in allTeamsJSON)
+            {
+                Team t = result.ToObject<Team>();
+
+                if (!allTeams.Any(x => x.id == t.id))
+                {
+                    allTeams.Add(t);
+                }
+            }
+
+            return allTeams;
+        }
+
+        public async Task<List<Game>> GetAllGames()
+        {
+            var response = await _httpClient.GetAsync("fixtures/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            List<Game> allGames = JsonConvert.DeserializeObject<List<Game>>(content);
+
+            return allGames;
+        }
+
         public async Task<int> GetTeamId()
         {
             HttpClientHandler handler = new HttpClientHandler();
 
-            var client = new FPLHttpClient();
-
-            var response = await client.GetAuthAsync(CreateHandler(handler), "me/");
+            var response = await _httpClient.GetAuthAsync(CreateHandler(handler), "me/");
 
             response.EnsureSuccessStatusCode();
 
@@ -58,9 +158,7 @@ namespace FPL.Controllers
 
         public async Task<EventStatus> GetEventStatus()
         {
-            var client = new FPLHttpClient();
-
-            var response = await client.GetAsync("event-status");
+            var response = await _httpClient.GetAsync("event-status");
 
             response.EnsureSuccessStatusCode();
 
@@ -75,9 +173,7 @@ namespace FPL.Controllers
 
         public async Task<List<Game>> PopulateGameListWithTeams(List<Game> games)
         {
-            var client = new FPLHttpClient();
-
-            var response = await client.GetAsync("bootstrap-static/");
+            var response = await _httpClient.GetAsync("bootstrap-static/");
 
             response.EnsureSuccessStatusCode();
 
@@ -115,9 +211,7 @@ namespace FPL.Controllers
 
         public async Task<List<PlayerPosition>> GetPlayerPositionInfo()
         {
-            var client = new FPLHttpClient();
-
-            var response = await client.GetAsync("bootstrap-static/");
+            var response = await _httpClient.GetAsync("bootstrap-static/");
 
             response.EnsureSuccessStatusCode();
 
@@ -140,9 +234,7 @@ namespace FPL.Controllers
 
         public async Task<GameWeek> GetCurrentGameWeek()
         {
-            var client = new FPLHttpClient();
-
-            var response = await client.GetAsync("bootstrap-static/");
+            var response = await _httpClient.GetAsync("bootstrap-static/");
 
             response.EnsureSuccessStatusCode();
 
@@ -168,9 +260,7 @@ namespace FPL.Controllers
 
         public async Task<int> GetCurrentGameWeekId()
         {
-            var client = new FPLHttpClient();
-
-            var response = await client.GetAsync("bootstrap-static/");
+            var response = await _httpClient.GetAsync("bootstrap-static/");
 
             response.EnsureSuccessStatusCode();
 
@@ -194,29 +284,25 @@ namespace FPL.Controllers
             return currentGameweek.id;
         }
 
-        public async Task<List<Game>> GetGwFixtures(int gameweekId)
-        {
-            //var client = new FPLHttpClient();
+        //public async Task<List<Game>> GetGwFixtures(int gameweekId)
+        //{
+        //    var response = await _httpClient.GetAsync("fixtures/?event=" + gameweekId);
 
-            var response = await _httpClient.GetAsync("fixtures/?event=" + gameweekId);
+        //    response.EnsureSuccessStatusCode();
 
-            response.EnsureSuccessStatusCode();
+        //    var content = await response.Content.ReadAsStringAsync();
 
-            var content = await response.Content.ReadAsStringAsync();
+        //    List<Game> games = JsonConvert.DeserializeObject<List<Game>>(content);
 
-            List<Game> games = JsonConvert.DeserializeObject<List<Game>>(content);
-
-            return games;
-        }
+        //    return games;
+        //}
 
 
         public async Task<List<GameWeek>> GetAllGameWeeks()
         {
             var viewModel = new GameWeekViewModel();
 
-            var client = new FPLHttpClient();
-
-            var response = await client.GetAsync("bootstrap-static/");
+            var response = await _httpClient.GetAsync("bootstrap-static/");
 
             response.EnsureSuccessStatusCode();
 

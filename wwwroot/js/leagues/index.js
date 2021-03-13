@@ -98,7 +98,10 @@
                 url: "/Leagues/GetPlayerStandingsForClassicLeague",
                 type: "GET",
                 cache: true,
-                data: { leagueId: league.id },
+                data: {
+                    leagueId: league.id,
+                    gameweekId: self.CurrentGwId()
+                },
                 beforeSend: function () {
                     standingsLoader.addClass("active");
                 },

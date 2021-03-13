@@ -7,6 +7,8 @@ namespace FPL.Models
 {
     public class Team
     {
+        public List<Game> Fixtures { get; set; }
+        public List<Game> Results { get; set; }
         public int code { get; set; }
         public int draw { get; set; }
         public object form { get; set; }
@@ -28,7 +30,5 @@ namespace FPL.Models
         public int strength_defence_home { get; set; }
         public int strength_defence_away { get; set; }
         public int pulse_id { get; set; }
-        public List<Game> Fixtures { get; set; }
-        public List<Game> Results { get; set; }
     }
 }

@@ -82,7 +82,7 @@ namespace FPL.Controllers
                 }
             }
 
-            int gameweekId = await GetCurrentGameWeekId();
+            int gameweekId = currentGwId;
             var eventStatus = await GetEventStatus();
             var lastEvent = eventStatus.status.LastOrDefault();
             var isEventFinished = false;
@@ -96,7 +96,7 @@ namespace FPL.Controllers
             positions = await GetPlayerPositionInfo();
             teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
             teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, gameweekId);
-            teamPicks = await CalculateTotalPointsContributed(teamPicks, transfers);
+            teamPicks = await CalculateTotalPointsContributed(teamPicks, transfers, gameweekId);
             teamPicks = teamPicks.OrderBy(x => x.position).ToList();
             FPLTeam teamDetails = await GetTeamInfo(teamId);
 
@@ -357,9 +357,9 @@ namespace FPL.Controllers
             return teamPicks;
         }
 
-        private async Task<List<Pick>> CalculateTotalPointsContributed(List<Pick> teamPicks, List<Transfer> teamTransfers)
+        private async Task<List<Pick>> CalculateTotalPointsContributed(List<Pick> teamPicks, List<Transfer> teamTransfers, int gameweekId)
         {
-            int currentGwId = await GetCurrentGameWeekId();
+            //int currentGwId = await GetCurrentGameWeekId();
 
             foreach (Pick pick in teamPicks)
             {
@@ -368,11 +368,11 @@ namespace FPL.Controllers
                     if (pick.element == transfer.element_in)
                     {
                         pick.HadSinceGW = transfer.@event;
-                        var gw = currentGwId - pick.HadSinceGW;
+                        var gw = gameweekId - pick.HadSinceGW;
 
                         if (gw != 0)
                         {
-                            pick.GWOnTeam = (currentGwId - pick.HadSinceGW) + 1;
+                            pick.GWOnTeam = (gameweekId - pick.HadSinceGW) + 1;
                         }
                         else
                         {
@@ -384,7 +384,7 @@ namespace FPL.Controllers
 
                 if (pick.HadSinceGW == 1 && !pick.IsNewTransfer)
                 {
-                    pick.GWOnTeam = currentGwId;
+                    pick.GWOnTeam = gameweekId;
                 }
                 else if (pick.IsNewTransfer)
                 {
