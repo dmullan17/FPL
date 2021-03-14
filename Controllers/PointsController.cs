@@ -91,9 +91,9 @@ namespace FPL.Controllers
             List<Team> allTeams = await GetAllTeams();
             List<Game> allGames = await GetAllGames();
             var currentGameweekId = await GetCurrentGameWeekId();
-            List<GWPlayer> allGwPlayers = await GetAllGwPlayers(currentGameweekId);
+            List<GWPlayer> allGwPlayers = await GetAllGwPlayers(id);
             EventStatus eventStatus = await GetEventStatus();
-            List<Game> gwGames = await GetGwGames(currentGameweekId);
+            List<Game> gwGames = await GetGwGames(id);
             if (Request.Cookies["teamId"] == null) teamId = await GetTeamId();
             else teamId = Convert.ToInt32(Request.Cookies["teamId"]);
       
@@ -104,14 +104,14 @@ namespace FPL.Controllers
 
             GWTeam gwTeam = new GWTeam();
             gwTeam = await PopulateGwTeam(gwTeam, id, teamId);
-            gwTeam = AddPlayerSummaryDataToTeam(allPlayers, allTeams, allGames, gwTeam, id, currentGameweekId);
-            gwTeam = await AddTransfersToGwTeam(allPlayers, gwTeam, teamId, currentGameweekId);
+            gwTeam = AddPlayerSummaryDataToTeam(allPlayers, allTeams, allGames, gwTeam, teamId, id);
+            gwTeam = await AddTransfersToGwTeam(allPlayers, gwTeam, teamId, id);
             gwTeam.picks = AddPlayerGameweekDataToTeam(gwGames, allGwPlayers, gwTeam.picks, id);
             gwTeam.EntryHistory = await AddExtraDatatoEntryHistory(gwTeam.EntryHistory);
-            gwTeam = AddAutoSubs(gwTeam, gwTeam.picks, id, eventStatus);
+            //gwTeam = AddAutoSubs(gwTeam, gwTeam.picks, id, eventStatus);
             var liveGameCount = gwTeam.picks.FindAll(x => !x.GWGames.Any(x => x.finished_provisional)).Count();
-            gwTeam.picks = AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
-            int gwpoints = GetGameWeekPoints(gwTeam.picks, eventStatus);
+            //gwTeam.picks = AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
+            int gwpoints = GetGameWeekPoints(gwTeam.picks, null);
             FPLTeam teamDetails = await GetTeamInfo(teamId);
 
             if (id == currentGameweekId)
@@ -961,7 +961,7 @@ namespace FPL.Controllers
                         var vc = teamPicks.Find(x => x.is_vice_captain);
                         if (vc != null)
                         {
-                            if (vc.GWGames.Any(x => x.minutes != 0))
+                            if (vc.GWGames.Any(x => x.minutes != 0) || vc.GWPlayer.stats.minutes > 0)
                             {
                                 teamPicks[i].is_captain = false;
                                 vc.is_captain = true;
