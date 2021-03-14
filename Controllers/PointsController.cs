@@ -384,7 +384,7 @@ namespace FPL.Controllers
             var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGames.LastOrDefault().finished_provisional || x.GWGames.Count == 0 || x.player.status == "i" || x.player.status == "u"));
             //RemoveIfMultiGamesInGW(startersWhoDidNotPlay);
             var subsWhoPlayed = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes > 0);
-            var subsYetToPlay = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes == 0 && (x.player.status != "u" || x.player.status != "i") && x.GWGames.Any(x => !x.finished_provisional));
+            var subsYetToPlay = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes == 0 && (x.player.status != "u" && x.player.status != "i") && x.GWGames.Any(y => !y.finished_provisional));
 
             if (lastEvent.bonus_added && eventStatus.leagues != "Updating")
             {
@@ -978,10 +978,6 @@ namespace FPL.Controllers
 
         private AutomaticSub MakeOutfieldAutoSub(List<Pick> picks, Pick starter, Pick sub, int eventId, int teamId)
         {
-            var starters = picks.FindAll(x => x.multiplier > 0);
-            var playersInStartersPosition = picks.FindAll(x => x.player.element_type == starter.player.element_type && x.multiplier > 0);
-            var playersInSubsPosition = picks.FindAll(x => x.player.element_type == sub.player.element_type && x.multiplier > 0);
-
             AutomaticSub autoSub = new AutomaticSub();
 
             autoSub.element_out = starter.element;
@@ -991,31 +987,116 @@ namespace FPL.Controllers
 
             var starterPosition = starter.position;
             var subPosition = sub.position;
-            starter.position = subPosition;
-            sub.position = starterPosition;
             sub.multiplier = 1;
             starter.multiplier = 0;
-
-            //need to ensure when auto sub happens the sub comes into the correct position i.e. defender shouldnt come into midfield
-            //if ((starter.player.element_type == 2 && sub.player.element_type == 2) || (starter.player.element_type == 3 && sub.player.element_type == 3) || (starter.player.element_type == 4 && sub.player.element_type == 4))
-            //{
-            //    sub.position = starterPosition;
-            //}
-            //else
-            //{
-            //    sub.position = picks.FindAll(x => x.player.element_type == sub.player.element_type && x.multiplier > 0 && x.position < 12).FirstOrDefault().position;
-
-            //    var test = picks.FindAll(x => (x.position >= sub.position && x.player.element_type <= sub.player.element_type && x.multiplier > 0 && x.element != sub.element));
-
-            //    foreach (var t in test)
-            //    {
-            //        t.position += 1;
-            //    }
-            //}
-
-            //starter.position = subPosition;
+            starter.position = subPosition;
+            picks = AssignStarterPosition(picks.Where(x => x.multiplier > 0).OrderBy(x => x.position).ToList(), starter, sub);
 
             return autoSub;
+        }
+
+        private List<Pick> AssignStarterPosition(List<Pick> picks, Pick starter, Pick sub)
+        {
+            var starterElementType = starter.player.element_type;
+            var subElementType = sub.player.element_type;
+
+            var defs = picks.FindAll(x => x.player.element_type == 2);
+            var mids = picks.FindAll(x => x.player.element_type == 3);
+            var fwds = picks.FindAll(x => x.player.element_type == 4);
+
+            if (starterElementType == subElementType)
+            {
+                var playersInPosition = picks.FindAll(x => x.player.element_type == starterElementType && x.multiplier > 0);
+                var playersInBehindPosition = picks.FindAll(x => x.player.element_type == (starterElementType - 1) && x.multiplier > 0);
+
+                for (var i = 0; i < playersInPosition.Count; i++)
+                {
+                    playersInPosition[i].position = playersInBehindPosition.LastOrDefault().position + (i + 1);
+                }
+            }
+            else
+            {
+                //midfielder coming off & forward coming on
+                if (starterElementType == 3 && subElementType == 4)
+                {
+                    for (var i = 0; i < mids.Count; i++)
+                    {
+                        mids[i].position = defs.LastOrDefault().position + (i + 1);
+                    }
+
+                    for (var i = 0; i < fwds.Count; i++)
+                    {
+                        fwds[i].position = mids.LastOrDefault().position + (i + 1);
+                    }
+                }
+                //midfielder coming off & defender coming on
+                else if (starterElementType == 3 && subElementType == 2)
+                {
+                    for (var i = 0; i < defs.Count; i++)
+                    {
+                        defs[i].position = (i + 2);
+                    }
+
+                    for (var i = 0; i < mids.Count; i++)
+                    {
+                        mids[i].position = defs.LastOrDefault().position + (i + 1);
+                    }
+                }
+                //fwd coming off & defender coming on
+                else if (starterElementType == 4 && subElementType == 2)
+                {
+                    for (var i = 0; i < defs.Count; i++)
+                    {
+                        defs[i].position = (i + 2);
+                    }
+
+                    for (var i = 0; i < fwds.Count; i++)
+                    {
+                        fwds[i].position = mids.LastOrDefault().position + (i + 1);
+                    }
+                }
+                //fwd coming off & mid coming on
+                else if (starterElementType == 4 && subElementType == 3)
+                {
+                    for (var i = 0; i < mids.Count; i++)
+                    {
+                        mids[i].position = defs.LastOrDefault().position + (i + 1);
+                    }
+
+                    for (var i = 0; i < fwds.Count; i++)
+                    {
+                        fwds[i].position = mids.LastOrDefault().position + (i + 1);
+                    }
+                }
+                //def coming off & mid coming on
+                else if (starterElementType == 2 && subElementType == 3)
+                {
+                    for (var i = 0; i < defs.Count; i++)
+                    {
+                        defs[i].position = (i + 2);
+                    }
+
+                    for (var i = 0; i < mids.Count; i++)
+                    {
+                        mids[i].position = defs.LastOrDefault().position + (i + 1);
+                    }
+                }
+                //def coming off & fwd coming on
+                else if (starterElementType == 2 && subElementType == 4)
+                {
+                    for (var i = 0; i < defs.Count; i++)
+                    {
+                        defs[i].position = (i + 2);
+                    }
+
+                    for (var i = 0; i < fwds.Count; i++)
+                    {
+                        fwds[i].position = mids.LastOrDefault().position + (i + 1);
+                    }
+                }
+            }
+
+            return picks.OrderBy(x => x.position).ToList();
         }
 
         public async Task<List<Pick>> GetPicks(List<Pick> picks, int teamId)
