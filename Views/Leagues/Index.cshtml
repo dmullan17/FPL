@@ -133,20 +133,30 @@
                                         <thead>
                                             <tr>
                                                 <th>Player</th>
-                                                <th class="center aligned">Count</th>
-                                                <th class="center aligned">Ownership %</th>
-                                                <th class="center aligned">Starting Ownership %</th>
-                                                <th class="center aligned">Captain Selection %</th>
+                                                @*<th class="center aligned">Count</th>*@
+                                                @*<th class="center aligned">Ownership %</th>*@
+                                                <th>Position</th>
+                                                <th>Team</th>
+                                                <th class="center aligned">Starting %</th>
+                                                <th class="center aligned">Bench %</th>
+                                                <th class="center aligned">Captain %</th>
+                                                <th class="center aligned">Transferred In %</th>
+                                                <th class="center aligned">Transferred Out %</th>
                                                 <th class="default-sort center aligned">GW Points</th>
                                             </tr>
                                         </thead>
                                         <tbody data-bind="foreach: $root.SelectedLeaguePlayersTally">
                                             <tr>
                                                 <td data-bind="text: Pick.player.web_name"></td>
-                                                <td class="center aligned" data-bind="text: Count"></td>
-                                                <td class="center aligned" data-bind="text: Ownership"></td>
+                                                @*<td class="center aligned" data-bind="text: Count"></td>*@
+                                                @*<td class="center aligned" data-bind="text: Ownership"></td>*@
+                                                <td data-bind="text: $root.GetPosition(Pick.player.element_type)"></td>
+                                                <td data-bind="text: Pick.player.Team.name"></td>
                                                 <td class="center aligned" data-bind="text: StartingOwnership"></td>
+                                                <td class="center aligned" data-bind="text: BenchOwnership"></td>
                                                 <td class="center aligned" data-bind="text: CaptainSelection"></td>
+                                                <td class="center aligned" data-bind="text: TransferredIn"></td>
+                                                <td class="center aligned" data-bind="text: TransferredOut"></td>
                                                 <td class="center aligned" data-bind="text: $root.GetPlayerTallyGwPoints($data)"></td>
                                             </tr>
                                         </tbody>

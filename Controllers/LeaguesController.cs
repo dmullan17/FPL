@@ -351,6 +351,16 @@ namespace FPL.Controllers
 
         private void CalculatePlayersTallyForLeague(Classic league, List<Pick> players, int leagueCount)
         {
+            List<Transfer> allGwTransfers = new List<Transfer>();
+
+            foreach (Result player in league.Standings.results)
+            {
+                foreach (Transfer transfer in player.GWTeam.GWTransfers)
+                {
+                    allGwTransfers.Add(transfer);
+                }
+            }
+
             foreach (var player in players)
             {
                 if (!league.PlayersTally.Any(x => x.Pick.element == player.element))
@@ -361,8 +371,17 @@ namespace FPL.Controllers
                     var startingCount = players.FindAll(x => x.element == player.element && x.multiplier > 0).Count();
                     var startingOwnership = ((double)startingCount / (double)leagueCount).ToString("0%");
 
+                    var benchCount = players.FindAll(x => x.element == player.element && x.multiplier == 0).Count();
+                    var benchOwnership = ((double)benchCount / (double)leagueCount).ToString("0%");
+
                     int captainCount = players.FindAll(x => x.element == player.element && x.is_captain).Count();
                     var captainSelection = ((double)captainCount / (double)leagueCount).ToString("0%");
+
+                    int transferInCount = allGwTransfers.FindAll(x => x.PlayerIn.id == player.element).Count();
+                    var transferredIn = ((double)transferInCount / (double)leagueCount).ToString("0%");
+
+                    int transferOutCount = allGwTransfers.FindAll(x => x.PlayerOut.id == player.element).Count();
+                    var transferredOut = ((double)transferOutCount / (double)leagueCount).ToString("0%");
 
                     var pt = new PlayerTally()
                     {
@@ -370,7 +389,10 @@ namespace FPL.Controllers
                         Count = count,
                         Ownership = ownership,
                         StartingOwnership = startingOwnership,
-                        CaptainSelection = captainSelection
+                        BenchOwnership = benchOwnership,
+                        CaptainSelection = captainSelection,
+                        TransferredOut = transferredOut,
+                        TransferredIn = transferredIn
                     };
 
                     league.PlayersTally.Add(pt);

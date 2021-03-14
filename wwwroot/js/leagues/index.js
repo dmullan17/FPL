@@ -146,6 +146,21 @@
 
     }
 
+    self.GetPosition = function (position) {
+        if (position == 1) {
+            return "GK";
+        }
+        else if (position == 2) {
+            return "DEF";
+        }
+        else if (position == 3) {
+            return "MID";
+        }
+        else if (position == 4) {
+            return "FWD";
+        }
+    };
+
     self.GetTeamBonusPoints = function (picks) {
 
         var starters = picks.filter(x => x.multiplier > 0);

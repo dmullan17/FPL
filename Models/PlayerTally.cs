@@ -14,5 +14,8 @@ namespace FPL.Models
         public string Ownership { get; set; }
         public string StartingOwnership { get; set; }
         public string CaptainSelection { get; set; }
+        public string BenchOwnership { get; internal set; }
+        public string TransferredOut { get; internal set; }
+        public string TransferredIn { get; internal set; }
     }
 }
