@@ -292,7 +292,15 @@
         return html;
     }
 
-   
+    self.IsAllGwGamesFinished = function (gwGames) {
+
+        var isAllGwGamesFinished = gwGames.every(function (item) {
+            return item.finished_provisional == true;
+        });
+
+        return isAllGwGamesFinished;
+    }
+
     self.init = function () {
         $('.menu .item').tab({
             //'onLoad': function (tabPath) {
@@ -391,6 +399,7 @@
             var icon = "";
             var subIcon = "";
             var subIcon2 = "";
+            var subIcon3 = "";
             var captain = "";
 
             if (picks[i].player.element_type == 1) {
@@ -429,9 +438,20 @@
                 }
             }
 
+            //var isAllGwGamesFinished = picks[i].GWGames.every(function (item) {
+            //    return item.finished_provisional == true;
+            //});
+
+            var isAllGwGamesFinished = self.IsAllGwGamesFinished(picks[i].GWGames);
+
+            if (isAllGwGamesFinished) {
+                subIcon3 += "green bottom right corner check circle";
+            }
+
             icon += " icon";
             subIcon += " icon";
             subIcon2 += " icon";
+            subIcon3 += " icon";
 
             if (picks.length == 4) {
                 icon += " disabled";
@@ -444,7 +464,8 @@
                 '<i class="small icons">' +
                 '  <i class="' + icon + '"></i>' +
                 '  <i class="' + subIcon + '"></i>' +
-                '  <i class="' + subIcon2 + '"></i>' +
+            '  <i class="' + subIcon2 + '"></i>' +
+            '  <i class="' + subIcon3 + '"></i>' +
                 '</i>' +
                 '</br>' +
                 picks[i].player.web_name + captain +
@@ -466,7 +487,8 @@
                 ],
                 order: [[$('th.default-sort').index(), "asc"]],
                 responsive: true,
-                fixedHeader: true
+                fixedHeader: true,
+                scrollX: true
             });
 
         });
@@ -475,8 +497,10 @@
     function initialiseTalliesDatatable() {
         $(document).ready(function () {
             var table = playerTallyTable.DataTable({
-                order: [[$('#player-tally-table th.default-sort').index(), "desc"]]
-
+                order: [[$('#player-tally-table th.default-sort').index(), "desc"]],
+                columnDefs: [
+                    { orderable: false, targets: "no-sort" }
+                ],
             });
 
         });

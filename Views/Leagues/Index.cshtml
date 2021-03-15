@@ -143,6 +143,7 @@
                                                 <th class="center aligned">Transferred In %</th>
                                                 <th class="center aligned">Transferred Out %</th>
                                                 <th class="default-sort center aligned">GW Points</th>
+                                                <th class="no-sort"></th>
                                             </tr>
                                         </thead>
                                         <tbody data-bind="foreach: $root.SelectedLeaguePlayersTally">
@@ -158,6 +159,7 @@
                                                 <td class="center aligned" data-bind="text: TransferredIn"></td>
                                                 <td class="center aligned" data-bind="text: TransferredOut"></td>
                                                 <td class="center aligned" data-bind="text: $root.GetPlayerTallyGwPoints($data)"></td>
+                                                <td><i class="green check circle icon" data-bind="visible: $root.IsAllGwGamesFinished(Pick.GWGames)"></i></td>
                                             </tr>
                                         </tbody>
                                     </table>

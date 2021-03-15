@@ -961,12 +961,22 @@ namespace FPL.Controllers
                         var vc = teamPicks.Find(x => x.is_vice_captain);
                         if (vc != null)
                         {
-                            if (vc.GWGames.Any(x => x.minutes != 0) || vc.GWPlayer.stats.minutes > 0)
+                            if (vc.GWGames.LastOrDefault().started ?? true)
+                            {
+                                if (vc.GWGames.Any(x => x.minutes != 0) || vc.GWPlayer.stats.minutes > 0)
+                                {
+                                    teamPicks[i].is_captain = false;
+                                    vc.is_captain = true;
+                                    vc.is_vice_captain = false;
+                                    vc.GWPlayer.stats.gw_points = vc.GWPlayer.stats.gw_points * teamPicks[i].multiplier;
+                                }
+                            }
+                            else
                             {
                                 teamPicks[i].is_captain = false;
                                 vc.is_captain = true;
                                 vc.is_vice_captain = false;
-                                vc.GWPlayer.stats.gw_points += vc.GWPlayer.stats.gw_points;
+                                vc.GWPlayer.stats.gw_points = vc.GWPlayer.stats.gw_points * teamPicks[i].multiplier;
                             }
                         }
                     }
