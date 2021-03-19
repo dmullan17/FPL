@@ -379,12 +379,13 @@ namespace FPL.Controllers
 
         public GWTeam AddAutoSubs(GWTeam gwTeam, List<Pick> picks, int teamId, EventStatus eventStatus)
         {
+            var picksWhoHaveAGame = picks.FindAll(x => x.GWGames.Count > 0).ToList();
             var lastEvent = eventStatus.status.LastOrDefault();
-            var starters = picks.FindAll(x => x.position < 12);
-            var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGames.LastOrDefault().finished_provisional || x.GWGames.Count == 0 || x.player.status == "i" || x.player.status == "u"));
+            var starters = picksWhoHaveAGame.FindAll(x => x.position < 12);
+            var startersWhoDidNotPlay = picksWhoHaveAGame.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGames.LastOrDefault().finished_provisional || x.GWGames.Count == 0 || x.player.status == "i" || x.player.status == "u"));
             //RemoveIfMultiGamesInGW(startersWhoDidNotPlay);
-            var subsWhoPlayed = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes > 0);
-            var subsYetToPlay = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes == 0 && (x.player.status != "u" && x.player.status != "i") && x.GWGames.Any(y => !y.finished_provisional));
+            var subsWhoPlayed = picksWhoHaveAGame.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes > 0);
+            var subsYetToPlay = picksWhoHaveAGame.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes == 0 && (x.player.status != "u" && x.player.status != "i") && x.GWGames.Any(y => !y.finished_provisional));
 
             if (lastEvent.bonus_added && eventStatus.leagues != "Updating")
             {
@@ -924,26 +925,25 @@ namespace FPL.Controllers
                 }
             }
 
-            //totalling a players total gw stats
-            for (var i = 0; i < teamPicks.Count; i++)
+            foreach (var pick in teamPicks.FindAll(x => x.GWGames.Count > 0).ToList())
             {
-                teamPicks[i].GWPlayer.stats.gw_points = 0;
+                pick.GWPlayer.stats.gw_points = 0;
 
-                if (teamPicks[i].GWPlayer.stats.minutes != 0)
+                if (pick.GWPlayer.stats.minutes != 0)
                 {
-                    for (var j = 0; j < teamPicks[i].GWPlayer.explain.Count; j++)
+                    for (var j = 0; j < pick.GWPlayer.explain.Count; j++)
                     {
-                        for (var k = 0; k < teamPicks[i].GWPlayer.explain[j].stats.Count; k++)
+                        for (var k = 0; k < pick.GWPlayer.explain[j].stats.Count; k++)
                         {
-                            //if (teamPicks[i].GWPlayer.explain[j].stats[k].points != 0)
+                            //if (pick.GWPlayer.explain[j].stats[k].points != 0)
                             //{
-                            if (teamPicks[i].is_captain)
+                            if (pick.is_captain)
                             {
-                                teamPicks[i].GWPlayer.stats.gw_points += teamPicks[i].GWPlayer.explain[j].stats[k].points * teamPicks[i].multiplier;
+                                pick.GWPlayer.stats.gw_points += pick.GWPlayer.explain[j].stats[k].points * pick.multiplier;
                             }
                             else
                             {
-                                teamPicks[i].GWPlayer.stats.gw_points += teamPicks[i].GWPlayer.explain[j].stats[k].points;
+                                pick.GWPlayer.stats.gw_points += pick.GWPlayer.explain[j].stats[k].points;
                             }
                             //}
                             //else
@@ -953,10 +953,10 @@ namespace FPL.Controllers
                         }
                     }
                 }
-                else if (teamPicks[i].GWGames.LastOrDefault().started ?? true)
+                else if (pick.GWGames.LastOrDefault().started ?? true && pick.is_captain)
                 {
                     //if captain didnt play assign double points to vice
-                    if (teamPicks[i].is_captain)
+                    if (pick.is_captain)
                     {
                         var vc = teamPicks.Find(x => x.is_vice_captain);
                         if (vc != null)
@@ -965,24 +965,83 @@ namespace FPL.Controllers
                             {
                                 if (vc.GWGames.Any(x => x.minutes != 0) || vc.GWPlayer.stats.minutes > 0)
                                 {
-                                    teamPicks[i].is_captain = false;
+                                    pick.is_captain = false;
                                     vc.is_captain = true;
                                     vc.is_vice_captain = false;
-                                    vc.GWPlayer.stats.gw_points = vc.GWPlayer.stats.gw_points * teamPicks[i].multiplier;
+                                    vc.GWPlayer.stats.gw_points = vc.GWPlayer.stats.gw_points * pick.multiplier;
                                 }
                             }
                             else
                             {
-                                teamPicks[i].is_captain = false;
+                                pick.is_captain = false;
                                 vc.is_captain = true;
                                 vc.is_vice_captain = false;
-                                vc.GWPlayer.stats.gw_points = vc.GWPlayer.stats.gw_points * teamPicks[i].multiplier;
+                                vc.GWPlayer.stats.gw_points = vc.GWPlayer.stats.gw_points * pick.multiplier;
                             }
                         }
                     }
                 }
 
             }
+            //totalling a players total gw stats
+            //for (var i = 0; i < teamPicks.FindAll(x => x.GWGames.Count > 0).ToList().Count; i++)
+            //{
+            //    teamPicks[i].GWPlayer.stats.gw_points = 0;
+
+            //    if (teamPicks[i].GWPlayer.stats.minutes != 0)
+            //    {
+            //        for (var j = 0; j < teamPicks[i].GWPlayer.explain.Count; j++)
+            //        {
+            //            for (var k = 0; k < teamPicks[i].GWPlayer.explain[j].stats.Count; k++)
+            //            {
+            //                //if (teamPicks[i].GWPlayer.explain[j].stats[k].points != 0)
+            //                //{
+            //                if (teamPicks[i].is_captain)
+            //                {
+            //                    teamPicks[i].GWPlayer.stats.gw_points += teamPicks[i].GWPlayer.explain[j].stats[k].points * teamPicks[i].multiplier;
+            //                }
+            //                else
+            //                {
+            //                    teamPicks[i].GWPlayer.stats.gw_points += teamPicks[i].GWPlayer.explain[j].stats[k].points;
+            //                }
+            //                //}
+            //                //else
+            //                //{
+
+            //                //}
+            //            }
+            //        }
+            //    }
+            //    else if (teamPicks[i].GWGames.LastOrDefault().started ?? true && teamPicks[i].is_captain)
+            //    {
+            //        //if captain didnt play assign double points to vice
+            //        if (teamPicks[i].is_captain)
+            //        {
+            //            var vc = teamPicks.Find(x => x.is_vice_captain);
+            //            if (vc != null)
+            //            {
+            //                if (vc.GWGames.LastOrDefault().started ?? true)
+            //                {
+            //                    if (vc.GWGames.Any(x => x.minutes != 0) || vc.GWPlayer.stats.minutes > 0)
+            //                    {
+            //                        teamPicks[i].is_captain = false;
+            //                        vc.is_captain = true;
+            //                        vc.is_vice_captain = false;
+            //                        vc.GWPlayer.stats.gw_points = vc.GWPlayer.stats.gw_points * teamPicks[i].multiplier;
+            //                    }
+            //                }
+            //                else
+            //                {
+            //                    teamPicks[i].is_captain = false;
+            //                    vc.is_captain = true;
+            //                    vc.is_vice_captain = false;
+            //                    vc.GWPlayer.stats.gw_points = vc.GWPlayer.stats.gw_points * teamPicks[i].multiplier;
+            //                }
+            //            }
+            //        }
+            //    }
+
+            //}
             return teamPicks;
         }
 

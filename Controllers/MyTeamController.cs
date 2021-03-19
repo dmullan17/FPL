@@ -48,6 +48,8 @@ namespace FPL.Controllers
 
             var response = await _httpClient.GetAuthAsync(CreateHandler(handler), $"my-team/{teamId}");
 
+            //look for 404 error here
+
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();

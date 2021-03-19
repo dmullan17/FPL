@@ -421,6 +421,7 @@
                 return player.GWPlayer.stats.gw_points;
             }
         }
+        return player.GWPlayer.stats.gw_points;
 
     };
 
