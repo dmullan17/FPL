@@ -88,6 +88,70 @@
 
     };
 
+    var localCache = {
+        data: {},
+        remove: function (url) {
+            delete localCache.data[url];
+        },
+        exist: function (url) {
+            return localCache.data.hasOwnProperty(url) && localCache.data[url] !== null;
+        },
+        get: function (url) {
+            console.log('Getting in cache for url' + url);
+            return localCache.data[url];
+        },
+        set: function (url, cachedData, callback) {
+            localCache.remove(url);
+            localCache.data[url] = cachedData;
+            if ($.isFunction(callback)) callback(cachedData);
+        }
+    };
+
+    $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
+        if (options.cache && !self.IsGameLive()) {
+            var success = originalOptions.success || $.noop,
+                url = originalOptions.url + "/" + originalOptions.data.leagueId;
+            //remove jQuery cache as we have our own localCache
+            options.cache = false;
+            options.beforeSend = function () {
+                if (localCache.exist(url)) {
+                    success(localCache.get(url));
+                    return false;
+                }
+                standingsLoader.addClass("active");
+                return true;
+            };
+            options.success = function (data, textStatus) {
+                localCache.set(url, data, success);
+            };
+            options.complete = function (data, textStatus) {
+                standingsLoader.removeClass("active");
+                //localCache.set(url, data, complete);
+            };
+        }
+    });
+
+    //$.ajaxPrefilter(function (options, originalOptions, jqXHR) {
+    //    if (options.cache) {
+    //        var success = originalOptions.success || $.noop,
+    //            url = originalOptions.url + "/" + originalOptions.data.leagueId;
+
+    //        options.cache = false; //remove jQuery cache as we have our own localStorage
+    //        options.beforeSend = function () {
+    //            if (localStorage.getItem(url)) {
+    //                success(localStorage.getItem(url));
+    //                return false;
+    //            }
+    //            return true;
+    //        };
+    //        options.success = function (data, textStatus) {
+    //            var responseData = data;
+    //            localStorage.setItem(url, responseData);
+    //            if ($.isFunction(success)) success(responseData); //call back to original ajax call
+    //        };
+    //    }
+    //});
+
     self.SelectedLeague.subscribe(function (league) {
 
         if ($.fn.dataTable.isDataTable(standingsTable)) {
@@ -102,24 +166,24 @@
                     leagueId: league.id,
                     gameweekId: self.CurrentGwId()
                 },
-                beforeSend: function () {
-                    standingsLoader.addClass("active");
-                },
+                //beforeSend: function () {
+                //    standingsLoader.addClass("active");
+                //},
                 success: function (json, status, xhr) {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
+                    //if (xhr.readyState === 4 && xhr.status === 200) {
                         self.SelectedLeagueStandings(json.Standings.results);
                         self.SelectedLeaguePlayersTally(json.PlayersTally);
                         self.UserTeam(json.UserTeam);
                         initialiseStandingsDatatable();
                         initialiseTalliesDatatable();
                         return;
-                    }
-                },
-                complete: function (xhr, status) {
-                    standingsLoader.removeClass("active");
-                    if (xhr.readyState === 4 && xhr.status !== 200) {
-                    }
+                    //}
                 }
+                //complete: function (xhr, status) {
+                //    standingsLoader.removeClass("active");
+                //    if (xhr.readyState === 4 && xhr.status !== 200) {
+                //    }
+                //}
             });
         }
     });
