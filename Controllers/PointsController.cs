@@ -945,7 +945,7 @@ namespace FPL.Controllers
                 }
             }
 
-            foreach (var pick in teamPicks.FindAll(x => x.GWGames.Count > 0).ToList())
+            foreach (var pick in teamPicks)
             {
                 pick.GWPlayer.stats.gw_points = 0;
 
@@ -973,31 +973,20 @@ namespace FPL.Controllers
                         }
                     }
                 }
-                else if (pick.GWGames.LastOrDefault().started ?? true && pick.is_captain)
+                //if captain didnt play or has no gw games
+                else if ((pick.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().started ?? true || pick.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().started == null) && pick.is_captain)
                 {
-                    //if captain didnt play assign double points to vice
-                    if (pick.is_captain)
+                    pick.is_captain = false;
+
+                    //if vice played make him captain
+                    var vc = teamPicks.Find(x => x.is_vice_captain);
+                    if (vc != null)
                     {
-                        var vc = teamPicks.Find(x => x.is_vice_captain);
-                        if (vc != null)
+                        if (vc.GWGames.Any(x => x.minutes != 0) || vc.GWPlayer.stats.minutes > 0)
                         {
-                            if (vc.GWGames.LastOrDefault().started ?? true)
-                            {
-                                if (vc.GWGames.Any(x => x.minutes != 0) || vc.GWPlayer.stats.minutes > 0)
-                                {
-                                    pick.is_captain = false;
-                                    vc.is_captain = true;
-                                    vc.is_vice_captain = false;
-                                    vc.GWPlayer.stats.gw_points = vc.GWPlayer.stats.gw_points * pick.multiplier;
-                                }
-                            }
-                            else
-                            {
-                                pick.is_captain = false;
-                                vc.is_captain = true;
-                                vc.is_vice_captain = false;
-                                vc.GWPlayer.stats.gw_points = vc.GWPlayer.stats.gw_points * pick.multiplier;
-                            }
+                            vc.is_captain = true;
+                            vc.is_vice_captain = false;
+                            vc.GWPlayer.stats.gw_points = vc.GWPlayer.stats.gw_points * pick.multiplier;
                         }
                     }
                 }

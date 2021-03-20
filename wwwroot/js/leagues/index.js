@@ -221,7 +221,13 @@
 
     self.GetCaptain = function (picks) {
         var captain = picks.filter(x => x.is_captain);
-        return captain[0].player.web_name;
+
+        if (captain.length == 1) {
+            return captain[0].player.web_name;
+        }
+        else {
+            return "No Captain";
+        }
     }
 
     self.GetActiveChips = function (activeChips) {
