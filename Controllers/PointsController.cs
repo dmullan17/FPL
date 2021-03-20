@@ -30,25 +30,27 @@ namespace FPL.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index([FromQuery] int entry, [FromQuery] int gameweekId)
         {
             var viewModel = new GameweekPointsViewModel();
 
             List<Player> allPlayers = await GetAllPlayers();
             List<Team> allTeams = await GetAllTeams();
-            List<Game> allGames = await GetAllGames();
-            var currentGameweekId = await GetCurrentGameWeekId();
-            List<GWPlayer> allGwPlayers = await GetAllGwPlayers(currentGameweekId);
+            List<Game> allGames = await GetAllGames();        
+            if (gameweekId == 0) gameweekId = await GetCurrentGameWeekId();
+            List<GWPlayer> allGwPlayers = await GetAllGwPlayers(gameweekId);
             EventStatus eventStatus = await GetEventStatus();
-            List<Game> gwGames = await GetGwGames(currentGameweekId);
-            if (Request.Cookies["teamId"] == null) teamId = await GetTeamId();
+            List<Game> gwGames = await GetGwGames(gameweekId);
+
+            if (entry != 0) teamId = entry;
+            else if (Request.Cookies["teamId"] == null) teamId = await GetTeamId();
             else teamId = Convert.ToInt32(Request.Cookies["teamId"]);   
 
             GWTeam gwTeam = new GWTeam();
-            gwTeam = await PopulateGwTeam(gwTeam, currentGameweekId, teamId);
-            gwTeam = AddPlayerSummaryDataToTeam(allPlayers, allTeams, allGames, gwTeam, teamId, currentGameweekId);
-            gwTeam = await AddTransfersToGwTeam(allPlayers, gwTeam, teamId, currentGameweekId);
-            gwTeam.picks = AddPlayerGameweekDataToTeam(gwGames, allGwPlayers, gwTeam.picks, currentGameweekId);
+            gwTeam = await PopulateGwTeam(gwTeam, gameweekId, teamId);
+            gwTeam = AddPlayerSummaryDataToTeam(allPlayers, allTeams, allGames, gwTeam, teamId, gameweekId);
+            gwTeam = await AddTransfersToGwTeam(allPlayers, gwTeam, teamId, gameweekId);
+            gwTeam.picks = AddPlayerGameweekDataToTeam(gwGames, allGwPlayers, gwTeam.picks, gameweekId);
             gwTeam.EntryHistory = await AddExtraDatatoEntryHistory(gwTeam.EntryHistory);
             gwTeam = AddAutoSubs(gwTeam, gwTeam.picks, teamId, eventStatus);
             gwTeam.picks = AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
@@ -59,7 +61,7 @@ namespace FPL.Controllers
             {
                 foreach (var game in pick.player.Team.Results)
                 {
-                    if ((game.started ?? true) && game.started != null && game.Event == currentGameweekId)
+                    if ((game.started ?? true) && game.started != null && game.Event == gameweekId)
                     {
                         if (!game.finished_provisional)
                         {
@@ -76,64 +78,64 @@ namespace FPL.Controllers
             viewModel.Team = teamDetails;
             viewModel.GWPoints = gwpoints;
             viewModel.TotalPoints = (teamDetails.summary_overall_points - teamDetails.summary_event_points) + gwpoints;
-            viewModel.GameweekId = currentGameweekId;
+            viewModel.GameweekId = gameweekId;
 
             return View(viewModel);
         }
 
-        [HttpGet]
-        [Route("points/{id}")]
-        public async Task<IActionResult> Index(int id)
-        {
-            var viewModel = new GameweekPointsViewModel();
+        //[HttpGet]
+        //[Route("points/{id}")]
+        //public async Task<IActionResult> Index(int gameweekId)
+        //{
+        //    var viewModel = new GameweekPointsViewModel();
 
-            List<Player> allPlayers = await GetAllPlayers();
-            List<Team> allTeams = await GetAllTeams();
-            List<Game> allGames = await GetAllGames();
-            var currentGameweekId = await GetCurrentGameWeekId();
-            List<GWPlayer> allGwPlayers = await GetAllGwPlayers(id);
-            EventStatus eventStatus = await GetEventStatus();
-            List<Game> gwGames = await GetGwGames(id);
-            if (Request.Cookies["teamId"] == null) teamId = await GetTeamId();
-            else teamId = Convert.ToInt32(Request.Cookies["teamId"]);
+        //    List<Player> allPlayers = await GetAllPlayers();
+        //    List<Team> allTeams = await GetAllTeams();
+        //    List<Game> allGames = await GetAllGames();
+        //    var currentGameweekId = await GetCurrentGameWeekId();
+        //    List<GWPlayer> allGwPlayers = await GetAllGwPlayers(gameweekId);
+        //    EventStatus eventStatus = await GetEventStatus();
+        //    List<Game> gwGames = await GetGwGames(gameweekId);
+        //    if (Request.Cookies["teamId"] == null) teamId = await GetTeamId();
+        //    else teamId = Convert.ToInt32(Request.Cookies["teamId"]);
       
-            if (id > currentGameweekId)
-            {
-                return RedirectToAction("Index", new { id = currentGameweekId });
-            }
+        //    if (gameweekId > currentGameweekId)
+        //    {
+        //        return RedirectToAction("Index", new { gameweekId = currentGameweekId });
+        //    }
 
-            GWTeam gwTeam = new GWTeam();
-            gwTeam = await PopulateGwTeam(gwTeam, id, teamId);
-            gwTeam = AddPlayerSummaryDataToTeam(allPlayers, allTeams, allGames, gwTeam, teamId, id);
-            gwTeam = await AddTransfersToGwTeam(allPlayers, gwTeam, teamId, id);
-            gwTeam.picks = AddPlayerGameweekDataToTeam(gwGames, allGwPlayers, gwTeam.picks, id);
-            gwTeam.EntryHistory = await AddExtraDatatoEntryHistory(gwTeam.EntryHistory);
-            //gwTeam = AddAutoSubs(gwTeam, gwTeam.picks, id, eventStatus);
-            var liveGameCount = gwTeam.picks.FindAll(x => !x.GWGames.Any(x => x.finished_provisional)).Count();
-            //gwTeam.picks = AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
-            int gwpoints = GetGameWeekPoints(gwTeam.picks, null);
-            FPLTeam teamDetails = await GetTeamInfo(teamId);
+        //    GWTeam gwTeam = new GWTeam();
+        //    gwTeam = await PopulateGwTeam(gwTeam, gameweekId, teamId);
+        //    gwTeam = AddPlayerSummaryDataToTeam(allPlayers, allTeams, allGames, gwTeam, teamId, gameweekId);
+        //    gwTeam = await AddTransfersToGwTeam(allPlayers, gwTeam, teamId, gameweekId);
+        //    gwTeam.picks = AddPlayerGameweekDataToTeam(gwGames, allGwPlayers, gwTeam.picks, gameweekId);
+        //    gwTeam.EntryHistory = await AddExtraDatatoEntryHistory(gwTeam.EntryHistory);
+        //    //gwTeam = AddAutoSubs(gwTeam, gwTeam.picks, gameweekId, eventStatus);
+        //    var liveGameCount = gwTeam.picks.FindAll(x => !x.GWGames.Any(x => x.finished_provisional)).Count();
+        //    //gwTeam.picks = AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
+        //    int gwpoints = GetGameWeekPoints(gwTeam.picks, null);
+        //    FPLTeam teamDetails = await GetTeamInfo(teamId);
 
-            if (id == currentGameweekId)
-            {
-                viewModel.TotalPoints = (teamDetails.summary_overall_points - teamDetails.summary_event_points) + gwpoints;
-            }
-            else
-            {
-                viewModel.TotalPoints = teamDetails.summary_overall_points;
-            }
+        //    if (gameweekId == currentGameweekId)
+        //    {
+        //        viewModel.TotalPoints = (teamDetails.summary_overall_points - teamDetails.summary_event_points) + gwpoints;
+        //    }
+        //    else
+        //    {
+        //        viewModel.TotalPoints = teamDetails.summary_overall_points;
+        //    }
 
-            if (liveGameCount > 0) { viewModel.IsLive = true; }
-            viewModel.GWTeam = gwTeam;
-            viewModel.EntryHistory = gwTeam.EntryHistory;
-            viewModel.EventStatus = eventStatus;
-            viewModel.Team = teamDetails;
-            viewModel.GWPoints = gwpoints;
-            viewModel.GameweekId = id;
+        //    if (liveGameCount > 0) { viewModel.IsLive = true; }
+        //    viewModel.GWTeam = gwTeam;
+        //    viewModel.EntryHistory = gwTeam.EntryHistory;
+        //    viewModel.EventStatus = eventStatus;
+        //    viewModel.Team = teamDetails;
+        //    viewModel.GWPoints = gwpoints;
+        //    viewModel.GameweekId = gameweekId;
 
-            return View(viewModel);
+        //    return View(viewModel);
 
-        }
+        //}
 
         public async Task<GWTeam> PopulateGwTeam(GWTeam gwTeam, int gameweekId, int teamId)
         {
@@ -379,13 +381,11 @@ namespace FPL.Controllers
 
         public GWTeam AddAutoSubs(GWTeam gwTeam, List<Pick> picks, int teamId, EventStatus eventStatus)
         {
-            var picksWhoHaveAGame = picks.FindAll(x => x.GWGames.Count > 0).ToList();
             var lastEvent = eventStatus.status.LastOrDefault();
-            var starters = picksWhoHaveAGame.FindAll(x => x.position < 12);
-            var startersWhoDidNotPlay = picksWhoHaveAGame.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGames.LastOrDefault().finished_provisional || x.GWGames.Count == 0 || x.player.status == "i" || x.player.status == "u"));
-            //RemoveIfMultiGamesInGW(startersWhoDidNotPlay);
-            var subsWhoPlayed = picksWhoHaveAGame.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes > 0);
-            var subsYetToPlay = picksWhoHaveAGame.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes == 0 && (x.player.status != "u" && x.player.status != "i") && x.GWGames.Any(y => !y.finished_provisional));
+            var starters = picks.FindAll(x => x.position < 12);
+            var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().finished_provisional || x.GWGames.Count == 0 || x.player.status == "i" || x.player.status == "u"));
+            var subsWhoPlayed = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes > 0);
+            var subsYetToPlay = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes == 0 && (x.player.status != "u" && x.player.status != "i") && x.GWGames.Any(y => !y.finished_provisional));
 
             if (lastEvent.bonus_added && eventStatus.leagues != "Updating")
             {
@@ -409,13 +409,21 @@ namespace FPL.Controllers
                                     element_in = subsWhoPlayed.Find(x => x.player.element_type == 1).element,
                                     @event = eventStatus.status[0].@event
                                 };
+
+                                var starterPosition = startersWhoDidNotPlay[i].position;
+                                var subPosition = subsWhoPlayed.Find(x => x.player.element_type == 1).position;
+                                subsWhoPlayed.Find(x => x.player.element_type == 1).multiplier = 1;
+                                startersWhoDidNotPlay[i].multiplier = 0;
+                                startersWhoDidNotPlay[i].position = subPosition;
+                                subsWhoPlayed.Find(x => x.player.element_type == 1).position = starterPosition;
+
                                 gwTeam.automatic_subs.Add(autoSub);
                                 IsSubAdded = true;
-                                break;
+                                continue;
                             }
                             else
                             {
-                                break;
+                                continue;
                             }
 
                         }
@@ -517,7 +525,10 @@ namespace FPL.Controllers
 
                     }
                 }
-                else if (startersWhoDidNotPlay.Count > 0 && subsYetToPlay.Count > 0)
+
+                startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().finished_provisional || x.GWGames.Count == 0 || x.player.status == "i" || x.player.status == "u"));
+
+                if (startersWhoDidNotPlay.Count > 0 && subsYetToPlay.Count > 0)
                 {
                     for (var i = 0; i < startersWhoDidNotPlay.Count; i++)
                     {
@@ -533,20 +544,29 @@ namespace FPL.Controllers
                                     element_in = subsYetToPlay.Find(x => x.player.element_type == 1).element,
                                     @event = eventStatus.status[0].@event
                                 };
+
+                                var starterPosition = startersWhoDidNotPlay[i].position;
+                                var subPosition = subsYetToPlay.Find(x => x.player.element_type == 1).position;
+                                subsYetToPlay.Find(x => x.player.element_type == 1).multiplier = 1;
+                                startersWhoDidNotPlay[i].multiplier = 0;
+                                startersWhoDidNotPlay[i].position = subPosition;
+                                subsYetToPlay.Find(x => x.player.element_type == 1).position = starterPosition;
+
                                 gwTeam.automatic_subs.Add(autoSub);
                                 IsSubAdded = true;
-                                break;
+                                continue;
                             }
                             else
                             {
-                                break;
+                                continue;
                             }
 
                         }
 
                         if (startersWhoDidNotPlay[i].player.element_type == 2 && !IsSubAdded)
                         {
-                            var subDefenders = subsYetToPlay.FindAll(x => x.player.element_type == 2);
+                            //var subDefenders = subsYetToPlay.FindAll(x => x.player.element_type == 2);
+                            var startingDefenders = starters.FindAll(x => x.player.element_type == 2 && x.multiplier > 0);
 
                             for (var k = 0; k < subsYetToPlay.Count; k++)
                             {
@@ -558,7 +578,7 @@ namespace FPL.Controllers
                                     break;
                                 }
 
-                                if (subsYetToPlay[k].player.element_type == 3 && subDefenders.Count > 3)
+                                if (subsYetToPlay[k].player.element_type == 3 && startingDefenders.Count > 3)
                                 {
                                     var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);
@@ -567,7 +587,7 @@ namespace FPL.Controllers
 
                                 }
 
-                                if (subsYetToPlay[k].player.element_type == 4 && subDefenders.Count > 3)
+                                if (subsYetToPlay[k].player.element_type == 4 && startingDefenders.Count > 3)
                                 {
                                     var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
                                     gwTeam.automatic_subs.Add(autoSub);

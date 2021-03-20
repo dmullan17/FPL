@@ -84,7 +84,7 @@
                                             <i data-bind="class: $root.GetPointsMovement($data)"></i>
                                             <span data-bind="text: $root.GetRank($data)"></span>
                                         </td>
-                                        <td style="font-weight:bold" data-bind="html: $root.FormatNames(entry_name, player_name)"></td>
+                                        <td style="font-weight:bold" data-bind="html: $root.FormatNames($data)"></td>
                                         <td class="center aligned" data-bind="text: total"></td>
                                         <td class="center aligned" data-bind="text: event_total"></td>
                                         <td class="center aligned" data-bind="text: $root.GetTeamBonusPoints($data.GWTeam.picks)"></td>
@@ -108,6 +108,10 @@
                                             <i data-bind="class: $root.GetPointsMovement($data)"></i>
                                             <span data-bind="text: $root.GetRank($data)"></span>
                                         </td>
+                                        @*<td style="font-weight:bold">
+                                            <span data-bind="html: $root.FormatNames(entry_name, player_name)"></span>
+                                            <a data-bind="click: $root.GoToTeam.bind(entry)">Open</a>
+                                        </td>*@
                                         <td style="font-weight:bold" data-bind="html: $root.FormatNames(entry_name, player_name)"></td>
                                         <td class="center aligned" data-bind="text: total"></td>
                                         <td class="center aligned" data-bind="text: event_total"></td>

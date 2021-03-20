@@ -46,7 +46,7 @@
 
     self.GetGwTransfers = function (gwTeam) {
 
-        if (gwTeam.ActiveChips.includes("wildcard")) {
+        if (gwTeam.ActiveChips.includes("wildcard") || gwTeam.ActiveChips.includes("freehit")) {
             return gwTeam.GWTransfers.length + ' (0)';
         }
         else {
@@ -210,9 +210,12 @@
         }
     }
 
-    self.FormatNames = function (teamName, managerName) {
+    self.FormatNames = function (player) {
         var html = "";
-        html += teamName + "</br> <span class=\"manager-name\">" + managerName + "</span>"
+        var url = window.location.href;
+        var selectedPlayerUrl = url.replace('leagues', 'points?entry=' + player.entry);
+
+        html += "<a class=\"team-name\" href=" + selectedPlayerUrl + " target=\"_blank\"" + ">" + player.entry_name + "</a></br > <span class=\"manager-name\">" + player.player_name + "</span>"
         return html;
     }
 

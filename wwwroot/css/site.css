@@ -240,6 +240,14 @@ div.dt-buttons {
 	margin-bottom: 0.1rem;
 }
 
+.team-name {
+	color: black !important;
+}
+
+	.team-name:hover {
+		text-decoration: underline;
+	}
+
 .manager-name {
 	font-size: small;
 	font-weight: normal;
