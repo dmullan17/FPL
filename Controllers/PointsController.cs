@@ -685,7 +685,7 @@ namespace FPL.Controllers
         //    }
         //}
 
-        private async Task<FPLTeam> GetTeamInfo(int teamId)
+        public async Task<FPLTeam> GetTeamInfo(int teamId)
         {
             HttpClientHandler handler = new HttpClientHandler();
 

@@ -108,13 +108,13 @@
     };
 
     $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
-        if (options.cache && !self.IsGameLive()) {
+        if (options.cache) {
             var success = originalOptions.success || $.noop,
                 url = originalOptions.url + "/" + originalOptions.data.leagueId;
             //remove jQuery cache as we have our own localCache
             options.cache = false;
             options.beforeSend = function () {
-                if (localCache.exist(url)) {
+                if (localCache.exist(url) && !self.IsGameLive()) {
                     success(localCache.get(url));
                     return false;
                 }

@@ -216,6 +216,7 @@ namespace FPL.Controllers
                 gwTeam = PointsController.AddAutoSubs(gwTeam, gwTeam.picks, player.entry, eventStatus);
                 player.CompleteEntryHistory = await PointsController.GetCompleteEntryHistory(player.CompleteEntryHistory, player.entry);
                 gwTeam.picks = PointsController.AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
+                var teamDetails = await PointsController.GetTeamInfo(player.entry);
 
                 foreach (var p in gwTeam.picks)
                 {
@@ -225,8 +226,10 @@ namespace FPL.Controllers
 
                 int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
                 player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
-                player.total += (gwpoints - player.event_total);
-                player.event_total += (gwpoints - player.event_total);
+                //player.total += (gwpoints - player.event_total);
+                player.total = (teamDetails.summary_overall_points - teamDetails.summary_event_points) + gwpoints;
+                player.event_total = gwpoints;
+                //player.event_total += (gwpoints - player.event_total);
                 player.GWTeam = gwTeam;
 
             }
@@ -290,6 +293,7 @@ namespace FPL.Controllers
                 gwTeam = PointsController.AddAutoSubs(gwTeam, gwTeam.picks, player.entry, eventStatus);
                 player.CompleteEntryHistory = await PointsController.GetCompleteEntryHistory(player.CompleteEntryHistory, player.entry);
                 gwTeam.picks = PointsController.AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
+                var teamDetails = await PointsController.GetTeamInfo(player.entry);
 
                 foreach (var p in gwTeam.picks)
                 {
@@ -299,8 +303,10 @@ namespace FPL.Controllers
 
                 int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
                 player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
-                player.total += (gwpoints - player.event_total);
-                player.event_total += (gwpoints - player.event_total);
+                //player.total += (gwpoints - player.event_total);
+                //player.event_total += (gwpoints - player.event_total);
+                player.total = (teamDetails.summary_overall_points - teamDetails.summary_event_points) + gwpoints;
+                player.event_total = gwpoints;
                 player.GWTeam = gwTeam;
 
             }
