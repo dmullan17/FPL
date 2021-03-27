@@ -20,9 +20,11 @@
     self.UserTeam = ko.observable(data.SelectedLeague.UserTeam);
     self.EventStatus = ko.observable(data.EventStatus);
     self.LastUpdatedTime = ko.observable(data.LastUpdated);
+    self.SelectedPlayerFromTally = ko.observable();
 
     self.SelectedLeagueStandings = ko.observableArray(self.SelectedLeague().Standings.results);
     self.SelectedLeaguePlayersTally = ko.observableArray(self.SelectedLeague().PlayersTally);
+    self.ManagersWhoOwnSelectedPlayerFromTally = ko.observableArray();
 
     self.LastUpdated = function () {
         var lastUpdatedTime = new Date(self.LastUpdatedTime()).toLocaleString("en-GB");
@@ -372,6 +374,57 @@
         });
 
         return isAllGwGamesFinished;
+    }
+
+    self.FireStartingSelectionModal = function (data) {
+        var playerId = data.Pick.element;
+        var managers = [];
+
+        for (var i = 0; i < self.SelectedLeagueStandings().length; i++) {
+
+            if (self.SelectedLeagueStandings()[i].GWTeam.picks.filter(x => x.element == playerId && x.position < 12).length > 0) {
+                managers.push(self.SelectedLeagueStandings()[i]);
+            }
+        }
+
+        self.SelectedPlayerFromTally(data);
+        self.ManagersWhoOwnSelectedPlayerFromTally(managers);
+
+        $('.ui.starting-selection.modal').modal('show');
+    }
+
+    self.FireBenchSelectionModal = function (data) {
+        var playerId = data.Pick.element;
+        var managers = [];
+
+        for (var i = 0; i < self.SelectedLeagueStandings().length; i++) {
+
+            if (self.SelectedLeagueStandings()[i].GWTeam.picks.filter(x => x.element == playerId && x.position > 11).length > 0) {
+                managers.push(self.SelectedLeagueStandings()[i]);
+            }
+        }
+
+        self.SelectedPlayerFromTally(data);
+        self.ManagersWhoOwnSelectedPlayerFromTally(managers);
+
+        $('.ui.bench-selection.modal').modal('show');
+    }
+
+    self.FireCaptainSelectionModal = function (data) {
+        var playerId = data.Pick.element;
+        var managers = [];
+
+        for (var i = 0; i < self.SelectedLeagueStandings().length; i++) {
+
+            if (self.SelectedLeagueStandings()[i].GWTeam.picks.filter(x => x.element == playerId && x.is_captain).length > 0) {
+                managers.push(self.SelectedLeagueStandings()[i]);
+            }
+        }
+
+        self.SelectedPlayerFromTally(data);
+        self.ManagersWhoOwnSelectedPlayerFromTally(managers);
+
+        $('.ui.captain-selection.modal').modal('show');
     }
 
     self.init = function () {

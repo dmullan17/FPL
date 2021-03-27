@@ -12,9 +12,9 @@ namespace FPL.Models
         public string Name { get; set; }
         public int Count { get; set; }
         public string Ownership { get; set; }
-        public string StartingOwnership { get; set; }
+        public string StartingSelection { get; set; }
         public string CaptainSelection { get; set; }
-        public string BenchOwnership { get; internal set; }
+        public string BenchSelection { get; set; }
         public string TransferredOut { get; internal set; }
         public string TransferredIn { get; internal set; }
     }

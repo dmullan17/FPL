@@ -275,6 +275,14 @@ div.dt-buttons {
 	max-width: 6rem;
 }
 
+.clickable-cell {
+	cursor: pointer;
+}
+
+    .clickable-cell:hover {
+		text-decoration: underline;
+    }
+
 /*.tally-table-container {
 	max-height: 30rem;
 	overflow-y: scroll;

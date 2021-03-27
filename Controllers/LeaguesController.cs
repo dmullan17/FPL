@@ -434,13 +434,13 @@ namespace FPL.Controllers
                     var ownership = ((double)count / (double)leagueCount).ToString("0%");
 
                     var startingCount = players.FindAll(x => x.element == player.element && x.multiplier > 0).Count();
-                    var startingOwnership = ((double)startingCount / (double)leagueCount).ToString("0%");
+                    var startingSelectionPercentage = ((double)startingCount / (double)leagueCount).ToString("0%");
 
                     var benchCount = players.FindAll(x => x.element == player.element && x.multiplier == 0).Count();
-                    var benchOwnership = ((double)benchCount / (double)leagueCount).ToString("0%");
+                    var benchSelectionPercentage = ((double)benchCount / (double)leagueCount).ToString("0%");
 
                     int captainCount = players.FindAll(x => x.element == player.element && x.is_captain).Count();
-                    var captainSelection = ((double)captainCount / (double)leagueCount).ToString("0%");
+                    var captainSelectionPercentage = ((double)captainCount / (double)leagueCount).ToString("0%");
 
                     int transferInCount = allGwTransfers.FindAll(x => x.PlayerIn.id == player.element).Count();
                     var transferredIn = ((double)transferInCount / (double)leagueCount).ToString("0%");
@@ -453,9 +453,9 @@ namespace FPL.Controllers
                         Pick = player,
                         Count = count,
                         Ownership = ownership,
-                        StartingOwnership = startingOwnership,
-                        BenchOwnership = benchOwnership,
-                        CaptainSelection = captainSelection,
+                        StartingSelection = startingSelectionPercentage,
+                        BenchSelection = benchSelectionPercentage,
+                        CaptainSelection = captainSelectionPercentage,
                         TransferredOut = transferredOut,
                         TransferredIn = transferredIn
                     };
