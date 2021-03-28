@@ -152,8 +152,8 @@
                                                 <td class="clickable-cell center aligned" data-bind="text: StartingSelection, click: $root.FireStartingSelectionModal.bind($data)"></td>
                                                 <td class="clickable-cell center aligned" data-bind="text: BenchSelection, click: $root.FireBenchSelectionModal.bind($data)"></td>
                                                 <td class="clickable-cell center aligned" data-bind="text: CaptainSelection, click: $root.FireCaptainSelectionModal.bind($data)"></td>
-                                                <td class="center aligned" data-bind="text: TransferredIn"></td>
-                                                <td class="center aligned" data-bind="text: TransferredOut"></td>
+                                                <td class="clickable-cell center aligned" data-bind="text: TransferredIn, click: $root.FireTransferredInSelectionModal.bind($data)"></td>
+                                                <td class="clickable-cell center aligned" data-bind="text: TransferredOut, click: $root.FireTransferredOutSelectionModal.bind($data)"></td>
                                                 <td class="center aligned" data-bind="text: $root.GetPlayerTallyGwPoints($data)"></td>
                                                 <td><i class="green check circle icon" data-bind="visible: $root.IsAllGwGamesFinished(Pick.GWGames)"></i></td>
                                             </tr>
@@ -172,47 +172,77 @@
     </div>
     <div class="ui small starting-selection modal">
         <div class="header" data-bind="with: $root.SelectedPlayerFromTally()">
-            <span data-bind="text: 'Managers in ' + $root.SelectedLeague().name + ' who are starting ' + Pick.player.web_name"></span>
+            <span data-bind="text: $root.SelectedLeague().name + ' managers who are starting ' + Pick.player.web_name + ' in GW' + $root.CurrentGwId()"></span>
         </div>
         <div class="content">
-            <div class="ui horizontal list" data-bind="foreach: $root.ManagersWhoOwnSelectedPlayerFromTally">
+            <div class="ui horizontal list" data-bind="foreach: $root.ManagersAffiliatedWithSelectedPlayerFromTally">
                 <div class="item" style="min-width: 12rem !important; padding-left: 0 !important; margin-left: 0 !important;">
                     <div class="content" data-bind="text: player_name + ' (' + rank + ')'"></div>
                 </div>
             </div>
         </div>
         <div class="actions" style="text-align: left; font-weight:bold; font-size:1.1rem; padding-left:1.25rem;">
-            <p data-bind="text: 'Total: ' + $root.ManagersWhoOwnSelectedPlayerFromTally().length + '/' + $root.SelectedLeagueStandings().length"></p>
+            <p data-bind="text: 'Total: ' + $root.ManagersAffiliatedWithSelectedPlayerFromTally().length + '/' + $root.SelectedLeagueStandings().length"></p>
         </div>
     </div>
     <div class="ui small bench-selection modal">
         <div class="header" data-bind="with: $root.SelectedPlayerFromTally()">
-            <span data-bind="text: 'Managers in ' + $root.SelectedLeague().name + ' who are benching ' + Pick.player.web_name"></span>
+            <span data-bind="text: $root.SelectedLeague().name + ' managers who are benching ' + Pick.player.web_name + ' in GW' + $root.CurrentGwId()"></span>
         </div>
         <div class="content">
-            <div class="ui horizontal list" data-bind="foreach: $root.ManagersWhoOwnSelectedPlayerFromTally">
+            <div class="ui horizontal list" data-bind="foreach: $root.ManagersAffiliatedWithSelectedPlayerFromTally">
                 <div class="item" style="min-width: 12rem !important; padding-left: 0 !important; margin-left: 0 !important;">
                     <div class="content" data-bind="text: player_name + ' (' + rank + ')'"></div>
                 </div>
             </div>
         </div>
         <div class="actions" style="text-align: left; font-weight:bold; font-size:1.1rem; padding-left:1.25rem;">
-            <p data-bind="text: 'Total: ' + $root.ManagersWhoOwnSelectedPlayerFromTally().length + '/' + $root.SelectedLeagueStandings().length"></p>
+            <p data-bind="text: 'Total: ' + $root.ManagersAffiliatedWithSelectedPlayerFromTally().length + '/' + $root.SelectedLeagueStandings().length"></p>
         </div>
     </div>
     <div class="ui small captain-selection modal">
         <div class="header" data-bind="with: $root.SelectedPlayerFromTally()">
-            <span data-bind="text: 'Managers in ' + $root.SelectedLeague().name + ' who are captaining ' + Pick.player.web_name"></span>
+            <span data-bind="text: $root.SelectedLeague().name + ' managers who are captaining ' + Pick.player.web_name + ' in GW' + $root.CurrentGwId()"></span>
         </div>
         <div class="content">
-            <div class="ui horizontal list" data-bind="foreach: $root.ManagersWhoOwnSelectedPlayerFromTally">
+            <div class="ui horizontal list" data-bind="foreach: $root.ManagersAffiliatedWithSelectedPlayerFromTally">
                 <div class="item" style="min-width: 12rem !important; padding-left: 0 !important; margin-left: 0 !important;">
                     <div class="content" data-bind="text: player_name + ' (' + rank + ')'"></div>
                 </div>
             </div>
         </div>
         <div class="actions" style="text-align: left; font-weight:bold; font-size:1.1rem; padding-left:1.25rem;">
-            <p data-bind="text: 'Total: ' + $root.ManagersWhoOwnSelectedPlayerFromTally().length + '/' + $root.SelectedLeagueStandings().length"></p>
+            <p data-bind="text: 'Total: ' + $root.ManagersAffiliatedWithSelectedPlayerFromTally().length + '/' + $root.SelectedLeagueStandings().length"></p>
+        </div>
+    </div>
+    <div class="ui small transferred-in-selection modal">
+        <div class="header" data-bind="with: $root.SelectedPlayerFromTally()">
+            <span data-bind="text: $root.SelectedLeague().name + ' managers who have transferred in ' + Pick.player.web_name + ' in GW' + $root.CurrentGwId()"></span>
+        </div>
+        <div class="content">
+            <div class="ui horizontal list" data-bind="foreach: $root.ManagersAffiliatedWithSelectedPlayerFromTally">
+                <div class="item" style="min-width: 12rem !important; padding-left: 0 !important; margin-left: 0 !important;">
+                    <div class="content" data-bind="text: player_name + ' (' + rank + ')'"></div>
+                </div>
+            </div>
+        </div>
+        <div class="actions" style="text-align: left; font-weight:bold; font-size:1.1rem; padding-left:1.25rem;">
+            <p data-bind="text: 'Total: ' + $root.ManagersAffiliatedWithSelectedPlayerFromTally().length + '/' + $root.SelectedLeagueStandings().length"></p>
+        </div>
+    </div>
+    <div class="ui small transferred-out-selection modal">
+        <div class="header" data-bind="with: $root.SelectedPlayerFromTally()">
+            <span data-bind="text: $root.SelectedLeague().name + ' managers who have transferred out ' + Pick.player.web_name + ' in GW' + $root.CurrentGwId()"></span>
+        </div>
+        <div class="content">
+            <div class="ui horizontal list" data-bind="foreach: $root.ManagersAffiliatedWithSelectedPlayerFromTally">
+                <div class="item" style="min-width: 12rem !important; padding-left: 0 !important; margin-left: 0 !important;">
+                    <div class="content" data-bind="text: player_name + ' (' + rank + ')'"></div>
+                </div>
+            </div>
+        </div>
+        <div class="actions" style="text-align: left; font-weight:bold; font-size:1.1rem; padding-left:1.25rem;">
+            <p data-bind="text: 'Total: ' + $root.ManagersAffiliatedWithSelectedPlayerFromTally().length + '/' + $root.SelectedLeagueStandings().length"></p>
         </div>
     </div>
 </div>

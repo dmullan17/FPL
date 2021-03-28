@@ -205,6 +205,7 @@ namespace FPL.Controllers
             var smallestLeague = leagues.classic.FindAll(x => x.league_type == "x").OrderBy(i => i.PlayerCount).First();
             int leagueCount = Convert.ToInt32(smallestLeague.Standings.results.Count);
             List<Pick> players = new List<Pick>();
+            List<Transfer> allGwTransfers = new List<Transfer>();
 
             foreach (var player in smallestLeague.Standings.results)
             {
@@ -217,6 +218,11 @@ namespace FPL.Controllers
                 player.CompleteEntryHistory = await PointsController.GetCompleteEntryHistory(player.CompleteEntryHistory, player.entry);
                 gwTeam.picks = PointsController.AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
                 var teamDetails = await PointsController.GetTeamInfo(player.entry);
+
+                foreach (var transfer in gwTeam.GWTransfers)
+                {
+                    allGwTransfers.Add(transfer);
+                }
 
                 foreach (var p in gwTeam.picks)
                 {
@@ -238,6 +244,7 @@ namespace FPL.Controllers
             CalculatePlayersTallyForLeague(smallestLeague, players, leagueCount);
 
             smallestLeague.PlayersTally = smallestLeague.PlayersTally.ToList();
+            smallestLeague.AllGwTransfers = allGwTransfers;
 
             return leagues;
         }
@@ -285,6 +292,7 @@ namespace FPL.Controllers
 
             int leagueCount = Convert.ToInt32(l.Standings.results.Count);
             List<Pick> players = new List<Pick>();
+            List<Transfer> allGwTransfers = new List<Transfer>();
 
             foreach (var player in l.Standings.results)
             {
@@ -302,6 +310,11 @@ namespace FPL.Controllers
                 {
                     players.Add(p);
                     CalculatePlayersYetToPlay(player, p);
+                }
+
+                foreach (var transfer in gwTeam.GWTransfers)
+                {
+                    allGwTransfers.Add(transfer);
                 }
 
                 int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
@@ -326,6 +339,7 @@ namespace FPL.Controllers
             }
 
             l.PlayersTally = l.PlayersTally.ToList();
+            l.AllGwTransfers = allGwTransfers;
 
             return l;
         }

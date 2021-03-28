@@ -24,7 +24,8 @@
 
     self.SelectedLeagueStandings = ko.observableArray(self.SelectedLeague().Standings.results);
     self.SelectedLeaguePlayersTally = ko.observableArray(self.SelectedLeague().PlayersTally);
-    self.ManagersWhoOwnSelectedPlayerFromTally = ko.observableArray();
+    self.AllGwTransfersInLeague = ko.observableArray(self.SelectedLeague().AllGwTransfers);
+    self.ManagersAffiliatedWithSelectedPlayerFromTally = ko.observableArray();
 
     self.LastUpdated = function () {
         var lastUpdatedTime = new Date(self.LastUpdatedTime()).toLocaleString("en-GB");
@@ -175,6 +176,7 @@
                     //if (xhr.readyState === 4 && xhr.status === 200) {
                         self.SelectedLeagueStandings(json.Standings.results);
                         self.SelectedLeaguePlayersTally(json.PlayersTally);
+                        self.AllGwTransfersInLeague(json.AllGwTransfers);
                         self.UserTeam(json.UserTeam);
                         initialiseStandingsDatatable();
                         initialiseTalliesDatatable();
@@ -388,7 +390,7 @@
         }
 
         self.SelectedPlayerFromTally(data);
-        self.ManagersWhoOwnSelectedPlayerFromTally(managers);
+        self.ManagersAffiliatedWithSelectedPlayerFromTally(managers);
 
         $('.ui.starting-selection.modal').modal('show');
     }
@@ -405,7 +407,7 @@
         }
 
         self.SelectedPlayerFromTally(data);
-        self.ManagersWhoOwnSelectedPlayerFromTally(managers);
+        self.ManagersAffiliatedWithSelectedPlayerFromTally(managers);
 
         $('.ui.bench-selection.modal').modal('show');
     }
@@ -422,9 +424,52 @@
         }
 
         self.SelectedPlayerFromTally(data);
-        self.ManagersWhoOwnSelectedPlayerFromTally(managers);
+        self.ManagersAffiliatedWithSelectedPlayerFromTally(managers);
 
         $('.ui.captain-selection.modal').modal('show');
+    }
+
+    self.FireTransferredInSelectionModal = function (data) {
+        var playerId = data.Pick.element;
+        var managers = [];
+
+        for (var i = 0; i < self.SelectedLeagueStandings().length; i++)
+        {
+            if (self.SelectedLeagueStandings()[i].GWTeam.picks.filter(x => x.element == playerId).length > 0)
+            {
+                for (var j = 0; j < self.AllGwTransfersInLeague().length; j++)
+                {
+                    if (self.AllGwTransfersInLeague()[j].element_in == playerId && self.AllGwTransfersInLeague()[j].entry == self.SelectedLeagueStandings()[i].entry) {
+                        managers.push(self.SelectedLeagueStandings()[i]);
+                    }
+                }
+            }
+        }
+
+        self.SelectedPlayerFromTally(data);
+        self.ManagersAffiliatedWithSelectedPlayerFromTally(managers);
+
+        $('.ui.transferred-in-selection.modal').modal('show');
+    }
+
+    self.FireTransferredOutSelectionModal = function (data) {
+        var playerId = data.Pick.element;
+        var managers = [];
+
+        for (var i = 0; i < self.SelectedLeagueStandings().length; i++) {
+            if (self.SelectedLeagueStandings()[i].GWTeam.picks.filter(x => x.element == playerId).length == 0) {
+                for (var j = 0; j < self.AllGwTransfersInLeague().length; j++) {
+                    if (self.AllGwTransfersInLeague()[j].element_out == playerId && self.AllGwTransfersInLeague()[j].entry == self.SelectedLeagueStandings()[i].entry) {
+                        managers.push(self.SelectedLeagueStandings()[i]);
+                    }
+                }
+            }
+        }
+
+        self.SelectedPlayerFromTally(data);
+        self.ManagersAffiliatedWithSelectedPlayerFromTally(managers);
+
+        $('.ui.transferred-out-selection.modal').modal('show');
     }
 
     self.init = function () {

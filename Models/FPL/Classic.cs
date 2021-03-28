@@ -14,6 +14,7 @@ namespace FPL.Models.FPL
         public Result UserTeam { get; set; }
         //public List<PlayerTally> CaptainsTally { get; set; } = new List<PlayerTally>();
         public List<PlayerTally> PlayersTally { get; set; } = new List<PlayerTally>();
+        public List<Transfer> AllGwTransfers { get; set; } = new List<Transfer>();
         public int PlayerCount { get; set; }
         public Standings Standings { get; set; }
         public int id { get; set; }
