@@ -7,7 +7,8 @@
         standingsTable = $('#standings-table'),
         standingsTableBody = $('#standings-table tbody'),
         standingsTableFooter = $('#standings-table tfoot'),
-        playerTallyTable = $('#player-tally-table');
+        playerTallyTable = $('#player-tally-table'),
+        leagueDropdown = $('#league-dropdown');
 
     self.ClassicLeagues = ko.observableArray(data.ClassicLeagues);
     self.H2HLeagues = ko.observableArray(data.H2HLeagues);
@@ -122,6 +123,7 @@
                     return false;
                 }
                 standingsLoader.addClass("active");
+                leagueDropdown.addClass("disabled");
                 return true;
             };
             options.success = function (data, textStatus) {
@@ -129,6 +131,7 @@
             };
             options.complete = function (data, textStatus) {
                 standingsLoader.removeClass("active");
+                leagueDropdown.removeClass("disabled");
                 //localCache.set(url, data, complete);
             };
         }
@@ -484,6 +487,8 @@
             //}
         });
 
+        //$('#league-dropdown').dropdown();
+
         ////self.SelectedLeague(self.ClassicLeagues()[4]);
         for (var i = 0; i < self.ClassicLeagues().length; i++) {
             if (self.ClassicLeagues()[i] = self.SelectedLeague()) {
@@ -672,6 +677,9 @@
                 columnDefs: [
                     { orderable: false, targets: "no-sort" }
                 ],
+                responsive: true,
+                fixedHeader: true
+                //scrollX: true
             });
 
         });

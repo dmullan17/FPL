@@ -28,14 +28,12 @@
                 </div>*@
             <div class="sixteen wide column">
                 <div class="row">
-                    <select data-bind="options: $root.ClassicLeagues,
+                    <h3 class="ui top attached header">
+                        @*<span data-bind="text: $root.SelectedLeague().name"></span>*@
+                        <select id="league-dropdown" class="ui header scrolling dropdown" style="font-size: 1em!important; padding: 0.3em!important" data-bind="options: $root.ClassicLeagues,
                                        optionsText: 'name',
                                        value: $root.SelectedLeague">
-                    </select>
-                </div>
-                <div class="row">
-                    <h3 class="ui top attached header">
-                        <span data-bind="text: $root.SelectedLeague().name"></span>
+                        </select>
                     </h3>
                     <div id="standings-segment" class="ui attached segment" style="min-height:10rem;">
                         @*<div class="ui top right attached label" data-bind="visible: IsGameLive">Live</div>*@
