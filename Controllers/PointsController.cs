@@ -77,7 +77,7 @@ namespace FPL.Controllers
             viewModel.EventStatus = eventStatus;
             viewModel.Team = teamDetails;
             viewModel.GWPoints = gwpoints;
-            viewModel.TotalPoints = (teamDetails.summary_overall_points - teamDetails.summary_event_points) + gwpoints;
+            viewModel.TotalPoints = (teamDetails.summary_overall_points ?? 0 - teamDetails.summary_event_points ?? 0) + gwpoints;
             viewModel.GameweekId = gameweekId;
 
             return View(viewModel);
@@ -1128,6 +1128,11 @@ namespace FPL.Controllers
                         defs[i].position = (i + 2);
                     }
 
+                    for (var i = 0; i < mids.Count; i++)
+                    {
+                        mids[i].position = defs.LastOrDefault().position + (i + 1);
+                    }
+
                     for (var i = 0; i < fwds.Count; i++)
                     {
                         fwds[i].position = mids.LastOrDefault().position + (i + 1);
@@ -1165,6 +1170,11 @@ namespace FPL.Controllers
                     for (var i = 0; i < defs.Count; i++)
                     {
                         defs[i].position = (i + 2);
+                    }
+
+                    for (var i = 0; i < mids.Count; i++)
+                    {
+                        mids[i].position = defs.LastOrDefault().position + (i + 1);
                     }
 
                     for (var i = 0; i < fwds.Count; i++)

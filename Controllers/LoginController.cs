@@ -27,6 +27,7 @@ namespace FPL.Controllers
 
         public async Task<IActionResult> Index()
         {
+            //return await Index(new LoginViewModel { Email = "danny_99_mully@hotmail.com", Password = "Omaghabu1", Redirect = "Yes" });
             return await Index(new LoginViewModel { Email = "dannymullan17@gmail.com", Password = "eRx%90zVSWQo", Redirect = "Yes" });
         }
 

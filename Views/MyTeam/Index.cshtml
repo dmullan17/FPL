@@ -30,32 +30,32 @@
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Team</th>
-                    <th>Pos</th>
-                    <th>Val (Potential Profit)</th>
+                    <th class="center aligned">Team</th>
+                    <th class="center aligned" data-tooltip="Position">Pos</th>
+                    <th class="center aligned" data-tooltip="Value (Potential Profit)">Val (PP)</th>
                     @*<th>Pts</th>
         <th>Pts for Team</th>*@
-                    <th>GWs on Team</th>
-                    <th>PPGW on Team</th>
-                    <th>PPG Prev 30 days</th>
-                    <th>% Mins Played</th>
-                    <th><i class="star icon"></i></th>
-                    <th>FPL Index</th>
+                    <th class="center aligned" data-tooltip="Gameweeks On Team">GWOT</th>
+                    <th class="center aligned" data-tooltip="Points Per Gameweek">PPGW</th>
+                    <th class="center aligned" data-tooltip="Points Per Game (Previous 30 Days)">Form</th>
+                    <th class="center aligned" data-tooltip="Minutes Played">MP (%)</th>
+                    <th class="center aligned"><i class="star icon"></i></th>
+                    @*<th>FPL Index</th>
                     <th>FPL Rank</th>
-                    <th>FPL Position Rank</th>
+                    <th>FPL Position Rank</th>*@
                     @*<th>ICT</th>
         <th>ICT Rank</th>
         <th>Pos ICT Rank</th>
         <th>BPS</th>
         <th>Bps Rank</th>
         <th>Pos Bps Rank</th>*@
-                    <th>% Selected by</th>
-                    <th>GW Net Transfers</th>
+                    <th class="center aligned" data-tooltip="Total Ownership">TO (%)</th>
+                    <th class="center aligned" data-tooltip="Gameweek Net Transfers">GWNT</th>
                     <th data-bind="text: $root.GetCurrentGw()"></th>
                     @*<th data-bind="text: 'GW ' + $root.CurrentGwId()"></th>*@
                     <th data-bind="text: $root.GetNextGw()"></th>
                     @*<th>Next Game</th>*@
-                    <th>Avg FDR Next 5</th>
+                    <th class="center aligned" data-tooltip="Average Fixture Difficulty Rating (Next 5 Games)">Avg FDR (Next 5)</th>
                     @*<th>Form</th>
         <th>Points achieved</th>
         <th>Next Game</th>*@
@@ -69,13 +69,13 @@
                         <span data-bind="visible: player.in_dreamteam"><i class="star icon"></i></span>
                         <i class="ui icon" data-bind="visible: $root.DoesPlayerHaveStatus(player.status), class: $root.GetPlayerStatusIcon(player.status)"></i>
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: player.Team.short_name"></span>
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: $root.GetPosition(player.element_type)"></span>
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: $root.FormatValue(player.now_cost, NetProfitOnTransfer)"></span>
                     </td>
                     @*<td>
@@ -84,22 +84,22 @@
         <td>
             <span data-bind="text: TotalPointsAccumulatedForTeam"></span>
         </td>*@
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: GWOnTeam"></span>
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: PPGOnTeam.toFixed(1)"></span>
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: player.form"></span>
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: player.MinsPlayedPercentage"></span>
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: player.dreamteam_count"></span>
                     </td>
-                    <td>
+                    @*<td>
                         <span data-bind="text: player.FplIndex"></span>
                     </td>
                     <td>
@@ -107,7 +107,7 @@
                     </td>
                     <td>
                         <span data-bind="text: player.FplPositionRank"></span>
-                    </td>
+                    </td>*@
                     @*<td>
             <span data-bind="text: player.ict_index"></span>
         </td>
@@ -126,10 +126,10 @@
         <td>
             <span data-bind="text: $root.FormatPositionRankType(player.element_type, player.BpsPositionRank)"></span>
         </td>*@
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: player.selected_by_percent"></span>
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: $root.CreateGWNetTransfers(player)"></span>
                     </td>
                     @*<td>
@@ -141,7 +141,7 @@
                     <td>
                         <span data-bind="html: $root.GetNextGWGames(player.Team)"></span>
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <span data-bind="text: $root.CalculateFixtureDifficulty(player.Team, player.Fixtures)"></span>
                     </td>
                 </tr>
