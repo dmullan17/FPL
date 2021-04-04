@@ -11,6 +11,7 @@
     self.EventStatus = ko.observable(data.EventStatus);
     self.EntryHistory = ko.observable(data.EntryHistory);
     self.IsLive = ko.observable(data.IsLive);
+    self.GameWeek = ko.observable(data.GameWeek);
     self.SelectedPlayer = ko.observable();
     self.SelectedPlayerStatus = ko.observable();
 
@@ -276,6 +277,47 @@
 
     };
 
+    self.GetTotalPercentileMovement = function (entryHistory) {
+
+        if (entryHistory.overall_rank > entryHistory.LastEventOverallRank) {
+            return "red arrow alternate circle down icon";
+        }
+        else if (entryHistory.overall_rank < entryHistory.LastEventOverallRank) {
+            return "green arrow alternate circle up icon";
+        }
+        else if (entryHistory.overall_rank == entryHistory.LastEventOverallRank) {
+            return "grey circle icon";
+        }
+        return;
+
+    }
+
+    self.GetCaptain = function (gwTeam) {
+
+        var captain = gwTeam.picks.filter(x => x.is_captain);
+
+        return captain[0].player.web_name;
+    }
+
+    self.GetCaptainPointsTotal = function (gwTeam) {
+
+        var captain = gwTeam.picks.filter(x => x.is_captain);
+
+        return captain[0].GWPlayer.stats.gw_points;
+    }
+
+    self.GetBenchPointsTotal = function (gwTeam) {
+
+        var benchPicks = gwTeam.picks.filter(x => x.position > 11);
+        var total = 0;
+
+        for (var i = 0; i < benchPicks.length; i++) {
+            total += benchPicks[i].GWPlayer.stats.gw_points;
+        }
+
+        return total;
+    }
+
 
     self.GetBonus = function (player) {
 
@@ -478,10 +520,25 @@
         }
     };
 
+    self.GetLastTimeGwAvgWasUpdated = function (eventStatus) {
+
+        var finishedEvents = eventStatus.status.filter(x => x.points == "r");
+        var lastFinishedEvent = finishedEvents[finishedEvents.length - 1];
+        var day = getDayOfWeek(lastFinishedEvent.date);
+
+        return "Last updated on " + day + " " + lastFinishedEvent.date;
+    }
+
     self.FormatValue = function (value) {
         var value = parseFloat(value) / 10;
         return value.toFixed(1);
     };
+
+
+    self.FormatLargeNumber = function (number) {
+        return nFormatter(number, 2)
+        //return player.transfers_in_event - player.transfers_out_event;
+    }
 
     // Accepts a Date object or date string that is recognized by the Date.parse() method
     function getDayOfWeek(date) {
@@ -514,6 +571,30 @@
             setTimeout(refresh, 10000);
         }
 
+        $('#gw-percentile-statistic').popup({
+            popup: '#gw-percentile-popup.popup',
+            position: 'top center',
+            hoverable: true
+        });
+
+        $('#total-percentile-statistic').popup({
+            popup: '#total-percentile-popup.popup',
+            position: 'top center',
+            hoverable: true
+        });
+
+        $('#captain-points-statistic').popup({
+            popup: '#captain-points-popup.popup',
+            position: 'top center',
+            hoverable: true
+        });
+
+        $('#gw-average-statistic').popup({
+            popup: '#gw-average-popup.popup',
+            position: 'top center',
+            hoverable: true
+        });
+
         //totalling a players total gw stats
         //for (var i = 0; i < self.Picks().length; i++) {
         //    for (var j = 0; j < self.Picks()[i].GWPlayer.explain.length; j++) {
@@ -527,4 +608,24 @@
     };
 
     self.init();
+
+    function nFormatter(num, digits) {
+        var si = [
+            { value: 1, symbol: "" },
+            { value: 1E3, symbol: "k" },
+            { value: 1E6, symbol: "M" },
+            { value: 1E9, symbol: "G" },
+            { value: 1E12, symbol: "T" },
+            { value: 1E15, symbol: "P" },
+            { value: 1E18, symbol: "E" }
+        ];
+        var rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+        var i;
+        for (i = si.length - 1; i > 0; i--) {
+            if (Math.abs(num) >= si[i].value) {
+                break;
+            }
+        }
+        return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
+    }
 };

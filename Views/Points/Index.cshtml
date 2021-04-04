@@ -14,11 +14,83 @@
 
 <div id="app">
     <div class="ui container">
-        <h3 class="ui header" data-bind="with: $root.Team()">
+        @*<h3 class="ui header" data-bind="with: $root.Team()">
             <span data-bind="text: name"></span>
-        </h3>
+        </h3>*@
         <div class="ui grid">
-            <div class="eight wide column">
+            <div class="row">
+                <div class="column" style="padding-top: 0.5rem; width: fit-content; margin-right: 1rem;">
+                    <h3 class="ui header">
+                        <span data-bind="text: $root.Team().name"></span>
+                        <div class="sub header" data-bind="text: $root.Team().player_first_name + ' ' + $root.Team().player_last_name"></div>
+                    </h3>
+                </div>
+                @*<div class="ui vertical divider"></div>*@
+                <div class="column" style="width: 80%;">
+                    <div id="points-statistics-row" class="ui small statistics">
+                        <div class="statistic">
+                            <div data-bind="text: $root.GetGWPoints($root.GWPoints())" class="value"></div>
+                            <div class="label" data-bind="text: 'GW' + $root.GameweekId() + ' Points'"></div>
+                        </div>
+                        <div id="gw-percentile-statistic" class="statistic" style="margin-top: 1em">
+                            <div class="text value">
+                                <span>Top</span>
+                                <span style="font-size: 2.5rem !important;" data-bind="text: $root.EntryHistory().GwRankPercentile + '%'"></span>
+                            </div>
+                            <div class="label" data-bind="text: 'GW' + $root.GameweekId() + ' Percentile'"></div>
+                        </div>
+                        <div id="gw-average-statistic" class="statistic" data-bind="with: $root.GameWeek()">
+                            <div data-bind="text: average_entry_score" class="value"></div>
+                            <div class="label" data-bind="text: 'GW' + $root.GameweekId() + ' Avg Score'"></div>
+                        </div>
+                        @*<div class="statistic">
+                            <div data-bind="text: $root.GetTotalPoints($root.TotalPoints())" class="value"></div>
+                            <div class="label">Total Points</div>
+                        </div>
+                        <div id="total-percentile-statistic" class="statistic" style="margin-top: 1em">
+                            <div class="text value">
+                                <span>Top</span>
+                                <span style="font-size: 2.5rem !important;" data-bind="text: $root.EntryHistory().TotalRankPercentile + '%'"></span>
+                                <i data-bind="class: $root.GetTotalPercentileMovement($root.EntryHistory())"></i>
+                            </div>
+                            <div class="label">Total Percentile</div>
+                        </div>*@
+                        @*<div class="statistic" data-bind="with: $root.Team()">
+                            <div data-bind="text: $root.FormatLargeNumber(summary_event_rank)" class="value"></div>
+                            <div class="label" data-bind="text: 'GW' + $root.GameweekId() + ' Rank'"></div>
+                        </div>
+                        <div class="statistic" data-bind="with: $root.Team()">
+                            <div data-bind="text: $root.FormatLargeNumber(summary_overall_rank)" class="value"></div>
+                            <div class="label">Total Rank</div>
+                        </div>*@
+                        <div id="captain-points-statistic" class="statistic">
+                            <div data-bind="text: $root.GetCaptainPointsTotal($root.GWTeam())" class="value"></div>
+                            <div class="label">Captain Points</div>
+                        </div>
+                        <div class="statistic">
+                            <div data-bind="text: $root.GetBenchPointsTotal($root.GWTeam())" class="value"></div>
+                            <div class="label">Bench Points</div>
+                        </div>
+                        <div class="statistic" data-bind="with: $root.GWTeam()">
+                            <div data-bind="text: PlayersYetToPlay" class="value"></div>
+                            <div class="label">Picks YTP</div>
+                        </div>
+                        <div class="statistic" data-bind="visible: $root.GWTeam().ActiveChips.length > 0">
+                            <div class="value">
+                                <i class="gem outline icon"></i>
+                            </div>
+                            <div class="label" data-bind="text: $root.GWTeam().ActiveChips"></div>
+                        </div>
+                        @*<div class="statistic" data-bind="with: $root.GameWeek()">
+                            <div data-bind="text: highest_score" class="value"></div>
+                            <div class="label" data-bind="text: 'GW' + $root.GameweekId() + ' Top Score'"></div>
+                        </div>*@
+                    </div>
+
+                </div>
+            </div>
+
+            @*<div class="eight wide column">
                 <h4 class="ui header">
                     Total Points: <span data-bind="text: $root.GetTotalPoints($root.TotalPoints())"></span>
                 </h4>
@@ -33,11 +105,12 @@
                 <h4 class="ui header" data-bind="visible: $root.GWTeam().ActiveChips.length > 0">
                     Active Chips:
                     <!-- ko foreach: $root.GWTeam().ActiveChips -->
-                    <!-- ko if: $index() > 0 -->, <!-- /ko -->
-                    <span data-bind="text: $data"></span>
+                    <!-- ko if: $index() > 0 --><!--,--> <!-- /ko -->
+                    <!--<span data-bind="text: $data"></span>-->
                     <!-- /ko -->
                 </h4>
-            </div>
+            </div>*@
+
         </div>
         <table class="ui table">
             <thead>
@@ -129,8 +202,17 @@
                 </tr>
             </tbody>
         </table>
-        <div class="ui special popup">
-            test
+        <div id="gw-percentile-popup" class="ui hidden stat popup">
+            <p data-bind="text: $root.FormatLargeNumber($root.Team().summary_event_rank) + ' / ' + $root.FormatLargeNumber($root.EntryHistory().TotalPlayers)"></p>
+        </div>
+        <div id="total-percentile-popup" class="ui hidden stat popup">
+            <p data-bind="text: $root.FormatLargeNumber($root.Team().summary_overall_rank) + ' / ' + $root.FormatLargeNumber($root.EntryHistory().TotalPlayers)"></p>
+        </div>
+        <div id="captain-points-popup" class="ui hidden stat popup">
+            <p data-bind="text: $root.GetCaptain($root.GWTeam())"></p>
+        </div>
+        <div id="gw-average-popup" class="ui hidden stat popup">
+            <p data-bind="text: $root.GetLastTimeGwAvgWasUpdated($root.EventStatus())"></p>
         </div>
         <div class="ui modal">
             <i class="close icon"></i>

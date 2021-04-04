@@ -19,6 +19,7 @@ namespace FPL.ViewModels.FPL
         public EventStatus EventStatus { get; set; }
         public EntryHistory EntryHistory { get; set; }
         public bool IsLive { get; set; }
+        public GameWeek GameWeek { get; set; }
 
     }
 }

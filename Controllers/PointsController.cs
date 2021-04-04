@@ -51,7 +51,8 @@ namespace FPL.Controllers
             gwTeam = AddPlayerSummaryDataToTeam(allPlayers, allTeams, allGames, gwTeam, teamId, gameweekId);
             gwTeam = await AddTransfersToGwTeam(allPlayers, gwTeam, teamId, gameweekId);
             gwTeam.picks = AddPlayerGameweekDataToTeam(gwGames, allGwPlayers, gwTeam.picks, gameweekId);
-            gwTeam.EntryHistory = await AddExtraDatatoEntryHistory(gwTeam.EntryHistory);
+            gwTeam.CompleteEntryHistory = await GetCompleteEntryHistory(gwTeam.CompleteEntryHistory, teamId);
+            gwTeam.EntryHistory = await AddExtraDatatoEntryHistory(gwTeam.EntryHistory, gwTeam.CompleteEntryHistory);
             gwTeam = AddAutoSubs(gwTeam, gwTeam.picks, teamId, eventStatus);
             gwTeam.picks = AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
             int gwpoints = GetGameWeekPoints(gwTeam.picks, eventStatus);
@@ -70,14 +71,17 @@ namespace FPL.Controllers
                         }
                     }
                 }
+
+                CalculatePlayersYetToPlay(gwTeam, pick);
             }
 
+            viewModel.GameWeek = await GetCurrentGameWeek();
             viewModel.GWTeam = gwTeam;
             viewModel.EntryHistory = gwTeam.EntryHistory;
             viewModel.EventStatus = eventStatus;
             viewModel.Team = teamDetails;
             viewModel.GWPoints = gwpoints;
-            viewModel.TotalPoints = (teamDetails.summary_overall_points ?? 0 - teamDetails.summary_event_points ?? 0) + gwpoints;
+            viewModel.TotalPoints = ((int)teamDetails.summary_overall_points - (int)teamDetails.summary_event_points) + gwpoints;
             viewModel.GameweekId = gameweekId;
 
             return View(viewModel);
@@ -330,7 +334,7 @@ namespace FPL.Controllers
             return teamPicks;
         }
 
-        public async Task<EntryHistory> AddExtraDatatoEntryHistory(EntryHistory entryHistory)
+        public async Task<EntryHistory> AddExtraDatatoEntryHistory(EntryHistory entryHistory, CompleteEntryHistory completeEntryHistory)
         {
             var response = await _httpClient.GetAsync("bootstrap-static/");
 
@@ -344,6 +348,7 @@ namespace FPL.Controllers
             //EntryHistory entryHistory = new EntryHistory();
 
             int totalPlayers = totalPlayersJson.ToObject<int>();
+            entryHistory.TotalPlayers = totalPlayers;
 
             var gwRankPercentile = 0m;
             var overallRankPercentile = 0m;
@@ -364,7 +369,7 @@ namespace FPL.Controllers
             }
             else
             {
-                entryHistory.GwRankPercentile = Convert.ToInt32(gwRankPercentile + 1);
+                entryHistory.GwRankPercentile = Convert.ToInt32(Math.Ceiling(gwRankPercentile));
             }
 
             if (overallRankPercentile < 1)
@@ -373,8 +378,11 @@ namespace FPL.Controllers
             }
             else
             {
-                entryHistory.TotalRankPercentile = Convert.ToInt32(overallRankPercentile + 1);
+                entryHistory.TotalRankPercentile = Convert.ToInt32(Math.Ceiling(overallRankPercentile));
             }
+
+            var lastEventIndex = completeEntryHistory.CurrentSeasonEntryHistory.Count() - 2;
+            entryHistory.LastEventOverallRank = completeEntryHistory.CurrentSeasonEntryHistory[lastEventIndex].overall_rank;
 
             return entryHistory;
         }

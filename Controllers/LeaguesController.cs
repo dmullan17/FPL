@@ -290,13 +290,13 @@ namespace FPL.Controllers
                 foreach (var p in gwTeam.picks)
                 {
                     players.Add(p);
-                    CalculatePlayersYetToPlay(player, p);
+                    CalculatePlayersYetToPlay(gwTeam, p);
                 }
 
                 int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
                 player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
                 //player.total += (gwpoints - player.event_total);
-                player.total = (teamDetails.summary_overall_points ?? 0 - teamDetails.summary_event_points ?? 0) + gwpoints;
+                player.total = ((int)teamDetails.summary_overall_points - (int)teamDetails.summary_event_points) + gwpoints;
                 player.event_total = gwpoints;
                 //player.event_total += (gwpoints - player.event_total);
                 player.GWTeam = gwTeam;
@@ -372,7 +372,7 @@ namespace FPL.Controllers
                 foreach (var p in gwTeam.picks)
                 {
                     players.Add(p);
-                    CalculatePlayersYetToPlay(player, p);
+                    CalculatePlayersYetToPlay(gwTeam, p);
                 }
 
                 foreach (var transfer in gwTeam.GWTransfers)
@@ -384,7 +384,7 @@ namespace FPL.Controllers
                 player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
                 //player.total += (gwpoints - player.event_total);
                 //player.event_total += (gwpoints - player.event_total);
-                player.total = (teamDetails.summary_overall_points ?? 0 - teamDetails.summary_event_points ?? 0) + gwpoints;
+                player.total = ((int)teamDetails.summary_overall_points - (int)teamDetails.summary_event_points) + gwpoints;
                 player.event_total = gwpoints;
                 player.GWTeam = gwTeam;
 
@@ -438,7 +438,7 @@ namespace FPL.Controllers
 
             foreach (var p in gwTeam.picks)
             {
-                CalculatePlayersYetToPlay(userTeam, p);
+                CalculatePlayersYetToPlay(gwTeam, p);
             }
 
             //CalculateRankAndPFF(l);
@@ -542,27 +542,27 @@ namespace FPL.Controllers
             }
         }
 
-        public void CalculatePlayersYetToPlay(Result player, Pick p)
-        {
-            if (p.multiplier > 0 && p.GWGames.Any(x => x.kickoff_time != null && !x.finished_provisional) && p.player.status != "i")
-            {
-                for (var i = 0; i < p.GWPlayer.explain.Count; i++)
-                {
-                    for (var j = 0; j < p.GWPlayer.explain[i].stats.Count; j++)
-                    {
-                        var g = p.GWGames.Find(x => x.id == p.GWPlayer.explain[i].fixture);
+        //public void CalculatePlayersYetToPlay(Result player, Pick p)
+        //{
+        //    if (p.multiplier > 0 && p.GWGames.Any(x => x.kickoff_time != null && !x.finished_provisional) && p.player.status != "i")
+        //    {
+        //        for (var i = 0; i < p.GWPlayer.explain.Count; i++)
+        //        {
+        //            for (var j = 0; j < p.GWPlayer.explain[i].stats.Count; j++)
+        //            {
+        //                var g = p.GWGames.Find(x => x.id == p.GWPlayer.explain[i].fixture);
 
-                        if (p.GWPlayer.explain[i].stats[j].identifier == "minutes" && p.GWPlayer.explain[i].stats[j].value == 0)
-                        {
-                            if (!g.started ?? true)
-                            {
-                                player.PlayersYetToPlay += 1;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        //                if (p.GWPlayer.explain[i].stats[j].identifier == "minutes" && p.GWPlayer.explain[i].stats[j].value == 0)
+        //                {
+        //                    if (!g.started ?? true)
+        //                    {
+        //                        player.PlayersYetToPlay += 1;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
     }
 }

@@ -26,5 +26,9 @@ namespace FPL.Models.FPL
         public List<Transfer> GWTransfers { get; set; }
 
         public EntryHistory EntryHistory { get; set; }
+
+        public CompleteEntryHistory CompleteEntryHistory { get; set; } = new CompleteEntryHistory();
+
+        public int PlayersYetToPlay { get; set; } = 0;
     }
 }

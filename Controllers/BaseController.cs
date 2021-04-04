@@ -8,12 +8,15 @@ using FPL.Attributes;
 using FPL.Contracts;
 using FPL.Http;
 using FPL.Models;
+using FPL.Models.FPL;
 using FPL.Models.GWPlayerStats;
 using FPL.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Team = FPL.Models.Team;
+using FPLTeam = FPL.Models.FPL.Team;
 
 namespace FPL.Controllers
 {
@@ -26,6 +29,28 @@ namespace FPL.Controllers
         public string GetBaseUrl()
         {
             return "https://fantasy.premierleague.com/api/";
+        }
+
+        public void CalculatePlayersYetToPlay(GWTeam gwTeam, Pick p)
+        {
+            if (p.multiplier > 0 && p.GWGames.Any(x => x.kickoff_time != null && !x.finished_provisional) && p.player.status != "i")
+            {
+                for (var i = 0; i < p.GWPlayer.explain.Count; i++)
+                {
+                    for (var j = 0; j < p.GWPlayer.explain[i].stats.Count; j++)
+                    {
+                        var g = p.GWGames.Find(x => x.id == p.GWPlayer.explain[i].fixture);
+
+                        if (p.GWPlayer.explain[i].stats[j].identifier == "minutes" && p.GWPlayer.explain[i].stats[j].value == 0)
+                        {
+                            if (!g.started ?? true)
+                            {
+                                gwTeam.PlayersYetToPlay += 1;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public async Task<List<Game>> GetGwGames (int gameweekId)
