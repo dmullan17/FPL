@@ -57,6 +57,7 @@ namespace FPL.Controllers
             gwTeam.picks = AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
             int gwpoints = GetGameWeekPoints(gwTeam.picks, eventStatus);
             FPLTeam teamDetails = await GetTeamInfo(teamId);
+            var allStartedGameWeeks = await GetAllStartedGameWeeks();
 
             foreach (var pick in gwTeam.picks)
             {
@@ -75,14 +76,17 @@ namespace FPL.Controllers
                 CalculatePlayersYetToPlay(gwTeam, pick);
             }
 
-            viewModel.GameWeek = await GetCurrentGameWeek();
+            viewModel.AllStartedGameWeeks = allStartedGameWeeks.OrderByDescending(x => x.id).ToList();
+            viewModel.GameWeek = await GetGameWeekById(gameweekId);
             viewModel.GWTeam = gwTeam;
+            viewModel.CompleteEntryHistory = gwTeam.CompleteEntryHistory;
             viewModel.EntryHistory = gwTeam.EntryHistory;
             viewModel.EventStatus = eventStatus;
             viewModel.Team = teamDetails;
             viewModel.GWPoints = gwpoints;
             viewModel.TotalPoints = ((int)teamDetails.summary_overall_points - (int)teamDetails.summary_event_points) + gwpoints;
             viewModel.GameweekId = gameweekId;
+            viewModel.CurrentGameweekId = await GetCurrentGameWeekId();
 
             return View(viewModel);
         }
@@ -392,6 +396,7 @@ namespace FPL.Controllers
             var lastEvent = eventStatus.status.LastOrDefault();
             var starters = picks.FindAll(x => x.position < 12);
             var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().finished_provisional || x.GWGames.Count == 0 || x.player.status == "i" || x.player.status == "u"));
+            var subs = picks.FindAll(x => x.position > 11);
             var subsWhoPlayed = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes > 0);
             var subsYetToPlay = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes == 0 && (x.player.status != "u" && x.player.status != "i") && x.GWGames.Any(y => !y.finished_provisional));
 
@@ -401,6 +406,18 @@ namespace FPL.Controllers
             }
             else
             {
+                //if (startersWhoDidNotPlay.Count > 0)
+                //{
+                //    foreach (var sub in subs)
+                //    {
+                //        foreach (var starter in startersWhoDidNotPlay)
+                //        {
+                //            if (sub.GWPlayer.stats.minutes)
+                //        }
+                //    }
+
+                //}
+
                 if (startersWhoDidNotPlay.Count > 0 && subsWhoPlayed.Count > 0)
                 {
                     for (var i = 0; i < startersWhoDidNotPlay.Count; i++)

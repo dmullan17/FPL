@@ -8,12 +8,39 @@
     self.TotalPoints = ko.observable(data.TotalPoints);
     self.GWPoints = ko.observable(data.GWPoints);
     self.GameweekId = ko.observable(data.GameweekId);
+    self.CurrentGameweekId = ko.observable(data.CurrentGameweekId);
+    self.SelectedGameweek = ko.observable()
     self.EventStatus = ko.observable(data.EventStatus);
     self.EntryHistory = ko.observable(data.EntryHistory);
+    self.CompleteEntryHistory = ko.observable(data.EntryHistory);
     self.IsLive = ko.observable(data.IsLive);
     self.GameWeek = ko.observable(data.GameWeek);
     self.SelectedPlayer = ko.observable();
     self.SelectedPlayerStatus = ko.observable();
+
+    self.AllStartedGameWeeks = ko.observableArray(data.AllStartedGameWeeks);
+
+    self.SelectedGameweek.subscribe(function (selectedGameweek) {
+
+        if (selectedGameweek.id != self.GameweekId()) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const gameweekIdParam = urlParams.get('gameweekId');
+            const entryParam = urlParams.get('entry');
+
+            if (gameweekIdParam != null) {
+                var url = window.location.href;
+                var selectedGameweekUrl = url.replace('gameweekId=' + gameweekIdParam, 'gameweekId=' + selectedGameweek.id);
+                window.location.href = selectedGameweekUrl;
+            }
+            else if (entryParam != null) {
+                window.location.href += '&gameweekId=' + selectedGameweek.id;
+            }
+            else {
+                window.location.href += '?gameweekId=' + selectedGameweek.id;
+            }
+        }
+
+    });
 
     self.viewPlayer = function (player) {
         self.SelectedPlayer(player);
@@ -211,7 +238,7 @@
         }
         if (fixtures.length > 0) {
             for (var i = 0; i < fixtures.length; i++) {
-                html += getDayOfWeek(fixtures[i].kickoff_time) + " @ " + fixtures[i].kickoff_time.substring(11, 16) + " <br/>";
+                html += getDayOfWeek(fixtures[i].kickoff_time) + " @ " + new Date(fixtures[i].kickoff_time).toTimeString().split(' ')[0].slice(0, -3) + " <br/>";
             }
         }
 
@@ -290,6 +317,12 @@
         }
         return;
 
+    }
+
+    self.GetGwPercentilePopupHeight = function (gameweekId) {
+        if (gameweekId != self.CurrentGameweekId()) {
+            return "40px";
+        }
     }
 
     self.GetCaptain = function (gwTeam) {
@@ -520,6 +553,13 @@
         }
     };
 
+    self.GetGWRank = function (completeEntryHistory) {
+
+        var rank = completeEntryHistory.filter(x => x.event == self.GameweekId()).rank;
+
+        return rank;
+    }
+
     self.GetLastTimeGwAvgWasUpdated = function (eventStatus) {
 
         var finishedEvents = eventStatus.status.filter(x => x.points == "r");
@@ -533,6 +573,10 @@
         var value = parseFloat(value) / 10;
         return value.toFixed(1);
     };
+
+    self.GetFlagClass = function (countryCode) {
+        return countryCode.toLowerCase() + " flag";
+    }
 
 
     self.FormatLargeNumber = function (number) {
@@ -589,11 +633,17 @@
             hoverable: true
         });
 
-        $('#gw-average-statistic').popup({
-            popup: '#gw-average-popup.popup',
-            position: 'top center',
-            hoverable: true
-        });
+        if (self.GameweekId() == self.CurrentGameweekId()) {
+            $('#gw-average-statistic').popup({
+                popup: '#gw-average-popup.popup',
+                position: 'top center',
+                hoverable: true
+            });
+        }
+
+        var index = self.AllStartedGameWeeks().findIndex(x => x.id === self.GameweekId());
+        self.SelectedGameweek(self.AllStartedGameWeeks()[index]);
+
 
         //totalling a players total gw stats
         //for (var i = 0; i < self.Picks().length; i++) {

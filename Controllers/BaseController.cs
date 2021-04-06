@@ -283,6 +283,32 @@ namespace FPL.Controllers
             return currentGameweek;
         }
 
+        public async Task<GameWeek> GetGameWeekById(int gameweekId)
+        {
+            var response = await _httpClient.GetAsync("bootstrap-static/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            //events = gameweeks
+            var resultObjects = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("events"))
+                .Children<JObject>();
+
+            List<GameWeek> gws = new List<GameWeek>();
+
+            foreach (JObject result in resultObjects)
+            {
+                GameWeek gw = result.ToObject<GameWeek>();
+                gws.Add(gw);
+            }
+
+            GameWeek gameweek = gws.FirstOrDefault(a => a.id == gameweekId);
+
+            return gameweek;
+        }
+
         public async Task<int> GetCurrentGameWeekId()
         {
             var response = await _httpClient.GetAsync("bootstrap-static/");
@@ -322,6 +348,32 @@ namespace FPL.Controllers
         //    return games;
         //}
 
+        public async Task<List<GameWeek>> GetAllStartedGameWeeks()
+        {
+            var response = await _httpClient.GetAsync("bootstrap-static/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            //events = gameweeks
+            var resultObjects = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("events"))
+                .Children<JObject>();
+
+            List<GameWeek> startedGameWeeks = new List<GameWeek>();
+
+            foreach (JObject result in resultObjects)
+            {
+                GameWeek gw = result.ToObject<GameWeek>();
+                if (gw.is_current || gw.finished)
+                {
+                    startedGameWeeks.Add(gw);
+                }
+            }
+
+            return startedGameWeeks;
+        }
 
         public async Task<List<GameWeek>> GetAllGameWeeks()
         {
