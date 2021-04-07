@@ -30,6 +30,8 @@ namespace FPL.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            ViewData["Title"] = "My Leagues";
+
             List<Player> allPlayers = await GetAllPlayers();
             List<Team> allTeams = await GetAllTeams();
             List<Game> allGames = await GetAllGames();

@@ -500,7 +500,7 @@
         initialiseStandingsDatatable();
         initialiseTalliesDatatable();
 
-        $("#th-bonus-points").attr('title', 'This is the hover-over text');
+        $("#th-bonus-points").attr('title',  'This is the hover-over text');
     };
 
     self.init();

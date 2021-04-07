@@ -31,6 +31,8 @@ namespace FPL.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            ViewData["Title"] = "My Team";
+
             var viewModel = new MyTeamViewModel();
 
             HttpClientHandler handler = new HttpClientHandler();

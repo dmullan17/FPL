@@ -76,6 +76,7 @@ namespace FPL.Controllers
                 CalculatePlayersYetToPlay(gwTeam, pick);
             }
 
+            ViewData["Title"] = teamDetails.player_first_name + " " + teamDetails.player_last_name + "'s GW" + gameweekId;
             viewModel.AllStartedGameWeeks = allStartedGameWeeks.OrderByDescending(x => x.id).ToList();
             viewModel.GameWeek = await GetGameWeekById(gameweekId);
             viewModel.GWTeam = gwTeam;

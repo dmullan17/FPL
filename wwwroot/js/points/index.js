@@ -574,8 +574,8 @@
         return value.toFixed(1);
     };
 
-    self.GetFlagClass = function (countryCode) {
-        return countryCode.toLowerCase() + " flag";
+    self.GetFlagClass = function (country) {
+        return country.toLowerCase() + " flag";
     }
 
 
@@ -615,6 +615,8 @@
             setTimeout(refresh, 10000);
         }
 
+        $('.menu .item').tab({});
+
         $('#gw-percentile-statistic').popup({
             popup: '#gw-percentile-popup.popup',
             position: 'top center',
@@ -643,6 +645,8 @@
 
         var index = self.AllStartedGameWeeks().findIndex(x => x.id === self.GameweekId());
         self.SelectedGameweek(self.AllStartedGameWeeks()[index]);
+
+        $("#flag-icon").attr('title', self.Team().player_region_name)
 
 
         //totalling a players total gw stats
