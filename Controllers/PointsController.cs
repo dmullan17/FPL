@@ -1008,11 +1008,16 @@ namespace FPL.Controllers
                     var vc = teamPicks.Find(x => x.is_vice_captain);
                     if (vc != null)
                     {
-                        if (vc.GWGames.Any(x => x.minutes != 0) || vc.GWPlayer.stats.minutes > 0)
+                        vc.is_captain = true;
+                        vc.is_vice_captain = false;
+
+                        if (vc.GWPlayer.stats.minutes > 0)
                         {
-                            vc.is_captain = true;
-                            vc.is_vice_captain = false;
                             vc.GWPlayer.stats.gw_points = vc.GWPlayer.stats.gw_points * pick.multiplier;
+                        }
+                        else if (vc.GWGames.Any(x => x.minutes != 0))
+                        {
+                            vc.is_captain = false;
                         }
                     }
                 }
