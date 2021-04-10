@@ -30,7 +30,7 @@
                     <div id="points-statistics-row" class="ui small statistics">
                         <div class="statistic">
                             <div data-bind="text: $root.GetGWPoints($root.GWPoints())" class="value"></div>
-                            <div class="label" data-bind="text: 'GW' + $root.GameweekId() + ' Points'"></div>
+                            <div class="label" data-bind="text: 'GW' + $root.GameweekId() + ' Pnts'"></div>
                         </div>
                         <div id="gw-percentile-statistic" class="statistic" style="margin-top: 1em">
                             <div class="text value">
@@ -65,11 +65,11 @@
                         </div>*@
                         <div id="captain-points-statistic" class="statistic">
                             <div data-bind="text: $root.GetCaptainPointsTotal($root.GWTeam())" class="value"></div>
-                            <div class="label">Captain Points</div>
+                            <div class="label">Captain Pnts</div>
                         </div>
                         <div class="statistic">
                             <div data-bind="text: $root.GetBenchPointsTotal($root.GWTeam())" class="value"></div>
-                            <div class="label">Bench Points</div>
+                            <div class="label">Bench Pnts</div>
                         </div>
                         <div class="statistic" data-bind="visible: $root.GameweekId() == $root.CurrentGameweekId()">
                             <div data-bind="text: $root.GWTeam().PlayersYetToPlay" class="value"></div>
