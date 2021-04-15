@@ -60,7 +60,7 @@ namespace FPL.Controllers
             TransferInfo transferInfo = transfersObject.ToObject<TransferInfo>();
 
             List<Pick> teamPicks = new List<Pick>();
-            //List<Pick> teamPicksLastWeek = new List<Pick>();
+            List<Pick> teamPicksLastWeek = new List<Pick>();
             List<Transfer> transfers = new List<Transfer>();
             List<PlayerPosition> positions = new List<PlayerPosition>();
 
@@ -70,11 +70,11 @@ namespace FPL.Controllers
                 teamPicks.Add(p);
             }
 
-            //teamPicksLastWeek = await GetLastWeeksTeam(teamPicksLastWeek, teamId, currentGwId);
+            teamPicksLastWeek = await GetLastWeeksTeam(teamPicksLastWeek, teamId, currentGwId);
 
             foreach (var p in teamPicks)
             {
-                if (teamPicks.FindAll(x => x.element == p.element).Count == 0)
+                if (teamPicksLastWeek.FindAll(x => x.element == p.element).Count == 0)
                 {
                     p.IsNewTransfer = true;
                 }

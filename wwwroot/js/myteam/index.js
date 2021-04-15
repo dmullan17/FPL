@@ -10,11 +10,17 @@
     self.TransferInfo = ko.observable(data.TransferInfo);
     self.CurrentGwId = ko.observable(data.CurrentGwId);
     self.IsEventFinished = ko.observable(data.IsEventFinished);
+    self.EntryHistory = ko.observable(data.EntryHistory);
 
 
     //self.getColor = ko.pureComputed(function (data) {
     //    return this;
     //});
+
+    self.GetFlagClass = function (country) {
+        return country.toLowerCase() + " flag";
+    }
+
 
     self.getColor = function (position) {
         if (position > 11) {

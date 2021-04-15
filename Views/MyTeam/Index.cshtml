@@ -14,18 +14,77 @@
 
 <div id="app">
     <div class="ui container">
-        <h3 class="ui header" data-bind="with: $root.Team()">
-            <span data-bind="text: name"></span>
-        </h3>
-        <h4 class="ui header">
-            Total Points: <span data-bind="text: $root.TotalPoints()"></span>
-        </h4>
-        <h4 class="ui header">
-            Team Value: <span data-bind="text: $root.ConvertToDecimal($root.TransferInfo().value)"></span>
-        </h4>
-        <h4 class="ui header">
-            Bank: <span data-bind="text: $root.ConvertToDecimal($root.TransferInfo().bank)"></span>
-        </h4>
+        <div class="ui grid">
+            <div class="row">
+                <div class="column" style="padding-top: 0.5rem; width: fit-content; margin-right: 1rem;">
+                    <h4 class="ui header">
+                        <span data-bind="text: $root.Team().name"></span>
+                        <div class="sub header" data-bind="text: $root.Team().player_first_name + ' ' + $root.Team().player_last_name"></div>
+                        <i id="flag-icon" data-bind="class: $root.GetFlagClass($root.Team().player_region_name)"></i>
+                    </h4>
+                </div>
+                <div class="twelve wide column">
+                    <div @*id="points-statistics-row"*@ class="ui small statistics">
+                        <div class="statistic">
+                            <div data-bind="text: $root.TotalPoints()" class="value"></div>
+                            <div class="label">Total Points</div>
+                        </div>
+                        <div class="statistic">
+                            <div data-bind="text: $root.ConvertToDecimal($root.TransferInfo().value)" class="value"></div>
+                            <div class="label">Value</div>
+                        </div>
+                        <div class="statistic">
+                            <div data-bind="text: $root.ConvertToDecimal($root.TransferInfo().bank)" class="value"></div>
+                            <div class="label">Bank</div>
+                        </div>
+                        <!--<div--> @*id="total-percentile-statistic"*@
+                        <!--class="statistic" style="margin-top: 1em">
+        <div class="text value">
+            <span>Top</span>
+            <span style="font-size: 2.5rem !important;" data-bind="text: $root.EntryHistory().TotalRankPercentile + '%'"></span>
+            <i data-bind="class: $root.GetTotalPercentileMovement($root.EntryHistory())"></i>
+        </div>
+        <div class="label">Total Percentile</div>
+    </div>-->
+                        <!--<div--> @*id="gw-average-statistic"*@
+                        <!--class="statistic" data-bind="with: $root.GameWeek()">
+        <div data-bind="text: average_entry_score" class="value"></div>
+        <div class="label" data-bind="text: 'GW' + $root.GameweekId() + ' Avg Score'"></div>
+    </div>
+    <div-->
+                        @*id="captain-points-statistic"*@
+                        <!--class="statistic">
+        <div data-bind="text: $root.GetCaptainPointsTotal($root.GWTeam())" class="value"></div>
+        <div class="label">Captain Points</div>
+    </div>
+    <div class="statistic">
+        <div data-bind="text: $root.GetBenchPointsTotal($root.GWTeam())" class="value"></div>
+        <div class="label">Bench Points</div>
+    </div>
+    <div class="statistic" data-bind="visible: $root.GameweekId() == $root.CurrentGameweekId()">
+        <div data-bind="text: $root.GWTeam().PlayersYetToPlay" class="value"></div>
+        <div class="label">Picks YTP</div>
+    </div>
+    <div class="statistic" data-bind="visible: $root.GWTeam().ActiveChips.length > 0">
+        <div class="value">
+            <i class="gem outline icon"></i>
+        </div>
+        <div class="label" data-bind="text: $root.GWTeam().ActiveChips"></div>
+    </div>-->
+                    </div>
+                </div>
+                @*<div class="right floated column" style="width: 8.5% !important;">
+                    <select class="ui dropdown" style="padding: 0 !important; height: 30px !important;"
+                            data-bind="options: AllStartedGameWeeks,
+                                       optionsText: function(gw) {
+                                            return 'GW ' + gw.id
+                                       },
+                                       value: $root.SelectedGameweek">
+                    </select>
+                </div>*@
+            </div>
+
+        </div>
         <table id="table" class="ui collapsing selectable table">
             <thead>
                 <tr>

@@ -327,16 +327,41 @@
 
     self.GetCaptain = function (gwTeam) {
 
+        //var captain = gwTeam.picks.filter(x => x.is_captain);
+
+        //return captain[0].player.web_name;
+
         var captain = gwTeam.picks.filter(x => x.is_captain);
 
-        return captain[0].player.web_name;
+        var vice = gwTeam.picks.filter(x => x.is_vice_captain);
+
+        if (captain.length != 0) {
+            return captain[0].player.web_name;
+        }
+        else if (vice.length != 0) {
+            return vice[0].player.web_name;
+        }
+        else {
+            return "No Captain";
+        }
     }
 
     self.GetCaptainPointsTotal = function (gwTeam) {
 
         var captain = gwTeam.picks.filter(x => x.is_captain);
 
-        return captain[0].GWPlayer.stats.gw_points;
+        var vice = gwTeam.picks.filter(x => x.is_vice_captain);
+
+        if (captain.length != 0) {
+            return captain[0].GWPlayer.stats.gw_points;
+        }
+        else if (vice.length != 0) {
+            return vice[0].GWPlayer.stats.gw_points;
+        }
+        else {
+            return 0;
+        }
+
     }
 
     self.GetBenchPointsTotal = function (gwTeam) {
