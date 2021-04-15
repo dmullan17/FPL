@@ -53,7 +53,7 @@ namespace FPL.Controllers
             gwTeam.picks = AddPlayerGameweekDataToTeam(gwGames, allGwPlayers, gwTeam.picks, gameweekId);
             gwTeam.CompleteEntryHistory = await GetCompleteEntryHistory(gwTeam.CompleteEntryHistory, teamId);
             gwTeam.EntryHistory = await AddExtraDatatoEntryHistory(gwTeam.EntryHistory, gwTeam.CompleteEntryHistory);
-            gwTeam = AddAutoSubs(gwTeam, gwTeam.picks, teamId, eventStatus);
+            gwTeam = AddAutoSubs(gwTeam, gwTeam.picks, teamId, eventStatus, gameweekId);
             gwTeam.picks = AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
             int gwpoints = GetGameWeekPoints(gwTeam.picks, eventStatus);
             FPLTeam teamDetails = await GetTeamInfo(teamId);
@@ -392,26 +392,31 @@ namespace FPL.Controllers
             return entryHistory;
         }
 
-        public GWTeam AddAutoSubs(GWTeam gwTeam, List<Pick> picks, int teamId, EventStatus eventStatus)
+        public GWTeam AddAutoSubs(GWTeam gwTeam, List<Pick> picks, int teamId, EventStatus eventStatus, int gameweekId)
         {
             var lastEvent = eventStatus.status.LastOrDefault();
-            var starters = picks.FindAll(x => x.position < 12);
-            var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().finished_provisional || x.GWGames.Count == 0 || x.player.status == "i" || x.player.status == "u"));
-            var availableSubs = picks.FindAll(x => x.position > 11 && (x.player.status != "u" && x.player.status != "i"));
-            var subsWhoPlayed = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes > 0);
-            var subsYetToPlay = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes == 0 && (x.player.status != "u" && x.player.status != "i") && x.GWGames.Any(y => !y.finished_provisional));
 
             if (lastEvent.bonus_added && eventStatus.leagues != "Updating")
             {
                 return gwTeam;
             }
+            else if (lastEvent.@event != gameweekId)
+            {
+                return gwTeam;
+            }
             else
             {
+                var starters = picks.FindAll(x => x.position < 12);
+                var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().finished_provisional || (bool)x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().started || x.GWGames.Count == 0 || x.player.status == "i" || x.player.status == "u"));
+                var availableSubs = picks.FindAll(x => x.position > 11 && (x.player.status != "u" && x.player.status != "i"));
+                var subsWhoPlayed = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes > 0);
+                var subsYetToPlay = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes == 0 && (x.player.status != "u" && x.player.status != "i") && x.GWGames.Any(y => !y.finished_provisional));
+
                 if (startersWhoDidNotPlay.Count > 0)
                 {
                     foreach (var sub in availableSubs)
                     {
-                        startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().finished_provisional || x.GWGames.Count == 0 || x.player.status == "i" || x.player.status == "u"));
+                        startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().finished_provisional || (bool)x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().started || x.GWGames.Count == 0 || x.player.status == "i" || x.player.status == "u"));
                         var startingDefenders = starters.FindAll(x => x.player.element_type == 2);
 
                         foreach (var starterWhoDidNotPlay in startersWhoDidNotPlay)
@@ -451,7 +456,7 @@ namespace FPL.Controllers
                                         break;
 
                                     }
-                                    else if (starterWhoDidNotPlay.player.element_type == 4 && startingDefenders.Count > 3)
+                                    else if (starterWhoDidNotPlay.player.element_type == 4 /*&& startingDefenders.Count > 3*/)
                                     {
                                         var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
                                         gwTeam.automatic_subs.Add(autoSub);
@@ -839,6 +844,16 @@ namespace FPL.Controllers
             }
 
             gwTeam.GWTransfers = transfers.Where(x => x.@event == gameweekId).ToList();
+
+            // when manager plays wildcard and they end up making many transfers, need to find a way to filter gw transfers to only show confirmed transfers in gw
+            //var gwTransfers = transfers.Where(x => x.@event == gameweekId).ToList();
+            //foreach (var gwTransfer in gwTransfers)
+            //{
+            //    if (gwTransfers.Any(x => x.element_in == gwTransfer.element_in))
+            //    {
+
+            //    }
+            //}
 
             return gwTeam;
         }

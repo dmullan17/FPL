@@ -279,7 +279,7 @@ namespace FPL.Controllers
                 gwTeam = PointsController.AddPlayerSummaryDataToTeam(allPlayers, allTeams, allGames, gwTeam, player.entry, gameweekId);
                 gwTeam = await PointsController.AddTransfersToGwTeam(allPlayers, gwTeam, player.entry, gameweekId);
                 gwTeam.picks = PointsController.AddPlayerGameweekDataToTeam(gwGames, allGwPlayers, gwTeam.picks, gameweekId);
-                gwTeam = PointsController.AddAutoSubs(gwTeam, gwTeam.picks, player.entry, eventStatus);
+                gwTeam = PointsController.AddAutoSubs(gwTeam, gwTeam.picks, player.entry, eventStatus, gameweekId);
                 player.CompleteEntryHistory = await PointsController.GetCompleteEntryHistory(player.CompleteEntryHistory, player.entry);
                 gwTeam.picks = PointsController.AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
                 var teamDetails = await PointsController.GetTeamInfo(player.entry);
@@ -366,7 +366,7 @@ namespace FPL.Controllers
                 gwTeam = PointsController.AddPlayerSummaryDataToTeam(allPlayers, allTeams, allGames, gwTeam, player.entry, gameweekId);
                 gwTeam = await PointsController.AddTransfersToGwTeam(allPlayers, gwTeam, player.entry, gameweekId);
                 gwTeam.picks = PointsController.AddPlayerGameweekDataToTeam(gwGames, allGwPlayers, gwTeam.picks, gameweekId);
-                gwTeam = PointsController.AddAutoSubs(gwTeam, gwTeam.picks, player.entry, eventStatus);
+                gwTeam = PointsController.AddAutoSubs(gwTeam, gwTeam.picks, player.entry, eventStatus, gameweekId);
                 player.CompleteEntryHistory = await PointsController.GetCompleteEntryHistory(player.CompleteEntryHistory, player.entry);
                 gwTeam.picks = PointsController.AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
                 var teamDetails = await PointsController.GetTeamInfo(player.entry);
@@ -433,7 +433,7 @@ namespace FPL.Controllers
             gwTeam = pointsController.AddPlayerSummaryDataToTeam(allPlayers, allTeams, allGames, gwTeam, teamId, gameweekId);
             gwTeam = await pointsController.AddTransfersToGwTeam(allPlayers, gwTeam, teamId, gameweekId);
             gwTeam.picks = pointsController.AddPlayerGameweekDataToTeam(gwGames, allGwPlayers, gwTeam.picks, gameweekId);
-            gwTeam = pointsController.AddAutoSubs(gwTeam, gwTeam.picks, teamId, eventStatus);
+            gwTeam = pointsController.AddAutoSubs(gwTeam, gwTeam.picks, teamId, eventStatus, gameweekId);
             userTeam.CompleteEntryHistory = await pointsController.GetCompleteEntryHistory(userTeam.CompleteEntryHistory, teamId);
             gwTeam.picks = pointsController.AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
             var teamDetails = await pointsController.GetTeamInfo(teamId);
@@ -475,7 +475,7 @@ namespace FPL.Controllers
             gwTeam = PointsController.AddPlayerSummaryDataToTeam(allPlayers, allTeams, allGames, gwTeam, teamId, currentGameWeekId);
             gwTeam = await PointsController.AddTransfersToGwTeam(allPlayers, gwTeam, teamId, currentGameWeekId);
             gwTeam.picks = PointsController.AddPlayerGameweekDataToTeam(gwGames, allGwPlayers, gwTeam.picks, currentGameWeekId);
-            gwTeam = PointsController.AddAutoSubs(gwTeam, gwTeam.picks, teamId, eventStatus);
+            gwTeam = PointsController.AddAutoSubs(gwTeam, gwTeam.picks, teamId, eventStatus, currentGameWeekId);
             gwTeam.picks = PointsController.AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
 
             return gwTeam;
