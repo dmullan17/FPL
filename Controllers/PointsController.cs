@@ -392,6 +392,24 @@ namespace FPL.Controllers
             return entryHistory;
         }
 
+        private List<Pick> GetStartersWhoDidNotPlay(List<Pick> picks, bool IsPlayerOnTeamWithNoGWGames)
+        {
+            var startersWhoDidNotPlay = new List<Pick>();
+
+            //had to do this because code was breaking when a manager had a starter who had no gw games
+            if (IsPlayerOnTeamWithNoGWGames)
+            {
+                startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().finished_provisional || /*(bool)x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().started ||*/ x.GWGames.Count == 0 || x.player.status == "i" || x.player.status == "u"));
+            }
+            else
+            {
+                startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().finished_provisional || (bool)x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().started || x.GWGames.Count == 0 || x.player.status == "i" || x.player.status == "u"));
+            }
+
+            return startersWhoDidNotPlay;
+
+        }
+
         public GWTeam AddAutoSubs(GWTeam gwTeam, List<Pick> picks, int teamId, EventStatus eventStatus, int gameweekId)
         {
             var lastEvent = eventStatus.status.LastOrDefault();
@@ -407,7 +425,8 @@ namespace FPL.Controllers
             else
             {
                 var starters = picks.FindAll(x => x.position < 12);
-                var startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().finished_provisional || (bool)x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().started || x.GWGames.Count == 0 || x.player.status == "i" || x.player.status == "u"));
+                var IsPlayerOnTeamWithNoGWGames = starters.Any(x => x.GWGames.Count == 0);
+                var startersWhoDidNotPlay = GetStartersWhoDidNotPlay(picks, IsPlayerOnTeamWithNoGWGames);
                 var availableSubs = picks.FindAll(x => x.position > 11 && (x.player.status != "u" && x.player.status != "i"));
                 var subsWhoPlayed = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes > 0);
                 var subsYetToPlay = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes == 0 && (x.player.status != "u" && x.player.status != "i") && x.GWGames.Any(y => !y.finished_provisional));
@@ -416,7 +435,7 @@ namespace FPL.Controllers
                 {
                     foreach (var sub in availableSubs)
                     {
-                        startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().finished_provisional || (bool)x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().started || x.GWGames.Count == 0 || x.player.status == "i" || x.player.status == "u"));
+                        startersWhoDidNotPlay = GetStartersWhoDidNotPlay(picks, IsPlayerOnTeamWithNoGWGames);
                         var startingDefenders = starters.FindAll(x => x.player.element_type == 2);
 
                         foreach (var starterWhoDidNotPlay in startersWhoDidNotPlay)
