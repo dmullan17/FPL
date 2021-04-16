@@ -32,15 +32,15 @@
                             <div data-bind="text: $root.GetGWPoints($root.GWPoints())" class="value"></div>
                             <div class="label" data-bind="text: 'GW' + $root.GameweekId() + ' Pnts'"></div>
                         </div>
-                        <div id="gw-percentile-statistic" class="statistic" style="margin-top: 1em">
+                        <div id="gw-percentile-statistic" class="statistic" style="margin-top: 1em" data-bind="visible: $root.EntryHistory().rank != null">
                             <div class="text value">
                                 <span>Top</span>
                                 <span style="font-size: 2.5rem !important;" data-bind="text: $root.EntryHistory().GwRankPercentile + '%'"></span>
                             </div>
                             <div class="label" data-bind="text: 'GW' + $root.GameweekId() + ' Percentile'"></div>
                         </div>
-                        <div id="gw-average-statistic" class="statistic" data-bind="with: $root.GameWeek()">
-                            <div data-bind="text: average_entry_score" class="value"></div>
+                        <div id="gw-average-statistic" class="statistic" data-bind="visible: $root.GameWeek().average_entry_score != 0">
+                            <div data-bind="text: $root.GameWeek().average_entry_score" class="value"></div>
                             <div class="label" data-bind="text: 'GW' + $root.GameweekId() + ' Avg Score'"></div>
                         </div>
                         @*<div class="statistic">

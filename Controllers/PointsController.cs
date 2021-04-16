@@ -361,29 +361,29 @@ namespace FPL.Controllers
             if (entryHistory.rank != null)
             {
                 gwRankPercentile = Math.Round(((decimal)entryHistory.rank / (decimal)totalPlayers) * 100m, 2);
+
+                if (gwRankPercentile < 1)
+                {
+                    entryHistory.GwRankPercentile = 1;
+                }
+                else
+                {
+                    entryHistory.GwRankPercentile = Convert.ToInt32(Math.Ceiling(gwRankPercentile));
+                }
             }
 
             if (entryHistory.overall_rank != null)
             {
                 overallRankPercentile = Math.Round(((decimal)entryHistory.overall_rank / (decimal)totalPlayers) * 100m, 2);
-            }
 
-            if (gwRankPercentile < 1)
-            {
-                entryHistory.GwRankPercentile = 1;
-            }
-            else
-            {
-                entryHistory.GwRankPercentile = Convert.ToInt32(Math.Ceiling(gwRankPercentile));
-            }
-
-            if (overallRankPercentile < 1)
-            {
-                entryHistory.TotalRankPercentile = 1;
-            }
-            else
-            {
-                entryHistory.TotalRankPercentile = Convert.ToInt32(Math.Ceiling(overallRankPercentile));
+                if (overallRankPercentile < 1)
+                {
+                    entryHistory.TotalRankPercentile = 1;
+                }
+                else
+                {
+                    entryHistory.TotalRankPercentile = Convert.ToInt32(Math.Ceiling(overallRankPercentile));
+                }
             }
 
             var lastEventIndex = completeEntryHistory.CurrentSeasonEntryHistory.Count() - 2;
