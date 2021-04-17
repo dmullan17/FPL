@@ -97,6 +97,10 @@ namespace FPL.Controllers
             teamPicks = await CalculateTotalPointsContributed(teamPicks, transfers, gameweekId);
             teamPicks = teamPicks.OrderBy(x => x.position).ToList();
             FPLTeam teamDetails = await GetTeamInfo(teamId);
+            var entryHistory = await GetEntryHistory(teamId, currentGwId);
+            var completeEntryHistory = new CompleteEntryHistory();
+            completeEntryHistory = await GetCompleteEntryHistory(completeEntryHistory, teamId);
+            entryHistory = await AddExtraDatatoEntryHistory(entryHistory, completeEntryHistory);
 
             viewModel.CurrentGwId = gameweekId;
             viewModel.Picks = teamPicks;
@@ -105,8 +109,30 @@ namespace FPL.Controllers
             viewModel.TotalPoints = teamDetails.summary_overall_points ?? 0;
             viewModel.TransferInfo = transferInfo;
             viewModel.IsEventFinished = isEventFinished;
+            viewModel.EntryHistory = entryHistory;
+            viewModel.CompleteEntryHistory = completeEntryHistory;
+            viewModel.EventStatus = eventStatus;
 
             return View(viewModel);
+        }
+
+        private async Task<EntryHistory> GetEntryHistory(int teamId, int gameweekId)
+        {
+            var response = await _httpClient.GetAsync($"entry/{teamId}/event/{gameweekId}/picks/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var entryHistoryJSON = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Object && c.Path.Contains("entry_history"));
+
+            EntryHistory entryHistory = new EntryHistory();
+
+            entryHistory = entryHistoryJSON.ToObject<EntryHistory>();
+
+            return entryHistory;
+
         }
 
         private async Task<List<Pick>> GetLastWeeksTeam(List<Pick> teamPicksLastWeek, int teamId, int currentGwId)

@@ -11,6 +11,7 @@
     self.CurrentGwId = ko.observable(data.CurrentGwId);
     self.IsEventFinished = ko.observable(data.IsEventFinished);
     self.EntryHistory = ko.observable(data.EntryHistory);
+    self.EventStatus = ko.observable(data.EventStatus);
 
 
     //self.getColor = ko.pureComputed(function (data) {
@@ -19,6 +20,47 @@
 
     self.GetFlagClass = function (country) {
         return country.toLowerCase() + " flag";
+    }
+
+    self.FormatLargeNumber = function (number) {
+        return nFormatter(number, 2)
+        //return player.transfers_in_event - player.transfers_out_event;
+    }
+
+    self.GetTotalPercentileMovement = function (entryHistory) {
+
+        if (entryHistory.overall_rank > entryHistory.LastEventOverallRank) {
+            return "red arrow alternate circle down icon";
+        }
+        else if (entryHistory.overall_rank < entryHistory.LastEventOverallRank) {
+            return "green arrow alternate circle up icon";
+        }
+        else if (entryHistory.overall_rank == entryHistory.LastEventOverallRank) {
+            return "grey circle icon";
+        }
+        return;
+
+    }
+
+    self.GetTotalPercentileChange = function (entryHistory) {
+        var change = entryHistory.LastEventOverallRank - entryHistory.overall_rank;
+        var formattedChange = nFormatter(change, 2);
+
+        if (change > 0) {
+            return "+" + formattedChange;
+        }
+        else if (change < 0) {
+            return "-" + formattedChange;
+        }
+    }
+
+    self.GetLastTimeTotalRankWasUpdated = function (eventStatus) {
+
+        var finishedEvents = eventStatus.status.filter(x => x.points == "r");
+        var lastFinishedEvent = finishedEvents[finishedEvents.length - 1];
+        var day = getDayOfWeek(lastFinishedEvent.date);
+
+        return "Last updated on " + day + " " + lastFinishedEvent.date;
     }
 
     self.getColor = function (position) {
@@ -405,6 +447,11 @@
 
     self.init = function () {
 
+        $('#total-percentile-statistic').popup({
+            popup: '#total-percentile-popup.popup',
+            position: 'top center',
+            hoverable: true
+        });
         //$('.ui.icon.button').popup();
         //$('.circle.icon').popup();
 
@@ -474,5 +521,12 @@
             }
         }
         return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
+    }
+
+    // Accepts a Date object or date string that is recognized by the Date.parse() method
+    function getDayOfWeek(date) {
+        const dayOfWeek = new Date(date).getDay();
+        return isNaN(dayOfWeek) ? null :
+            ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][dayOfWeek];
     }
 };

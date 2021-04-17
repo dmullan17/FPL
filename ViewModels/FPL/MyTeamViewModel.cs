@@ -1,4 +1,5 @@
-﻿using FPL.Models.FPL;
+﻿using FPL.Models;
+using FPL.Models.FPL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +16,11 @@ namespace FPL.ViewModels.FPL
         public TransferInfo TransferInfo { get; set; }
 
         public int CurrentGwId { get; set; }
+
+        public EntryHistory EntryHistory { get; set; }
+
+        public CompleteEntryHistory CompleteEntryHistory { get; set; }
+
+        public EventStatus EventStatus { get; set; }
     }
 }

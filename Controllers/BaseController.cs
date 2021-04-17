@@ -114,6 +114,105 @@ namespace FPL.Controllers
             return allPlayers;
         }
 
+        public async Task<CompleteEntryHistory> GetCompleteEntryHistory(CompleteEntryHistory completeEntryHistory, int teamId)
+        {
+            HttpClientHandler handler = new HttpClientHandler();
+
+            var response = await _httpClient.GetAuthAsync(CreateHandler(handler), $"entry/{teamId}/history/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var currentSeasonEntryHistoryJSON = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("current"))
+                .Children<JObject>();
+
+            List<EntryHistory> currentSeasonEntryHistory = new List<EntryHistory>();
+            int totalTransfers = 0;
+            int totalTransferCost = 0;
+
+            foreach (JObject result in currentSeasonEntryHistoryJSON)
+            {
+                EntryHistory eh = result.ToObject<EntryHistory>();
+                currentSeasonEntryHistory.Add(eh);
+                totalTransfers += eh.event_transfers;
+                totalTransferCost += eh.event_transfers_cost;
+            }
+
+            var chipsUsedJSON = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Array && c.Path.Contains("chips"))
+                .Children<JObject>();
+
+            List<BasicChip> chipsUsed = new List<BasicChip>();
+
+            foreach (JObject result in chipsUsedJSON)
+            {
+                BasicChip bc = result.ToObject<BasicChip>();
+                chipsUsed.Add(bc);
+            }
+
+            completeEntryHistory.CurrentSeasonEntryHistory = currentSeasonEntryHistory;
+            completeEntryHistory.ChipsUsed = chipsUsed;
+            completeEntryHistory.TotalTransfersMade = totalTransfers;
+            completeEntryHistory.TotalTransfersCost = totalTransferCost;
+
+            return completeEntryHistory;
+        }
+
+        public async Task<EntryHistory> AddExtraDatatoEntryHistory(EntryHistory entryHistory, CompleteEntryHistory completeEntryHistory)
+        {
+            var response = await _httpClient.GetAsync("bootstrap-static/");
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var totalPlayersJson = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Integer && c.Path.Contains("total_players"));
+
+            //EntryHistory entryHistory = new EntryHistory();
+
+            int totalPlayers = totalPlayersJson.ToObject<int>();
+            entryHistory.TotalPlayers = totalPlayers;
+
+            var gwRankPercentile = 0m;
+            var overallRankPercentile = 0m;
+
+            if (entryHistory.rank != null)
+            {
+                gwRankPercentile = Math.Round(((decimal)entryHistory.rank / (decimal)totalPlayers) * 100m, 2);
+
+                if (gwRankPercentile < 1)
+                {
+                    entryHistory.GwRankPercentile = 1;
+                }
+                else
+                {
+                    entryHistory.GwRankPercentile = Convert.ToInt32(Math.Ceiling(gwRankPercentile));
+                }
+            }
+
+            if (entryHistory.overall_rank != null)
+            {
+                overallRankPercentile = Math.Round(((decimal)entryHistory.overall_rank / (decimal)totalPlayers) * 100m, 2);
+
+                if (overallRankPercentile < 1)
+                {
+                    entryHistory.TotalRankPercentile = 1;
+                }
+                else
+                {
+                    entryHistory.TotalRankPercentile = Convert.ToInt32(Math.Ceiling(overallRankPercentile));
+                }
+            }
+
+            var lastEventIndex = completeEntryHistory.CurrentSeasonEntryHistory.Count() - 2;
+            entryHistory.LastEventOverallRank = completeEntryHistory.CurrentSeasonEntryHistory[lastEventIndex].overall_rank;
+
+            return entryHistory;
+        }
+
         public async Task<List<Team>> GetAllTeams()
         {
             var response = await _httpClient.GetAsync("bootstrap-static/");
