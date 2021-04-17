@@ -101,6 +101,7 @@ namespace FPL.Controllers
             var completeEntryHistory = new CompleteEntryHistory();
             completeEntryHistory = await GetCompleteEntryHistory(completeEntryHistory, teamId);
             entryHistory = await AddExtraDatatoEntryHistory(entryHistory, completeEntryHistory);
+            entryHistory.BuyingPower = CalculateTeamBuyingPower(teamPicks, entryHistory);
 
             viewModel.CurrentGwId = gameweekId;
             viewModel.Picks = teamPicks;
@@ -114,6 +115,18 @@ namespace FPL.Controllers
             viewModel.EventStatus = eventStatus;
 
             return View(viewModel);
+        }
+
+        private int CalculateTeamBuyingPower(List<Pick> picks, EntryHistory entryHistory)
+        {
+            var buyingPower = entryHistory.bank;
+
+            foreach (var pick in picks)
+            {
+                buyingPower += pick.selling_price;
+            }
+
+            return buyingPower;
         }
 
         private async Task<EntryHistory> GetEntryHistory(int teamId, int gameweekId)

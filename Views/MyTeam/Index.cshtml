@@ -37,39 +37,43 @@
                             </div>
                             <div class="label">Total Percentile</div>
                         </div>
-                        <div class="statistic">
+                        <div id="buying-power-statistic" class="statistic">
+                            <div data-bind="text: $root.ConvertToDecimal($root.EntryHistory().BuyingPower)" class="value"></div>
+                            <div class="label">Buying Power</div>
+                        </div>
+                        @*<div class="statistic">
                             <div data-bind="text: $root.ConvertToDecimal($root.TransferInfo().value)" class="value"></div>
                             <div class="label">Value</div>
                         </div>
                         <div class="statistic">
                             <div data-bind="text: $root.ConvertToDecimal($root.TransferInfo().bank)" class="value"></div>
                             <div class="label">Bank</div>
-                        </div>
+                        </div>*@
                         <!--<div--> @*id="gw-average-statistic"*@
                         <!--class="statistic" data-bind="with: $root.GameWeek()">
-        <div data-bind="text: average_entry_score" class="value"></div>
-        <div class="label" data-bind="text: 'GW' + $root.GameweekId() + ' Avg Score'"></div>
-    </div>
-    <div-->
+                        <div data-bind="text: average_entry_score" class="value"></div>
+                        <div class="label" data-bind="text: 'GW' + $root.GameweekId() + ' Avg Score'"></div>
+                    </div>
+                    <div-->
                         @*id="captain-points-statistic"*@
                         <!--class="statistic">
-        <div data-bind="text: $root.GetCaptainPointsTotal($root.GWTeam())" class="value"></div>
-        <div class="label">Captain Points</div>
-    </div>
-    <div class="statistic">
-        <div data-bind="text: $root.GetBenchPointsTotal($root.GWTeam())" class="value"></div>
-        <div class="label">Bench Points</div>
-    </div>
-    <div class="statistic" data-bind="visible: $root.GameweekId() == $root.CurrentGameweekId()">
-        <div data-bind="text: $root.GWTeam().PlayersYetToPlay" class="value"></div>
-        <div class="label">Picks YTP</div>
-    </div>
-    <div class="statistic" data-bind="visible: $root.GWTeam().ActiveChips.length > 0">
-        <div class="value">
-            <i class="gem outline icon"></i>
-        </div>
-        <div class="label" data-bind="text: $root.GWTeam().ActiveChips"></div>
-    </div>-->
+                        <div data-bind="text: $root.GetCaptainPointsTotal($root.GWTeam())" class="value"></div>
+                        <div class="label">Captain Points</div>
+                    </div>
+                    <div class="statistic">
+                        <div data-bind="text: $root.GetBenchPointsTotal($root.GWTeam())" class="value"></div>
+                        <div class="label">Bench Points</div>
+                    </div>
+                    <div class="statistic" data-bind="visible: $root.GameweekId() == $root.CurrentGameweekId()">
+                        <div data-bind="text: $root.GWTeam().PlayersYetToPlay" class="value"></div>
+                        <div class="label">Picks YTP</div>
+                    </div>
+                    <div class="statistic" data-bind="visible: $root.GWTeam().ActiveChips.length > 0">
+                        <div class="value">
+                            <i class="gem outline icon"></i>
+                        </div>
+                        <div class="label" data-bind="text: $root.GWTeam().ActiveChips"></div>
+                    </div>-->
                     </div>
                 </div>
                 @*<div class="right floated column" style="width: 8.5% !important;">
@@ -221,6 +225,9 @@
             <p style="text-align: center;" data-bind="text: $root.FormatLargeNumber($root.Team().summary_overall_rank) + ' / ' + $root.FormatLargeNumber($root.EntryHistory().TotalPlayers) + ' (' + GetTotalPercentileChange($root.EntryHistory()) + ')'"></p>
             @*<p data-bind="text: GetTotalPercentileChange($root.EntryHistory())></p>*@
             <p data-bind="text: $root.GetLastTimeTotalRankWasUpdated($root.EventStatus())"></p>
+        </div>
+        <div id="buying-power-popup" class="ui hidden stat popup">
+            <p>Sum of Selling Prices + Bank Value</p>
         </div>
         @*<div class="pitch">
             <div>

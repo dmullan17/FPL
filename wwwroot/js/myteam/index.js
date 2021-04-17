@@ -452,6 +452,12 @@
             position: 'top center',
             hoverable: true
         });
+
+        $('#buying-power-statistic').popup({
+            popup: '#buying-power-popup.popup',
+            position: 'top center',
+            hoverable: true
+        });
         //$('.ui.icon.button').popup();
         //$('.circle.icon').popup();
 
