@@ -21,7 +21,6 @@
         return country.toLowerCase() + " flag";
     }
 
-
     self.getColor = function (position) {
         if (position > 11) {
             return "lightgray";
@@ -84,6 +83,34 @@
         }
     };
 
+    self.GetNextPlusOneGw = function () {
+        if (self.IsEventFinished) {
+            return "GW " + (self.CurrentGwId() + 2);
+        }
+        else {
+            return "GW " + (self.CurrentGwId() + 3);
+        }
+    };
+
+    self.GetNextPlusTwoGw = function () {
+        if (self.IsEventFinished) {
+            return "GW " + (self.CurrentGwId() + 3);
+        }
+        else {
+            return "GW " + (self.CurrentGwId() + 4);
+        }
+    };
+
+    self.GetNextPlusThreeGw = function () {
+        if (self.IsEventFinished) {
+            return "GW " + (self.CurrentGwId() + 4);
+        }
+        else {
+            return "GW " + (self.CurrentGwId() + 5);
+        }
+    };
+
+
     //self.GetPlayersNextFixture = function (team) {
 
     //    var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId() + 1 || x.Event == self.CurrentGwId());
@@ -117,10 +144,10 @@
         if (!self.IsEventFinished()) {
             for (var i = 0; i < games.length; i++) {
                 if (team.id == games[i].team_h) {
-                    html += games[i].AwayTeam.name + " (H)<br/>";
+                    html += "<div style='" + GetFdrStyle(games[i].team_h_difficulty) + "'>" + trimTeamName(games[i].AwayTeam.name) + " (H)</div>";
                 }
                 else if (team.id == games[i].team_a) {
-                    html += games[i].HomeTeam.name + " (A)<br/>";
+                    html += "<div style='" + GetFdrStyle(games[i].team_a_difficulty) + "'>" +  trimTeamName(games[i].HomeTeam.name) + " (A)</div>";
                 }
             }
         }
@@ -130,16 +157,16 @@
             if (fixtures.length > 0) {
                 for (var i = 0; i < fixtures.length; i++) {
                     if (team.id == fixtures[i].team_h) {
-                        html += fixtures[i].team_a_name + " (H) <br/>";
+                        html += "<div style='" + GetFdrStyle(fixtures[i].team_h_difficulty) + "'>" + trimTeamName(fixtures[i].team_a_name) + " (H) </div>";
                     }
                     else if (team.id == fixtures[i].team_a) {
-                        html += fixtures[i].team_h_name + " (A) <br/>";
+                        html += "<div style='" + GetFdrStyle(fixtures[i].team_a_difficulty) + "'>" + trimTeamName(fixtures[i].team_h_name) + " (A) </div>";
                     }
 
                 }
             }
             else {
-                html += "No Game";
+                html += "N/A";
             }
         }
 
@@ -161,16 +188,114 @@
         if (fixtures.length > 0) {
             for (var i = 0; i < fixtures.length; i++) {
                 if (team.id == fixtures[i].team_h) {
-                    html += fixtures[i].team_a_name + " (H) <br/>";
+                    //html += trimTeamName(fixtures[i].team_a_name) + " (H) <br/>";
+                    html += "<div style='" + GetFdrStyle(fixtures[i].team_h_difficulty) + "'>" + trimTeamName(fixtures[i].team_a_name) + " (H) </div>";
                 }
                 else if (team.id == fixtures[i].team_a) {
-                    html += fixtures[i].team_h_name + " (A) <br/>";
+                    //html += trimTeamName(fixtures[i].team_h_name) + " (A) <br/>";
+                    html += "<div style='" + GetFdrStyle(fixtures[i].team_a_difficulty) + "'>" + trimTeamName(fixtures[i].team_h_name) + " (A) </div>";
                 }
 
             }
         }
         else {
-            html += "No Game";
+            html += "N/A";
+        }
+
+        return html;
+
+    };
+
+    self.GetNextPlusOneGWGames = function (team) {
+
+        var html = "";
+
+        if (!self.IsEventFinished()) {
+            var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId() + 2);
+        }
+        else {
+            var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId() + 3);
+        }
+
+        if (fixtures.length > 0) {
+            for (var i = 0; i < fixtures.length; i++) {
+                if (team.id == fixtures[i].team_h) {
+                    //html += trimTeamName(fixtures[i].team_a_name) + " (H) <br/>";
+                    html += "<div style='" + GetFdrStyle(fixtures[i].team_h_difficulty) + "'>" + trimTeamName(fixtures[i].team_a_name) + " (H) </div>";
+                }
+                else if (team.id == fixtures[i].team_a) {
+                    //html += trimTeamName(fixtures[i].team_h_name) + " (A) <br/>";
+                    html += "<div style='" + GetFdrStyle(fixtures[i].team_a_difficulty) + "'>" + trimTeamName(fixtures[i].team_h_name) + " (A) </div>";
+                }
+
+            }
+        }
+        else {
+            html += "N/A";
+        }
+
+        return html;
+
+    };
+
+    self.GetNextPlusTwoGWGames = function (team) {
+
+        var html = "";
+
+        if (!self.IsEventFinished()) {
+            var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId() + 3);
+        }
+        else {
+            var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId() + 4);
+        }
+
+        if (fixtures.length > 0) {
+            for (var i = 0; i < fixtures.length; i++) {
+                if (team.id == fixtures[i].team_h) {
+                    //html += trimTeamName(fixtures[i].team_a_name) + " (H) <br/>";
+                    html += "<div style='" + GetFdrStyle(fixtures[i].team_h_difficulty) + "'>" + trimTeamName(fixtures[i].team_a_name) + " (H) </div>";
+                }
+                else if (team.id == fixtures[i].team_a) {
+                    //html += trimTeamName(fixtures[i].team_h_name) + " (A) <br/>";
+                    html += "<div style='" + GetFdrStyle(fixtures[i].team_a_difficulty) + "'>" + trimTeamName(fixtures[i].team_h_name) + " (A) </div>";
+                }
+
+            }
+        }
+        else {
+            html += "N/A";
+        }
+
+        return html;
+
+    };
+
+    self.GetNextPlusThreeGWGames = function (team) {
+
+        var html = "";
+
+        if (!self.IsEventFinished()) {
+            var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId() + 4);
+        }
+        else {
+            var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId() + 5);
+        }
+
+        if (fixtures.length > 0) {
+            for (var i = 0; i < fixtures.length; i++) {
+                if (team.id == fixtures[i].team_h) {
+                    //html += trimTeamName(fixtures[i].team_a_name) + " (H) <br/>";
+                    html += "<div style='" + GetFdrStyle(fixtures[i].team_h_difficulty) + "'>" + trimTeamName(fixtures[i].team_a_name) + " (H) </div>";
+                }
+                else if (team.id == fixtures[i].team_a) {
+                    //html += trimTeamName(fixtures[i].team_h_name) + " (A) <br/>";
+                    html += "<div style='" + GetFdrStyle(fixtures[i].team_a_difficulty) + "'>" + trimTeamName(fixtures[i].team_h_name) + " (A) </div>";
+                }
+
+            }
+        }
+        else {
+            html += "N/A";
         }
 
         return html;
@@ -287,6 +412,49 @@
     };
 
     self.init();
+
+    function trimTeamName(name) {
+        if (name == "Man Utd") {
+            return "MUN";
+        }
+        else if (name == "West Brom") {
+            return "WBA";
+        }
+        else {
+            return name.substring(0, 3).toUpperCase();
+        }
+    }
+
+    function GetFdrStyle(difficulty) {
+        var html = "padding: 1px;text-align: center;";
+        
+        if (difficulty == 1) {
+            html += "background-color: rgb(55, 85, 35); color: white;";
+        }
+        else if (difficulty == 2) {
+            html += "background-color: rgb(1, 252, 122);";
+        }
+        else if (difficulty == 3) {
+            html += "background-color: rgb(231, 231, 231)";
+        }
+        else if (difficulty == 4) {
+            html += "background-color: rgb(255, 23, 81); color: white;";
+        }
+        else if (difficulty == 5) {
+            html += "background-color: rgb(128, 7, 45);  color: white;";
+        }
+
+        return html;
+
+    }
+
+        //self.GetFdrBgColour = function (test) {
+
+    //    if (test) {
+    //        return "green";
+    //    }
+
+    //}
 
     function nFormatter(num, digits) {
         var si = [
