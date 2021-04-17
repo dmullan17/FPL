@@ -282,11 +282,13 @@ namespace FPL.Controllers
                         if (playerFixture.team_h == t.id)
                         {
                             playerFixture.team_h_name = t.name;
+                            playerFixture.team_h_short_name = t.short_name;
                         }
 
                         if (playerFixture.team_a == t.id)
                         {
                             playerFixture.team_a_name = t.name;
+                            playerFixture.team_a_short_name = t.short_name;
                         }
                     }
                 }
@@ -322,11 +324,13 @@ namespace FPL.Controllers
                         if (playerResult.team_h == t.id)
                         {
                             playerResult.team_h_name = t.name;
+                            playerResult.team_h_short_name = t.short_name;
                         }
 
                         if (playerResult.team_a == t.id)
                         {
                             playerResult.team_a_name = t.name;
+                            playerResult.team_a_short_name = t.short_name;
                         }
                     }
                 }

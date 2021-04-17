@@ -186,10 +186,10 @@
         if (!self.IsEventFinished()) {
             for (var i = 0; i < games.length; i++) {
                 if (team.id == games[i].team_h) {
-                    html += "<div style='" + GetFdrStyle(games[i].team_h_difficulty) + "'>" + trimTeamName(games[i].AwayTeam.name) + " (H)</div>";
+                    html += "<div style='" + GetFdrStyle(games[i].team_h_difficulty) + "'>" + games[i].AwayTeam.short_name + " (H)</div>";
                 }
                 else if (team.id == games[i].team_a) {
-                    html += "<div style='" + GetFdrStyle(games[i].team_a_difficulty) + "'>" +  trimTeamName(games[i].HomeTeam.name) + " (A)</div>";
+                    html += "<div style='" + GetFdrStyle(games[i].team_a_difficulty) + "'>" +  games[i].HomeTeam.short_name + " (A)</div>";
                 }
             }
         }
@@ -199,10 +199,10 @@
             if (fixtures.length > 0) {
                 for (var i = 0; i < fixtures.length; i++) {
                     if (team.id == fixtures[i].team_h) {
-                        html += "<div style='" + GetFdrStyle(fixtures[i].team_h_difficulty) + "'>" + trimTeamName(fixtures[i].team_a_name) + " (H) </div>";
+                        html += "<div style='" + GetFdrStyle(fixtures[i].team_h_difficulty) + "'>" + fixtures[i].team_a_short_name + " (H) </div>";
                     }
                     else if (team.id == fixtures[i].team_a) {
-                        html += "<div style='" + GetFdrStyle(fixtures[i].team_a_difficulty) + "'>" + trimTeamName(fixtures[i].team_h_name) + " (A) </div>";
+                        html += "<div style='" + GetFdrStyle(fixtures[i].team_a_difficulty) + "'>" + fixtures[i].team_h_short_name + " (A) </div>";
                     }
 
                 }
@@ -231,11 +231,11 @@
             for (var i = 0; i < fixtures.length; i++) {
                 if (team.id == fixtures[i].team_h) {
                     //html += trimTeamName(fixtures[i].team_a_name) + " (H) <br/>";
-                    html += "<div style='" + GetFdrStyle(fixtures[i].team_h_difficulty) + "'>" + trimTeamName(fixtures[i].team_a_name) + " (H) </div>";
+                    html += "<div style='" + GetFdrStyle(fixtures[i].team_h_difficulty) + "'>" + fixtures[i].team_a_short_name + " (H) </div>";
                 }
                 else if (team.id == fixtures[i].team_a) {
                     //html += trimTeamName(fixtures[i].team_h_name) + " (A) <br/>";
-                    html += "<div style='" + GetFdrStyle(fixtures[i].team_a_difficulty) + "'>" + trimTeamName(fixtures[i].team_h_name) + " (A) </div>";
+                    html += "<div style='" + GetFdrStyle(fixtures[i].team_a_difficulty) + "'>" + fixtures[i].team_h_short_name + " (A) </div>";
                 }
 
             }
@@ -263,11 +263,11 @@
             for (var i = 0; i < fixtures.length; i++) {
                 if (team.id == fixtures[i].team_h) {
                     //html += trimTeamName(fixtures[i].team_a_name) + " (H) <br/>";
-                    html += "<div style='" + GetFdrStyle(fixtures[i].team_h_difficulty) + "'>" + trimTeamName(fixtures[i].team_a_name) + " (H) </div>";
+                    html += "<div style='" + GetFdrStyle(fixtures[i].team_h_difficulty) + "'>" + fixtures[i].team_a_short_name + " (H) </div>";
                 }
                 else if (team.id == fixtures[i].team_a) {
                     //html += trimTeamName(fixtures[i].team_h_name) + " (A) <br/>";
-                    html += "<div style='" + GetFdrStyle(fixtures[i].team_a_difficulty) + "'>" + trimTeamName(fixtures[i].team_h_name) + " (A) </div>";
+                    html += "<div style='" + GetFdrStyle(fixtures[i].team_a_difficulty) + "'>" + fixtures[i].team_h_short_name + " (A) </div>";
                 }
 
             }
@@ -295,11 +295,11 @@
             for (var i = 0; i < fixtures.length; i++) {
                 if (team.id == fixtures[i].team_h) {
                     //html += trimTeamName(fixtures[i].team_a_name) + " (H) <br/>";
-                    html += "<div style='" + GetFdrStyle(fixtures[i].team_h_difficulty) + "'>" + trimTeamName(fixtures[i].team_a_name) + " (H) </div>";
+                    html += "<div style='" + GetFdrStyle(fixtures[i].team_h_difficulty) + "'>" + fixtures[i].team_a_short_name + " (H) </div>";
                 }
                 else if (team.id == fixtures[i].team_a) {
                     //html += trimTeamName(fixtures[i].team_h_name) + " (A) <br/>";
-                    html += "<div style='" + GetFdrStyle(fixtures[i].team_a_difficulty) + "'>" + trimTeamName(fixtures[i].team_h_name) + " (A) </div>";
+                    html += "<div style='" + GetFdrStyle(fixtures[i].team_a_difficulty) + "'>" + fixtures[i].team_h_short_name + " (A) </div>";
                 }
 
             }
@@ -327,11 +327,11 @@
             for (var i = 0; i < fixtures.length; i++) {
                 if (team.id == fixtures[i].team_h) {
                     //html += trimTeamName(fixtures[i].team_a_name) + " (H) <br/>";
-                    html += "<div style='" + GetFdrStyle(fixtures[i].team_h_difficulty) + "'>" + trimTeamName(fixtures[i].team_a_name) + " (H) </div>";
+                    html += "<div style='" + GetFdrStyle(fixtures[i].team_h_difficulty) + "'>" + fixtures[i].team_a_short_name + " (H) </div>";
                 }
                 else if (team.id == fixtures[i].team_a) {
                     //html += trimTeamName(fixtures[i].team_h_name) + " (A) <br/>";
-                    html += "<div style='" + GetFdrStyle(fixtures[i].team_a_difficulty) + "'>" + trimTeamName(fixtures[i].team_h_name) + " (A) </div>";
+                    html += "<div style='" + GetFdrStyle(fixtures[i].team_a_difficulty) + "'>" + fixtures[i].team_h_short_name + " (A) </div>";
                 }
 
             }
@@ -459,18 +459,6 @@
     };
 
     self.init();
-
-    function trimTeamName(name) {
-        if (name == "Man Utd") {
-            return "MUN";
-        }
-        else if (name == "West Brom") {
-            return "WBA";
-        }
-        else {
-            return name.substring(0, 3).toUpperCase();
-        }
-    }
 
     function GetFdrStyle(difficulty) {
         var html = "padding: 1px;text-align: center;";
