@@ -11,6 +11,7 @@
     self.CurrentGwId = ko.observable(data.CurrentGwId);
     self.IsEventFinished = ko.observable(data.IsEventFinished);
     self.EntryHistory = ko.observable(data.EntryHistory);
+    self.CompleteEntryHistory = ko.observable(data.CompleteEntryHistory);
     self.EventStatus = ko.observable(data.EventStatus);
 
 
