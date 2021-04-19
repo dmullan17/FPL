@@ -3,17 +3,20 @@
 
     var self = this;
 
-    self.Picks = ko.observable(data.Picks);
+    self.MyTeam = ko.observable(data.MyTeam);
+    //self.Picks = ko.observable(data.Picks);
     self.Team = ko.observable(data.Team);
     self.Positions = ko.observableArray(data.Positions);
     self.TotalPoints = ko.observable(data.TotalPoints);
-    self.TransferInfo = ko.observable(data.TransferInfo);
+    //self.TransferInfo = ko.observable(data.TransferInfo);
     self.CurrentGwId = ko.observable(data.CurrentGwId);
     self.IsEventFinished = ko.observable(data.IsEventFinished);
     self.EntryHistory = ko.observable(data.EntryHistory);
     self.CompleteEntryHistory = ko.observable(data.CompleteEntryHistory);
     self.EventStatus = ko.observable(data.EventStatus);
 
+    self.PotentialSub1 = ko.observable();
+    self.PotentialSub2 = ko.observable();
 
     //self.getColor = ko.pureComputed(function (data) {
     //    return this;
@@ -51,7 +54,86 @@
             return "+" + formattedChange;
         }
         else if (change < 0) {
-            return "-" + formattedChange;
+            return formattedChange;
+        }
+    }
+
+    self.MakeSub = function (pick, event) {
+
+        if (!self.PotentialSub1()) {
+            var allSubButtons = $("button.substitution");
+            var position = pick.position;
+
+            allSubButtons.splice(position - 1, 1);
+
+            for (var i = 0; i < allSubButtons.length; i++) {
+
+                if (i < 10) {
+                    allSubButtons[i].className += " disabled";
+                }
+                else {
+                    allSubButtons[i].className += " green";
+                }
+
+            }
+
+            self.PotentialSub1(pick);
+        }
+        else if (self.PotentialSub1().element == pick.element) {
+            location.reload();
+            //var allSubButtons = $("button.substitution");
+            //var position = pick.position;
+
+            ////allSubButtons.splice(position - 1, 1);
+
+            //$.each(allSubButtons, function (index, value) {
+            //    alert(index + ": " + value);
+            //});
+
+            //for (var i = 0; i < allSubButtons.length; i++) {
+            //    allSubButtons[i].className.replace("disabled", "");
+            //    allSubButtons[i].className.replace("green", "");
+
+            //    //allSubButtons[i].className -= " disabled";
+            //    //allSubButtons[i].className -= " green";
+
+            //    //if (i < 10) {
+            //    //    allSubButtons[i].className += " disabled";
+            //    //}
+            //    //else {
+            //    //    allSubButtons[i].className += " green";
+            //    //}
+
+            //}
+        }
+        else {
+
+            self.PotentialSub2(pick);
+
+            $.ajax({
+                url: "/MyTeam/MakeSub",
+                type: "POST",
+                cache: true,
+                data: {
+                    sub1: self.PotentialSub1().element,
+                    sub1Position: self.PotentialSub1().position,
+                    sub2: self.PotentialSub2().element,
+                    sub2Position: self.PotentialSub2().position
+                },
+                beforeSend: function () {
+
+                },
+                success: function (json, status, xhr) {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        location.reload();
+                        return;
+                    }
+                },
+                complete: function (xhr, status) {
+                    if (xhr.readyState === 4 && xhr.status !== 200) {
+                    }
+                }
+            });
         }
     }
 
@@ -190,7 +272,7 @@
                     html += "<div style='" + GetFdrStyle(games[i].team_h_difficulty) + "'>" + games[i].AwayTeam.short_name + " (H)</div>";
                 }
                 else if (team.id == games[i].team_a) {
-                    html += "<div style='" + GetFdrStyle(games[i].team_a_difficulty) + "'>" +  games[i].HomeTeam.short_name + " (A)</div>";
+                    html += "<div style='" + GetFdrStyle(games[i].team_a_difficulty) + "'>" + games[i].HomeTeam.short_name + " (A)</div>";
                 }
             }
         }
@@ -345,7 +427,7 @@
 
     };
 
-    
+
 
     self.CreateGWNetTransfers = function (player) {
         return nFormatter((player.transfers_in_event - player.transfers_out_event), 0)
@@ -469,7 +551,7 @@
 
     function GetFdrStyle(difficulty) {
         var html = "padding: 1px;text-align: center;";
-        
+
         if (difficulty == 1) {
             html += "background-color: rgb(55, 85, 35); color: white;";
         }
@@ -490,7 +572,7 @@
 
     }
 
-        //self.GetFdrBgColour = function (test) {
+    //self.GetFdrBgColour = function (test) {
 
     //    if (test) {
     //        return "green";

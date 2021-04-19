@@ -541,6 +541,19 @@ namespace FPL.Controllers
             return handler;
         }
 
+        public HttpClientHandler ResetHandler(HttpClientHandler handler)
+        {
+            //foreach (Cookie co in handler.CookieContainer.GetCookies(new Uri(GetBaseUrl())))
+            //{
+            //    co.Expired = true;
+            //}
+
+            var newHandler = new HttpClientHandler();
+            newHandler = CreateHandler(newHandler);
+
+            return newHandler;
+        }
+
         /// <summary>  
         /// set the cookie  
         /// </summary>  

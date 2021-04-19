@@ -9,11 +9,12 @@ namespace FPL.ViewModels.FPL
 {
     public class MyTeamViewModel : FPL
     {
-        public List<Pick> Picks { get; set; }
+        public MyTeam MyTeam { get; set; }
+        //public List<Pick> Picks { get; set; }
 
-        public List<Chip> Chips { get; set; }
+        //public List<Chip> Chips { get; set; }
 
-        public TransferInfo TransferInfo { get; set; }
+        //public TransferInfo TransferInfo { get; set; }
 
         public int CurrentGwId { get; set; }
 

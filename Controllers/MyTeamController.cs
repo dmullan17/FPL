@@ -1,5 +1,4 @@
 ﻿using FPL.Attributes;
-using FPL.Http;
 using FPL.Models;
 using FPL.Models.FPL;
 using FPL.ViewModels.FPL;
@@ -52,27 +51,29 @@ namespace FPL.Controllers
 
             var myTeamJSON = JObject.Parse(content);
 
-            var teamPicksJSON = AllChildren(myTeamJSON)
-                .First(c => c.Type == JTokenType.Array && c.Path.Contains("picks"))
-                .Children<JObject>();
+            MyTeam myTeam = JsonConvert.DeserializeObject<MyTeam>(myTeamJSON.ToString());
 
-            JObject transfersObject = (JObject)myTeamJSON["transfers"];
-            TransferInfo transferInfo = transfersObject.ToObject<TransferInfo>();
+            //var teamPicksJSON = AllChildren(myTeamJSON)
+            //    .First(c => c.Type == JTokenType.Array && c.Path.Contains("picks"))
+            //    .Children<JObject>();
+
+            //JObject transfersObject = (JObject)myTeamJSON["transfers"];
+            //TransferInfo transferInfo = transfersObject.ToObject<TransferInfo>();
 
             List<Pick> teamPicks = new List<Pick>();
             List<Pick> teamPicksLastWeek = new List<Pick>();
             List<Transfer> transfers = new List<Transfer>();
             List<PlayerPosition> positions = new List<PlayerPosition>();
 
-            foreach (JObject result in teamPicksJSON)
-            {
-                Pick p = result.ToObject<Pick>();
-                teamPicks.Add(p);
-            }
+            //foreach (JObject result in teamPicksJSON)
+            //{
+            //    Pick p = result.ToObject<Pick>();
+            //    teamPicks.Add(p);
+            //}
 
             teamPicksLastWeek = await GetLastWeeksTeam(teamPicksLastWeek, teamId, currentGwId);
 
-            foreach (var p in teamPicks)
+            foreach (var p in myTeam.picks)
             {
                 if (teamPicksLastWeek.FindAll(x => x.element == p.element).Count == 0)
                 {
@@ -92,23 +93,24 @@ namespace FPL.Controllers
 
             transfers = await GetTeamTransfers(teamId);
             positions = await GetPlayerPositionInfo();
-            teamPicks = await AddPlayerSummaryDataToTeam(teamPicks);
-            teamPicks = await AddPlayerGameweekDataToTeam(teamPicks, gameweekId);
-            teamPicks = await CalculateTotalPointsContributed(teamPicks, transfers, gameweekId);
-            teamPicks = teamPicks.OrderBy(x => x.position).ToList();
+            myTeam.picks = await AddPlayerSummaryDataToTeam(myTeam.picks);
+            myTeam.picks = await AddPlayerGameweekDataToTeam(myTeam.picks, gameweekId);
+            myTeam.picks = await CalculateTotalPointsContributed(myTeam.picks, transfers, gameweekId);
+            myTeam.picks = myTeam.picks.OrderBy(x => x.position).ToList();
             FPLTeam teamDetails = await GetTeamInfo(teamId);
             var entryHistory = await GetEntryHistory(teamId, currentGwId);
             var completeEntryHistory = new CompleteEntryHistory();
             completeEntryHistory = await GetCompleteEntryHistory(completeEntryHistory, teamId);
             entryHistory = await AddExtraDatatoEntryHistory(entryHistory, completeEntryHistory);
-            entryHistory.BuyingPower = CalculateTeamBuyingPower(teamPicks, entryHistory);
+            entryHistory.BuyingPower = CalculateTeamBuyingPower(myTeam.picks, entryHistory);
 
+            viewModel.MyTeam = myTeam;
             viewModel.CurrentGwId = gameweekId;
-            viewModel.Picks = teamPicks;
+            //viewModel.Picks = teamPicks;
             viewModel.Team = teamDetails;
             viewModel.Positions = positions;
             viewModel.TotalPoints = teamDetails.summary_overall_points ?? 0;
-            viewModel.TransferInfo = transferInfo;
+            //viewModel.TransferInfo = transferInfo;
             viewModel.IsEventFinished = isEventFinished;
             viewModel.EntryHistory = entryHistory;
             viewModel.CompleteEntryHistory = completeEntryHistory;
@@ -147,6 +149,65 @@ namespace FPL.Controllers
             return entryHistory;
 
         }
+
+        public async Task<MyTeam> MakeSub(int sub1, int sub1Position, int sub2, int sub2Position)
+        {
+            HttpClientHandler handler = new HttpClientHandler();
+            handler = CreateHandler(handler);
+
+            var response = await _httpClient.GetAuthAsync(handler, $"my-team/{teamId}");
+
+            //look for 404 error here
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var myTeamJSON = JObject.Parse(content);
+
+            MyTeam myTeam = JsonConvert.DeserializeObject<MyTeam>(myTeamJSON.ToString());
+
+            var payload = new SubPayload();
+
+            payload.chip = null;
+
+            foreach (var pick in myTeam.picks)
+            {
+                var subPick = new SubPick
+                {
+                    element = pick.element,
+                    is_captain = pick.is_captain,
+                    is_vice_captain = pick.is_vice_captain
+                };
+
+                if (pick.element == sub1)
+                {
+                    subPick.position = sub2Position;
+                }
+                else if (pick.element == sub2)
+                {
+                    subPick.position = sub1Position;
+                }
+                else
+                {
+                    subPick.position = pick.position;
+                }
+
+                payload.picks.Add(subPick);
+            }
+
+            var json = JsonConvert.SerializeObject(payload);
+
+            handler = ResetHandler(handler);
+
+            response = await _httpClient.PostAuthAsync(handler, $"my-team/{teamId}/", json);
+
+            response.EnsureSuccessStatusCode();
+
+            content = await response.Content.ReadAsStringAsync();
+
+            return myTeam;
+        } 
 
         private async Task<List<Pick>> GetLastWeeksTeam(List<Pick> teamPicksLastWeek, int teamId, int currentGwId)
         {

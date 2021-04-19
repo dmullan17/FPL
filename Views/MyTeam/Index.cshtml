@@ -96,25 +96,26 @@
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th></th>
                     <th class="center aligned">Team</th>
                     <th class="center aligned" data-tooltip="Position">Pos</th>
                     <th class="center aligned" data-tooltip="Value (Potential Profit)">Val (PP)</th>
                     @*<th>Pts</th>
-                    <th>Pts for Team</th>*@
+        <th>Pts for Team</th>*@
                     <th class="center aligned" data-tooltip="Gameweeks On Team">GWOT</th>
                     <th class="center aligned" data-tooltip="Points Per Gameweek">PPGW</th>
                     <th class="center aligned" data-tooltip="Points Per Game (Previous 30 Days)">Form</th>
                     <th class="center aligned" data-tooltip="Minutes Played">MP (%)</th>
                     <th class="center aligned"><i class="star icon"></i></th>
                     @*<th>FPL Index</th>
-                    <th>FPL Rank</th>
-                    <th>FPL Position Rank</th>*@
+        <th>FPL Rank</th>
+        <th>FPL Position Rank</th>*@
                     @*<th>ICT</th>
-                    <th>ICT Rank</th>
-                    <th>Pos ICT Rank</th>
-                    <th>BPS</th>
-                    <th>Bps Rank</th>
-                    <th>Pos Bps Rank</th>*@
+        <th>ICT Rank</th>
+        <th>Pos ICT Rank</th>
+        <th>BPS</th>
+        <th>Bps Rank</th>
+        <th>Pos Bps Rank</th>*@
                     <th class="center aligned" data-tooltip="Total Ownership">TO (%)</th>
                     <th class="center aligned" data-tooltip="Gameweek Net Transfers">GWNT</th>
                     <th data-bind="text: $root.GetCurrentGw()"></th>
@@ -126,17 +127,25 @@
                     @*<th>Next Game</th>*@
                     @*<th class="center aligned" data-tooltip="Average Fixture Difficulty Rating (Next 5 Games)">Avg FDR (Next 5)</th>*@
                     @*<th>Form</th>
-                    <th>Points achieved</th>
-                    <th>Next Game</th>*@
+        <th>Points achieved</th>
+        <th>Next Game</th>*@
                 </tr>
             </thead>
-            <tbody class="single line" data-bind="foreach: $root.Picks">
+            <tbody class="single line" data-bind="foreach: $root.MyTeam().picks">
                 <tr data-bind="style: { 'background-color': $root.getColor($data.position) }">
                     <td>
                         <span data-bind="text: player.web_name"></span>
                         <span data-bind="visible: is_captain"><i class="copyright icon"></i></span>
                         <span data-bind="visible: player.in_dreamteam"><i class="star icon"></i></span>
                         <i class="ui icon" data-bind="visible: $root.DoesPlayerHaveStatus(player.status), class: $root.GetPlayerStatusIcon(player.status)"></i>
+                    </td>
+                    <td>
+                        <button class="ui tiny icon substitution button" data-bind="click: $root.MakeSub.bind($data)">
+                            <i class="exchange icon"></i>
+                        </button>
+                        <button class="ui tiny icon transfer button">
+                            <i class="pound sign icon"></i>
+                        </button>
                     </td>
                     <td class="center aligned">
                         <span data-bind="text: player.Team.short_name"></span>
@@ -148,11 +157,11 @@
                         <span data-bind="text: $root.FormatValue(player.now_cost, NetProfitOnTransfer)"></span>
                     </td>
                     @*<td>
-                        <span data-bind="text: player.total_points"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: TotalPointsAccumulatedForTeam"></span>
-                    </td>*@
+            <span data-bind="text: player.total_points"></span>
+        </td>
+        <td>
+            <span data-bind="text: TotalPointsAccumulatedForTeam"></span>
+        </td>*@
                     <td class="center aligned">
                         <span data-bind="text: GWOnTeam"></span>
                     </td>
@@ -169,32 +178,32 @@
                         <span data-bind="text: player.dreamteam_count"></span>
                     </td>
                     @*<td>
-                        <span data-bind="text: player.FplIndex"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: player.FplRank"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: player.FplPositionRank"></span>
-                    </td>*@
+            <span data-bind="text: player.FplIndex"></span>
+        </td>
+        <td>
+            <span data-bind="text: player.FplRank"></span>
+        </td>
+        <td>
+            <span data-bind="text: player.FplPositionRank"></span>
+        </td>*@
                     @*<td>
-                        <span data-bind="text: player.ict_index"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: $root.FormatOverallRank(player.ict_index_rank)"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: $root.FormatPositionRankType(player.element_type, player.ict_index_rank_type)"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: player.bps"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: $root.FormatOverallRank(player.BpsRank)"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: $root.FormatPositionRankType(player.element_type, player.BpsPositionRank)"></span>
-                    </td>*@
+            <span data-bind="text: player.ict_index"></span>
+        </td>
+        <td>
+            <span data-bind="text: $root.FormatOverallRank(player.ict_index_rank)"></span>
+        </td>
+        <td>
+            <span data-bind="text: $root.FormatPositionRankType(player.element_type, player.ict_index_rank_type)"></span>
+        </td>
+        <td>
+            <span data-bind="text: player.bps"></span>
+        </td>
+        <td>
+            <span data-bind="text: $root.FormatOverallRank(player.BpsRank)"></span>
+        </td>
+        <td>
+            <span data-bind="text: $root.FormatPositionRankType(player.element_type, player.BpsPositionRank)"></span>
+        </td>*@
                     <td class="center aligned">
                         <span data-bind="text: player.selected_by_percent"></span>
                     </td>
@@ -202,8 +211,8 @@
                         <span data-bind="text: $root.CreateGWNetTransfers(player)"></span>
                     </td>
                     @*<td>
-                        <span data-bind="html: $root.GetPlayersNextFixture(player.Team)"></span>
-                    </td>*@
+            <span data-bind="html: $root.GetPlayersNextFixture(player.Team)"></span>
+        </td>*@
                     <td class="center aligned" data-bind="html: $root.GetCurrentGWGames($data)">
                         @*<span data-bind="html: $root.GetCurrentGWGames($data)"></span>*@
                     </td>
@@ -220,8 +229,8 @@
                         <span data-bind="html: $root.GetNextPlusThreeGWGames(player.Team)"></span>
                     </td>
                     @*<td class="center aligned">
-                        <span data-bind="text: $root.CalculateFixtureDifficulty(player.Team, player.Fixtures)"></span>
-                    </td>*@
+            <span data-bind="text: $root.CalculateFixtureDifficulty(player.Team, player.Fixtures)"></span>
+        </td>*@
                 </tr>
             </tbody>
         </table>

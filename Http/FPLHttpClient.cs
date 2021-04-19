@@ -139,8 +139,6 @@ namespace FPL.Http
             {
                 client.DefaultRequestHeaders.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                //client.DefaultRequestHeaders.Add("X-Fern-Token", ConfigurationManager.AppSettings["ApiToken"]);
-                //client.DefaultRequestHeaders.Add("User-Agent", ConfigurationManager.AppSettings["UserAgent"]);
                 client.Timeout = DefaultTimeout;
 
                 foreach (var kvp in _headers)
@@ -193,6 +191,36 @@ namespace FPL.Http
                         .PostAsync(GetLoginUrl(), new FormUrlEncodedContent(fplLoginRequest))
                         .ConfigureAwait(false);
 
+                }
+                catch (HttpRequestException)
+                {
+                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                }
+
+                return response;
+            }
+        }
+
+        public async Task<HttpResponseMessage> PostAuthAsync(HttpClientHandler handler, string resource, string body)
+        {
+            using (var client = new HttpClient(handler) { BaseAddress = new Uri(GetBaseUrl()) })
+            {
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.Timeout = DefaultTimeout;
+
+                foreach (var kvp in _headers)
+                {
+                    client.DefaultRequestHeaders.Add(kvp.Key, kvp.Value);
+                }
+
+                HttpResponseMessage response;
+
+                try
+                {
+                    response = await client
+                        .PostAsync(resource, new StringContent(body, Encoding.UTF8, "application/json"))
+                        .ConfigureAwait(false);
                 }
                 catch (HttpRequestException)
                 {

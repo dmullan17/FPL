@@ -21,6 +21,8 @@ namespace FPL.Contracts
 
         Task<HttpResponseMessage> PostLoginAsync(HttpClientHandler handler, LoginAttempt body);
 
+        Task<HttpResponseMessage> PostAuthAsync(HttpClientHandler handler, string resource, string body);
+
         Task<HttpResponseMessage> PutAsync(string resource, string body);
 
         Task<HttpResponseMessage> DeleteAsync(string resource);
