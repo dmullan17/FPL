@@ -118,15 +118,8 @@
         var results = team.Results.filter(x => x.Event == self.GameweekId());
         var html = "";
 
-        //if (player.GWGame.team_h == player.player.Team.id) {
-        //    gwfixtures += player.GWGame.AwayTeam.name + " (H)<br/>"
-        //}
-        //else if (player.GWGame.team_a == player.player.Team.id) {
-        //    gwfixtures += player.GWGame.HomeTeam.name + " (A)<br/>";
-        //}
         if (results.length > 0) {
             for (var i = 0; i < results.length; i++) {
-                //if (player.GWGame.id != results[i].id) {
                 if (results[i].team_h_score > results[i].team_a_score) {
                     if (team.id == results[i].team_h) {
                         html += results[i].team_a_name + " (H)<br/>";
@@ -151,40 +144,46 @@
                         html += results[i].team_h_name + " (A) <br/>";
                     }
                 }
-                //}
-
             }
         }
         if (fixtures.length > 0) {
             for (var i = 0; i < fixtures.length; i++) {
-                //if (player.GWGame.id != fixtures[i].id) {
                 if (team.id == fixtures[i].team_h) {
                     html += fixtures[i].team_a_name + " (H)<br/>";
                 }
                 else if (team.id == fixtures[i].team_a) {
                     html += fixtures[i].team_h_name + " (A)<br/>";
                 }
-                //}
             }
         }
         if (results.length == 0 && fixtures.length == 0) {
             html += "No Game";
         }
-        //else {
-        //    gwfixtures += "No Game";
-        //}
 
         return html;
+    };
 
-        //if (player.GWGame.team_h == player.player.Team.id) {
-        //    return player.GWGame.AwayTeam.name + " (H)"
-        //}
-        //else if (player.GWGame.team_a == player.player.Team.id) {
-        //    return player.GWGame.HomeTeam.name + " (A)";
-        //}
-        //else {
-        //    return "No Game";
-        //}
+    self.GetOppositionShortName = function (player) {
+
+        var html = "";
+        var gwGames = player.GWGames;
+        var team = player.player.Team;
+
+        if (gwGames.length > 0) {
+            for (var i = 0; i < gwGames.length; i++) {
+                if (team.id == gwGames[i].HomeTeam.id) {
+                    html += gwGames[i].AwayTeam.short_name + " (H)<br/>";
+                }
+                else if (team.id == gwGames[i].AwayTeam.id) {
+                    html += gwGames[i].HomeTeam.short_name + " (A) <br/>";
+                }
+            }
+        }
+        else {
+            html += "No Game";
+        }
+
+        return html;
     };
 
     self.GetTimeOrResult = function (player) {
@@ -622,6 +621,24 @@
     //};
 
     self.init = function () {
+
+        $(document).ready(function () {
+            var mobilePointsTable = $('#mobile-points-table').DataTable({
+                //columnDefs: [
+                //    { orderable: true, targets: "allow-sort" }
+                //],
+                //order: [[$('th.default-sort').index(), "asc"]],
+                paging: false,
+                ordering: false,
+                //bSort: false,
+                info: false,
+                searching: false,
+                responsive: true,
+                fixedHeader: true,
+                scrollX: true
+            });
+
+        });
 
         if (self.IsLive()) {
             //auto refresh after a minute of inactivity

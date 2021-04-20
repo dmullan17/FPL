@@ -297,6 +297,48 @@ div.dt-buttons {
 	margin-left: 1em !important;
 }
 
+/*.ui.three.statistics .statistic {
+	margin-top: 0.3em !important;
+}*/
+
+/* On screens that are 992px or less, set the background color to blue */
+@media screen and (max-width: 992px) {
+
+	#mobile-header-grid {
+		display: block;
+	}
+
+	#desktop-header-grid {
+		display: none;
+	}
+
+	#mobile-points-table {
+		display: table;
+	}
+
+	#desktop-points-table {
+		display: none;
+	}
+}
+
+@media screen and (min-width: 992px) {
+	#mobile-header-grid {
+		display: none;
+	}
+
+	#desktop-header-grid {
+		display: block;
+	}
+
+	#mobile-points-table {
+		display: none;
+	}
+
+	#desktop-points-table {
+		display: table;
+	}
+}
+
 /*.tally-table-container {
 	max-height: 30rem;
 	overflow-y: scroll;
