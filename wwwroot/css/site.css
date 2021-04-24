@@ -319,6 +319,10 @@ div.dt-buttons {
 	#desktop-points-table {
 		display: none;
 	}
+
+	.hide-on-mobile {
+		display: none;
+	}
 }
 
 @media screen and (min-width: 992px) {
@@ -336,6 +340,10 @@ div.dt-buttons {
 
 	#desktop-points-table {
 		display: table;
+	}
+
+	.hide-on-mobile {
+		display: normal;
 	}
 }
 

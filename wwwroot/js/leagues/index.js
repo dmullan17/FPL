@@ -658,18 +658,41 @@
     }
 
     function initialiseStandingsDatatable() {
-        $(document).ready(function () {
-            var table = standingsTable.DataTable({
-                columnDefs: [
-                    { orderable: false, targets: "no-sort" }
-                ],
-                order: [[$('th.default-sort').index(), "asc"]],
-                responsive: true,
-                fixedHeader: true,
-                scrollX: true
-            });
+        // Size of browser viewport.
+        var browserH = $(window).height();
+        var browserW = $(window).width();
 
-        });
+        if (browserW > 992) {
+            $(document).ready(function () {
+                var table = standingsTable.DataTable({
+                    columnDefs: [
+                        { orderable: false, targets: "no-sort" }
+                    ],
+                    order: [[$('th.default-sort').index(), "asc"]],
+                    responsive: true,
+                    fixedHeader: true,
+                    scrollX: true,
+                    scrollY: true
+                });
+
+            });
+        }
+        else {
+            $(document).ready(function () {
+                var table = standingsTable.DataTable({
+                    columnDefs: [
+                        { orderable: false, targets: "no-sort" }
+                    ],
+                    order: [[$('th.default-sort').index(), "asc"]],
+                    responsive: true,
+                    scrollX: true,
+                    scrollY: true,
+                    searching: false
+                });
+
+            });
+        }
+
     }
 
     function initialiseTalliesDatatable() {
@@ -680,7 +703,9 @@
                     { orderable: false, targets: "no-sort" }
                 ],
                 responsive: true,
-                fixedHeader: true
+                searching: false,
+                scrollX: true,
+                scrollY: true
                 //scrollX: true
             });
 
