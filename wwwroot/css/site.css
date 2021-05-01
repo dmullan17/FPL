@@ -306,9 +306,11 @@ div.dt-buttons {
 	margin-left: 0.8rem;
 }
 
-/*div ul:not(:first-child) {
-	background-color: #900;
-}*/
+#player-tally-table {
+	display: block;
+	overflow-x: auto;
+	white-space: nowrap;
+}
 
 /* On screens that are 992px or less, set the background color to blue */
 @media screen and (max-width: 992px) {
@@ -328,6 +330,16 @@ div.dt-buttons {
 
 	#desktop-points-table {
 		display: none;
+	}
+
+	#desktop-standings-last-updated {
+		display: none;
+	}
+
+	#mobile-standings-last-updated {
+		display: normal;
+		width: 2rem;
+		padding-right: 2rem;
 	}
 
 	.hide-on-mobile {
@@ -350,6 +362,14 @@ div.dt-buttons {
 
 	#desktop-points-table {
 		display: normal;
+	}
+
+	#desktop-standings-last-updated {
+		display: normal;
+	}
+
+	#mobile-standings-last-updated {
+		display: none;
 	}
 
 	.hide-on-mobile {

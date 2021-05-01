@@ -28,7 +28,8 @@
                         </select>
                     </h3>
                     <div id="standings-segment" class="ui attached segment" style="min-height:10rem;">
-                        <div class="ui top right attached label" style="font-size: 0.9rem !important" data-bind="hidden: IsGameLive, text: $root.LastUpdated()"></div>
+                        <div id="desktop-standings-last-updated" class="ui top right attached label" style="font-size: 0.9rem !important" data-bind="hidden: IsGameLive, text: $root.LastUpdated()"></div>
+                        <div id="mobile-standings-last-updated" class="ui top right attached label"><i class="large clock outline icon"></i></div>
                         <div id="standings-loader" class="ui inverted dimmer">
                             <div class="ui text large loader">
                                 <h3 class="ui top attached header" data-bind="text: 'Loading ' + $root.SelectedLeague().Standings.results.length + ' fantasy teams from ' + $root.SelectedLeague().name"></h3>
@@ -43,7 +44,7 @@
                             <a class="item" data-tab="third">Third</a>
                         </div>
                         <div class="ui bottom attached tab segment active" data-tab="first">
-                            <table id="standings-table" class="ui unstackable table">
+                            <table id="standings-table" class="ui unstackable table" style="width: 100%;">
                                 <thead>
                                     <tr class="single line">
                                         <th class="no-sort" style="display:none"></th>
@@ -118,7 +119,7 @@
                         <div class="ui bottom attached tab segment" data-tab="second">
                             <div class="ui grid">
                                 <div class="column">
-                                    <table id="player-tally-table" class="ui unstackable uncollapsing table">
+                                    <table id="player-tally-table" class="ui unstackable table" style="width: 100%;">
                                         <thead>
                                             <tr>
                                                 <th>Player</th>
@@ -233,5 +234,8 @@
         <div class="actions" style="text-align: left; font-weight:bold; font-size:1.1rem; padding-left:1.25rem;">
             <p data-bind="text: 'Total: ' + $root.ManagersAffiliatedWithSelectedPlayerFromTally().length + '/' + $root.SelectedLeagueStandings().length"></p>
         </div>
+    </div>
+    <div id="standings-last-updated-popup" class="ui hidden stat popup">
+        <p data-bind="text: $root.LastUpdated()"></p>
     </div>
 </div>

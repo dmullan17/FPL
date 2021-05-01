@@ -124,6 +124,7 @@
                 }
                 standingsLoader.addClass("active");
                 leagueDropdown.addClass("disabled");
+                standingsTable.hide();
                 return true;
             };
             options.success = function (data, textStatus) {
@@ -132,6 +133,7 @@
             options.complete = function (data, textStatus) {
                 standingsLoader.removeClass("active");
                 leagueDropdown.removeClass("disabled");
+                standingsTable.show();
                 //localCache.set(url, data, complete);
             };
         }
@@ -500,7 +502,13 @@
         initialiseStandingsDatatable();
         initialiseTalliesDatatable();
 
-        $("#th-bonus-points").attr('title',  'This is the hover-over text');
+        $("#th-bonus-points").attr('title', 'This is the hover-over text');
+
+        $('#mobile-standings-last-updated').popup({
+            popup: '#standings-last-updated-popup.popup',
+            position: 'top center',
+            hoverable: true
+        });
     };
 
     self.init();
@@ -703,10 +711,9 @@
                     { orderable: false, targets: "no-sort" }
                 ],
                 responsive: true,
-                searching: false,
-                scrollX: true,
-                scrollY: true
+                searching: false
                 //scrollX: true
+                //scrollY: true
             });
 
         });
