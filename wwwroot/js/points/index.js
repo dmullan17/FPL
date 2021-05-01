@@ -44,10 +44,47 @@
 
     self.viewPlayer = function (player) {
         self.SelectedPlayer(player);
-
-
-        $('.ui.modal').modal().modal('show');
+        $('#player-popup').modal().modal('show');
     };
+
+    self.viewPlayerGwBreakdown = function (player) {
+
+        var games = player.GWPlayer.explain;
+
+        if (games.length > 0) {
+            for (var i = 0; i < games.length; i++) {
+
+                var fixtureId = games[i].fixture;
+
+                var gwGame = player.GWGames.filter(x => x.id == fixtureId);
+                var bonus = player.GWPlayer.stats.EstimatedBonus[i];
+
+                if (!gwGame[0].finished && bonus > 0) {
+                    games[i].stats.push({ identifier: "bonus", value: bonus, points: bonus })
+                }
+
+                if (player.is_captain) {
+                    for (var j = 0; j < games[i].stats.length; j++) {
+                        games[i].stats[j].points = games[i].stats[j].points * player.multiplier;
+                    }
+                }
+            }
+
+            self.SelectedPlayer(player);
+            $('#player-gw-breakdown-popup').modal().modal('show');
+        }
+
+    };
+
+    self.GetFixtureScore = function (gwGames, fixtureId) {
+
+        var gwGame = gwGames.filter(x => x.id == fixtureId);
+        var game = gwGame[0];
+
+        var text = game.HomeTeam.short_name + " " + game.team_h_score + " - " + game.team_a_score + " " + game.AwayTeam.short_name;
+
+        return text;
+    }
 
     self.getColor = function (position) {
         if (position > 11) {
