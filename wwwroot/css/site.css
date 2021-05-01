@@ -301,19 +301,33 @@ div.dt-buttons {
 	margin-top: 0.3em !important;
 }*/
 
+#mobile-points-table {
+	display: block;
+	overflow-x: auto;
+	white-space: nowrap;
+}
+
+.ui.tiny.statistics > .statistic:not(:first-child) {
+	margin-right: 0.8rem;
+	margin-left: 0.8rem;
+}
+
+/*div ul:not(:first-child) {
+	background-color: #900;
+}*/
+
 /* On screens that are 992px or less, set the background color to blue */
 @media screen and (max-width: 992px) {
-
-	#mobile-header-grid {
+	#mobile-points-header-grid {
 		display: block;
 	}
 
-	#desktop-header-grid {
+	#desktop-points-header-grid {
 		display: none;
 	}
 
-	#mobile-points-table {
-		display: table;
+	#mobile-points-table_wrapper {
+		display: normal;
 	}
 
 	#desktop-points-table {
@@ -326,20 +340,20 @@ div.dt-buttons {
 }
 
 @media screen and (min-width: 992px) {
-	#mobile-header-grid {
+	#mobile-points-header-grid {
 		display: none;
 	}
 
-	#desktop-header-grid {
+	#desktop-points-header-grid {
 		display: block;
 	}
 
-	#mobile-points-table {
+	#mobile-points-table_wrapper {
 		display: none;
 	}
 
 	#desktop-points-table {
-		display: table;
+		display: normal;
 	}
 
 	.hide-on-mobile {

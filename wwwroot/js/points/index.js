@@ -622,24 +622,6 @@
 
     self.init = function () {
 
-        $(document).ready(function () {
-            var mobilePointsTable = $('#mobile-points-table').DataTable({
-                //columnDefs: [
-                //    { orderable: true, targets: "allow-sort" }
-                //],
-                //order: [[$('th.default-sort').index(), "asc"]],
-                paging: false,
-                ordering: false,
-                //bSort: false,
-                info: false,
-                searching: false,
-                responsive: true,
-                fixedHeader: true,
-                scrollX: true
-            });
-
-        });
-
         if (self.IsLive()) {
             //auto refresh after a minute of inactivity
             var time = new Date().getTime();
@@ -659,7 +641,7 @@
 
         $('.menu .item').tab({});
 
-        $('#gw-percentile-statistic').popup({
+        $('.gw-percentile-statistic').popup({
             popup: '#gw-percentile-popup.popup',
             position: 'top center',
             hoverable: true
@@ -677,8 +659,14 @@
             hoverable: true
         });
 
+        $('.pytp-statistic').popup({
+            popup: '#pytp-popup.popup',
+            position: 'top center',
+            hoverable: true
+        });
+
         if (self.GameweekId() == self.CurrentGameweekId()) {
-            $('#gw-average-statistic').popup({
+            $('.gw-average-statistic').popup({
                 popup: '#gw-average-popup.popup',
                 position: 'top center',
                 hoverable: true
