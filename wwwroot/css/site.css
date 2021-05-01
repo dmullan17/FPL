@@ -301,12 +301,6 @@ div.dt-buttons {
 	margin-top: 0.3em !important;
 }*/
 
-#mobile-points-table {
-	display: block;
-	overflow-x: auto;
-	white-space: nowrap;
-}
-
 .ui.tiny.statistics > .statistic:not(:first-child) {
 	margin-right: 0.8rem;
 	margin-left: 0.8rem;
@@ -326,8 +320,10 @@ div.dt-buttons {
 		display: none;
 	}
 
-	#mobile-points-table_wrapper {
-		display: normal;
+	#mobile-points-table {
+		display: block;
+		overflow-x: auto;
+		white-space: nowrap;
 	}
 
 	#desktop-points-table {
@@ -348,7 +344,7 @@ div.dt-buttons {
 		display: block;
 	}
 
-	#mobile-points-table_wrapper {
+	#mobile-points-table {
 		display: none;
 	}
 

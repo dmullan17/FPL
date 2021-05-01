@@ -369,6 +369,10 @@ namespace FPL.Controllers
             {
                 return gwTeam;
             }
+            else if (gwTeam.ActiveChips.Contains("bboost"))
+            {
+                return gwTeam;
+            }
             else
             {
                 var starters = picks.FindAll(x => x.position < 12);
