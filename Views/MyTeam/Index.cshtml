@@ -118,12 +118,12 @@
         <th>Pos Bps Rank</th>*@
                     <th class="center aligned" data-tooltip="Total Ownership">TO (%)</th>
                     <th class="center aligned" data-tooltip="Gameweek Net Transfers">GWNT</th>
-                    <th data-bind="text: $root.GetCurrentGw()"></th>
+                    <th data-bind="text: $root.GetCurrentGw(), visible: $root.CurrentGwId() < 38"></th>
                     @*<th data-bind="text: 'GW ' + $root.CurrentGwId()"></th>*@
-                    <th data-bind="text: $root.GetNextGw()"></th>
-                    <th data-bind="text: $root.GetNextPlusOneGw()"></th>
-                    <th data-bind="text: $root.GetNextPlusTwoGw()"></th>
-                    <th data-bind="text: $root.GetNextPlusThreeGw()"></th>
+                    <th data-bind="text: $root.GetNextGw(), visible: $root.CurrentGwId() < 37"></th>
+                    <th data-bind="text: $root.GetNextPlusOneGw(), visible: $root.CurrentGwId() < 36"></th>
+                    <th data-bind="text: $root.GetNextPlusTwoGw(), visible: $root.CurrentGwId() < 35"></th>
+                    <th data-bind="text: $root.GetNextPlusThreeGw(), visible: $root.CurrentGwId() < 34"></th>
                     @*<th>Next Game</th>*@
                     @*<th class="center aligned" data-tooltip="Average Fixture Difficulty Rating (Next 5 Games)">Avg FDR (Next 5)</th>*@
                     @*<th>Form</th>
@@ -213,19 +213,19 @@
                     @*<td>
             <span data-bind="html: $root.GetPlayersNextFixture(player.Team)"></span>
         </td>*@
-                    <td class="center aligned" data-bind="html: $root.GetCurrentGWGames($data)">
+                    <td class="center aligned" data-bind="html: $root.GetCurrentGWGames($data), visible: $root.CurrentGwId() < 38">
                         @*<span data-bind="html: $root.GetCurrentGWGames($data)"></span>*@
                     </td>
-                    <td class="center aligned">
+                    <td class="center aligned"  data-bind="visible: $root.CurrentGwId() < 37">
                         <span data-bind="html: $root.GetNextGWGames(player.Team)"></span>
                     </td>
-                    <td class="center aligned">
+                    <td class="center aligned"  data-bind="visible: $root.CurrentGwId() < 36">
                         <span data-bind="html: $root.GetNextPlusOneGWGames(player.Team)"></span>
                     </td>
-                    <td class="center aligned">
+                    <td class="center aligned"  data-bind="visible: $root.CurrentGwId() < 35">
                         <span data-bind="html: $root.GetNextPlusTwoGWGames(player.Team)"></span>
                     </td>
-                    <td class="center aligned">
+                    <td class="center aligned" data-bind="visible: $root.CurrentGwId() < 34">
                         <span data-bind="html: $root.GetNextPlusThreeGWGames(player.Team)"></span>
                     </td>
                     @*<td class="center aligned">

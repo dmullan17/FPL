@@ -191,7 +191,7 @@
     };
 
     self.GetCurrentGw = function () {
-        if (self.IsEventFinished) {
+        if (!self.IsEventFinished) {
             return "GW " + (self.CurrentGwId());
         }
         else {
@@ -200,7 +200,7 @@
     };
 
     self.GetNextGw = function () {
-        if (self.IsEventFinished) {
+        if (!self.IsEventFinished) {
             return "GW " + (self.CurrentGwId() + 1);
         }
         else {
@@ -209,7 +209,7 @@
     };
 
     self.GetNextPlusOneGw = function () {
-        if (self.IsEventFinished) {
+        if (!self.IsEventFinished) {
             return "GW " + (self.CurrentGwId() + 2);
         }
         else {
@@ -218,7 +218,7 @@
     };
 
     self.GetNextPlusTwoGw = function () {
-        if (self.IsEventFinished) {
+        if (!self.IsEventFinished) {
             return "GW " + (self.CurrentGwId() + 3);
         }
         else {
@@ -227,7 +227,7 @@
     };
 
     self.GetNextPlusThreeGw = function () {
-        if (self.IsEventFinished) {
+        if (!self.IsEventFinished) {
             return "GW " + (self.CurrentGwId() + 4);
         }
         else {
