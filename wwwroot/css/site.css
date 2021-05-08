@@ -342,6 +342,16 @@ div.dt-buttons {
 		padding-right: 2rem;
 	}
 
+	#desktop-points-last-updated {
+		display: none;
+	}
+
+	#mobile-points-last-updated {
+		display: normal;
+		width: 2rem;
+		padding-right: 2rem;
+	}
+
 	.hide-on-mobile {
 		display: none;
 	}
@@ -369,6 +379,14 @@ div.dt-buttons {
 	}
 
 	#mobile-standings-last-updated {
+		display: none;
+	}
+
+	#desktop-points-last-updated {
+		display: normal;
+	}
+
+	#mobile-points-last-updated {
 		display: none;
 	}
 

@@ -134,10 +134,18 @@
             </div>
         </div>
         <div class="ui segment">
+            <div id="desktop-points-last-updated" class="ui top right attached label" style="font-size: 0.9rem !important" data-bind="visible: IsLive">
+                <i class="sync link icon" data-bind="click: $root.reload"></i>
+                <span data-bind="text: $root.LastUpdated()"></span>
+            </div>
+            <div id="mobile-points-last-updated" class="ui top right attached label"  data-bind="visible: IsLive">
+                <i class="sync link icon" data-bind="click: $root.reload"></i>
+                @*<i class="large clock outline icon"></i>*@
+            </div>
             <div class="ui attached tabular menu">
                 <a class="item active" data-tab="first">
                     Points
-                    @*<span class="ui green left pointing label" data-bind="visible: IsGameLive">Live</span>*@
+                    <span class="ui green left pointing label" data-bind="visible: IsLive">Live</span>
                 </a>
                 <a class="item" data-tab="second">Standings</a>
                 <a class="item" data-tab="third">Third</a>
@@ -264,8 +272,10 @@
                                 <span data-bind="text: $root.GetPoints($data), click: $root.viewPlayerGwBreakdown"></span>
                             </td>
                             <!--<td class="center aligned collapsing">
-                                <span data-bind="html: $root.GetTimeOrResult($data)--> @*visible: !GWGame.started*@<!--"></span>
-                            </td>-->
+                        <span data-bind="html: $root.GetTimeOrResult($data)-->
+                            @*visible: !GWGame.started*@
+                            <!--"></span>
+                        </td>-->
                         </tr>
                     </tbody>
                 </table>
@@ -373,6 +383,9 @@
                     <h3 class="ui center aligned header" data-bind="html: $root.GetFixtureScore($root.SelectedPlayer().GWGames, game.id)"></h3>
                 </div>
             </div>
+        </div>
+        <div id="points-last-updated-popup" class="ui hidden stat popup">
+            <p data-bind="text: $root.LastUpdated()"></p>
         </div>
     </div>
 </div>

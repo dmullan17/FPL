@@ -20,6 +20,18 @@
 
     self.AllStartedGameWeeks = ko.observableArray(data.AllStartedGameWeeks);
 
+    self.reload = function () {
+        $(".sync.icon").addClass("green loading");
+        location.reload();
+    }
+
+    self.LastUpdated = function () {
+
+        var lastUpdatedTime = new Date().toLocaleString("en-GB");
+        var formattedTime = lastUpdatedTime.slice(0, -3);
+        return "Last updated: " + formattedTime;
+    }
+
     self.SelectedGameweek.subscribe(function (selectedGameweek) {
 
         if (selectedGameweek.id != self.GameweekId()) {
@@ -670,22 +682,22 @@
 
     self.init = function () {
 
-        if (self.IsLive()) {
-            //auto refresh after a minute of inactivity
-            var time = new Date().getTime();
-            $(document.body).bind("mousemove keypress", function (e) {
-                time = new Date().getTime();
-            });
+        //if (self.IsLive()) {
+        //    //auto refresh after a minute of inactivity
+        //    var time = new Date().getTime();
+        //    $(document.body).bind("mousemove keypress", function (e) {
+        //        time = new Date().getTime();
+        //    });
 
-            function refresh() {
-                if (new Date().getTime() - time >= 60000)
-                    window.location.reload(true);
-                else
-                    setTimeout(refresh, 10000);
-            }
+        //    function refresh() {
+        //        if (new Date().getTime() - time >= 60000)
+        //            window.location.reload(true);
+        //        else
+        //            setTimeout(refresh, 10000);
+        //    }
 
-            setTimeout(refresh, 10000);
-        }
+        //    setTimeout(refresh, 10000);
+        //}
 
         $('.menu .item').tab({});
 
@@ -720,6 +732,12 @@
                 hoverable: true
             });
         }
+
+        //$('#mobile-points-last-updated').popup({
+        //    popup: '#points-last-updated-popup.popup',
+        //    position: 'top center',
+        //    hoverable: true
+        //});
 
         var index = self.AllStartedGameWeeks().findIndex(x => x.id === self.GameweekId());
         self.SelectedGameweek(self.AllStartedGameWeeks()[index]);
