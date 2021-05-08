@@ -231,11 +231,20 @@
 
         if (gwGames.length > 0) {
             for (var i = 0; i < gwGames.length; i++) {
-                if (team.id == gwGames[i].HomeTeam.id) {
-                    html += gwGames[i].AwayTeam.short_name + " (H)<br/>";
-                }
-                else if (team.id == gwGames[i].AwayTeam.id) {
-                    html += gwGames[i].HomeTeam.short_name + " (A) <br/>";
+                if (gwGames[i].finished_provisional) {
+                    if (team.id == gwGames[i].HomeTeam.id) {
+                        html += gwGames[i].AwayTeam.short_name + " (H) <i class=\"green check circle icon\"></i> <br/>";
+                    }
+                    else if (team.id == gwGames[i].AwayTeam.id) {
+                        html += gwGames[i].HomeTeam.short_name + " (A) <i class=\"green check circle icon\"></i> <br/>";
+                    }
+                } else {
+                    if (team.id == gwGames[i].HomeTeam.id) {
+                        html += gwGames[i].AwayTeam.short_name + " (H)<br/>";
+                    }
+                    else if (team.id == gwGames[i].AwayTeam.id) {
+                        html += gwGames[i].HomeTeam.short_name + " (A) <br/>";
+                    }
                 }
             }
         }
