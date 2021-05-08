@@ -151,134 +151,140 @@
                 <a class="item" data-tab="third">Third</a>
             </div>
             <div class="ui bottom attached tab segment active" data-tab="first">
-                <table id="desktop-points-table" class="ui unstackable table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th data-bind="visible: $root.GWTeam().automatic_subs.length > 0"></th>
-                            <th>Position</th>
-                            <th>Opposition</th>
-                            @*<th>Time</th>*@
-                            <th class="center aligned">Mins</th>
-                            <th class="center aligned">GF</th>
-                            <th class="center aligned">CS</th>
-                            <th class="center aligned">GA</th>
-                            <th class="center aligned">Assists</th>
-                            <th class="center aligned">Saves</th>
-                            <th class="center aligned">Bonus</th>
-                            <th class="center aligned">Bps (Rank)</th>
-                            @*<th>Bps Rank</th>*@
-                            <th class="center aligned">GW <span data-bind="text: $root.GameweekId()"></span></th>
-                            <th colspan="2"></th>
-                        </tr>
-                    </thead>
-                    <tbody data-bind="foreach: $root.GWTeam().picks">
-                        <tr data-bind="style: { 'background-color': $root.getColor($data.position) }">
-                            <td>
-                                <a data-bind="click: $root.viewPlayer"><span data-bind="text: player.web_name"></span></a>
-                                <span data-bind="visible: is_captain"><i class="copyright icon"></i></span>
-                                <span data-bind="visible: GWPlayer.stats.in_dreamteam"><i class="star icon"></i></span>
-                                <i class="ui icon" data-bind="visible: $root.DoesPlayerHaveStatus(player.status), class: $root.GetPlayerStatusIcon(player.status), click: $root.ShowStatusPopup(player.status)"></i>
-                                <i class="yellow square icon" data-bind="visible: GWPlayer.stats.yellow_cards > 0"></i>
-                                <i class="red square icon" data-bind="visible: GWPlayer.stats.red_cards > 0"></i>
-                            </td>
-                            <td data-bind="visible: $root.GWTeam().automatic_subs.length > 0">
-                                <span data-bind="visible: $root.SubOn($data)">On</span>
-                                <span data-bind="visible: $root.SubOff($data)">Off</span>
-                            </td>
-                            <td>
-                                <span data-bind="text: $root.GetPosition(player.element_type)"></span>
-                            </td>
-                            <td>
-                                <span data-bind="html: $root.GetOpposition($data)"></span>
-                            </td>
-                            <!--<td data-bind="class: GWGame.finished_provisional || !GWGame.started ? '' : 'center aligned'">-->
-                            @*<span data-bind="text: $root.GetTime($data), visible: GWGame.finished_provisional || !GWGame.started"></span>*@
-                            <!--<span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>
-                        </td>-->
-                            <td class="center aligned">
-                                <span data-bind="text: GWPlayer.stats.minutes"></span>
-                            </td>
-                            <td class="center aligned">
-                                <span data-bind="text: GWPlayer.stats.goals_scored"></span>
-                            </td>
-                            <td class="center aligned">
-                                <span data-bind="text: GWPlayer.stats.clean_sheets"></span>
-                            </td>
-                            <td class="center aligned">
-                                <span data-bind="text: GWPlayer.stats.goals_conceded"></span>
-                            </td>
-                            <td class="center aligned">
-                                <span data-bind="text: GWPlayer.stats.assists"></span>
-                            </td>
-                            <td class="center aligned">
-                                <span data-bind="text: GWPlayer.stats.saves"></span>
-                            </td>
-                            <td class="center aligned">
-                                <span data-bind="text: $root.GetBonus($data)"></span>
-                            </td>
-                            <td class="center aligned">
-                                <span data-bind="text: GWPlayer.stats.bps + ' (' + $root.GetBonusRank($data) + ')'"></span>
-                            </td>
-                            @*<td>
-                                <span data-bind="text: $root.GetBonusRank($data)"></span>
-                            </td>*@
-                            <td class="center aligned">
-                                <span data-bind="text: $root.GetPoints($data)"></span>
-                            </td>
-                            <td @*data-bind="class: $root.GetResult($data, $data.GWGame)"*@ class="center aligned collapsing">
-                                @*<span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>*@
-                                @*<span data-bind="visible: GWGame.started, text: GWGame.team_h_score + ' - ' + GWGame.team_a_score"></span>*@
-                                <span data-bind="html: $root.GetTimeOrResult($data) @*visible: !GWGame.started*@"></span>
-                                @*<span data-bind="visible: GWGame.finished_provisional"><i class="check icon"></i></span>*@
-                            </td>
-                            @*<td data-bind="class: $root.GetResult($data, $data.GWGame)" class="center aligned collapsing">
-                                <span class="ui mini green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>
-                                <span data-bind="visible: GWGame.finished_provisional">
-                                    <i class="small check icon"></i>
-                                </span>
-                            </td>*@
-                        </tr>
-                    </tbody>
-                </table>
-                <table id="mobile-points-table" class="ui unstackable table">
-                    <thead>
-                        <tr class="single line">
-                            <th>Name</th>
-                            <th data-bind="visible: $root.GWTeam().automatic_subs.length > 0"></th>
-                            <th>Opp</th>
-                            <th class="center aligned">GW <span data-bind="text: $root.GameweekId()"></span></th>
-                            @*<th></th>*@
-                        </tr>
-                    </thead>
-                    <tbody data-bind="foreach: $root.GWTeam().picks">
-                        <tr class="single line" data-bind="style: { 'background-color': $root.getColor($data.position) }">
-                            <td>
-                                <a data-bind="click: $root.viewPlayer"><span data-bind="text: player.web_name"></span></a>
-                                <span data-bind="visible: is_captain"><i class="copyright icon"></i></span>
-                                <span data-bind="visible: GWPlayer.stats.in_dreamteam"><i class="star icon"></i></span>
-                                <i class="ui icon" data-bind="visible: $root.DoesPlayerHaveStatus(player.status), class: $root.GetPlayerStatusIcon(player.status), click: $root.ShowStatusPopup(player.status)"></i>
-                                <i class="yellow square icon" data-bind="visible: GWPlayer.stats.yellow_cards > 0"></i>
-                                <i class="red square icon" data-bind="visible: GWPlayer.stats.red_cards > 0"></i>
-                            </td>
-                            <td data-bind="visible: $root.GWTeam().automatic_subs.length > 0">
-                                <span data-bind="visible: $root.SubOn($data)">On</span>
-                                <span data-bind="visible: $root.SubOff($data)">Off</span>
-                            </td>
-                            <td>
-                                <span data-bind="html: $root.GetOppositionShortName($data)"></span>
-                            </td>
-                            <td class="center aligned">
-                                <span data-bind="text: $root.GetPoints($data), click: $root.viewPlayerGwBreakdown"></span>
-                            </td>
-                            <!--<td class="center aligned collapsing">
-                        <span data-bind="html: $root.GetTimeOrResult($data)-->
-                            @*visible: !GWGame.started*@
-                            <!--"></span>
-                        </td>-->
-                        </tr>
-                    </tbody>
-                </table>
+                <div style="width: 100%; overflow-x: auto;">
+                    <table id="desktop-points-table" class="ui unstackable table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th data-bind="visible: $root.GWTeam().automatic_subs.length > 0"></th>
+                                <th>Position</th>
+                                <th>Opposition</th>
+                                @*<th>Time</th>*@
+                                <th class="center aligned">Mins</th>
+                                <th class="center aligned">GF</th>
+                                <th class="center aligned">CS</th>
+                                <th class="center aligned">GA</th>
+                                <th class="center aligned">Assists</th>
+                                <th class="center aligned">Saves</th>
+                                <th class="center aligned">Bonus</th>
+                                <th class="center aligned">Bps (Rank)</th>
+                                @*<th>Bps Rank</th>*@
+                                <th class="center aligned">GW <span data-bind="text: $root.GameweekId()"></span></th>
+                                <th colspan="2"></th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: $root.GWTeam().picks">
+                            <tr data-bind="style: { 'background-color': $root.getColor($data.position) }">
+                                <td>
+                                    <a data-bind="click: $root.viewPlayer"><span data-bind="text: player.web_name"></span></a>
+                                    <span data-bind="visible: is_captain"><i class="copyright icon"></i></span>
+                                    <span data-bind="visible: GWPlayer.stats.in_dreamteam"><i class="star icon"></i></span>
+                                    <i class="ui icon" data-bind="visible: $root.DoesPlayerHaveStatus(player.status), class: $root.GetPlayerStatusIcon(player.status), click: $root.ShowStatusPopup(player.status)"></i>
+                                    <i class="yellow square icon" data-bind="visible: GWPlayer.stats.yellow_cards > 0"></i>
+                                    <i class="red square icon" data-bind="visible: GWPlayer.stats.red_cards > 0"></i>
+                                </td>
+                                <td data-bind="visible: $root.GWTeam().automatic_subs.length > 0">
+                                    <span data-bind="visible: $root.SubOn($data)">On</span>
+                                    <span data-bind="visible: $root.SubOff($data)">Off</span>
+                                </td>
+                                <td>
+                                    <span data-bind="text: $root.GetPosition(player.element_type)"></span>
+                                </td>
+                                <td>
+                                    <span data-bind="html: $root.GetOpposition($data)"></span>
+                                </td>
+                                <!--<td data-bind="class: GWGame.finished_provisional || !GWGame.started ? '' : 'center aligned'">-->
+                                @*<span data-bind="text: $root.GetTime($data), visible: GWGame.finished_provisional || !GWGame.started"></span>*@
+                                <!--<span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>
+                </td>-->
+                                <td class="center aligned">
+                                    <span data-bind="text: GWPlayer.stats.minutes"></span>
+                                </td>
+                                <td class="center aligned">
+                                    <span data-bind="text: GWPlayer.stats.goals_scored"></span>
+                                </td>
+                                <td class="center aligned">
+                                    <span data-bind="text: GWPlayer.stats.clean_sheets"></span>
+                                </td>
+                                <td class="center aligned">
+                                    <span data-bind="text: GWPlayer.stats.goals_conceded"></span>
+                                </td>
+                                <td class="center aligned">
+                                    <span data-bind="text: GWPlayer.stats.assists"></span>
+                                </td>
+                                <td class="center aligned">
+                                    <span data-bind="text: GWPlayer.stats.saves"></span>
+                                </td>
+                                <td class="center aligned">
+                                    <span data-bind="text: $root.GetBonus($data)"></span>
+                                </td>
+                                <td class="center aligned">
+                                    <span data-bind="text: GWPlayer.stats.bps + ' (' + $root.GetBonusRank($data) + ')'"></span>
+                                </td>
+                                @*<td>
+                        <span data-bind="text: $root.GetBonusRank($data)"></span>
+                    </td>*@
+                                <td class="center aligned">
+                                    <span data-bind="text: $root.GetPoints($data)"></span>
+                                </td>
+                                <td @*data-bind="class: $root.GetResult($data, $data.GWGame)"*@ class="center aligned collapsing">
+                                    @*<span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>*@
+                                    @*<span data-bind="visible: GWGame.started, text: GWGame.team_h_score + ' - ' + GWGame.team_a_score"></span>*@
+                                    <span data-bind="html: $root.GetTimeOrResult($data) @*visible: !GWGame.started*@"></span>
+                                    @*<span data-bind="visible: GWGame.finished_provisional"><i class="check icon"></i></span>*@
+                                </td>
+                                @*<td data-bind="class: $root.GetResult($data, $data.GWGame)" class="center aligned collapsing">
+                        <span class="ui mini green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>
+                        <span data-bind="visible: GWGame.finished_provisional">
+                            <i class="small check icon"></i>
+                        </span>
+                    </td>*@
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table id="mobile-points-table" class="ui unstackable table">
+                        <thead>
+                            <tr class="single line">
+                                <th>Name</th>
+                                <th data-bind="visible: $root.GWTeam().automatic_subs.length > 0"></th>
+                                @*<th>Opp</th>*@
+                                <th class="center aligned">GW <span data-bind="text: $root.GameweekId()"></span></th>
+                                <th></th>
+                                @*<th></th>*@
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: $root.GWTeam().picks">
+                            <tr class="single line" data-bind="style: { 'background-color': $root.getColor($data.position) }">
+                                <td>
+                                    <a data-bind="click: $root.viewPlayer"><span data-bind="text: player.web_name"></span></a>
+                                    <span data-bind="visible: is_captain"><i class="copyright icon"></i></span>
+                                    <span data-bind="visible: GWPlayer.stats.in_dreamteam"><i class="star icon"></i></span>
+                                    <i class="ui icon" data-bind="visible: $root.DoesPlayerHaveStatus(player.status), class: $root.GetPlayerStatusIcon(player.status), click: $root.ShowStatusPopup(player.status)"></i>
+                                    <i class="yellow square icon" data-bind="visible: GWPlayer.stats.yellow_cards > 0"></i>
+                                    <i class="red square icon" data-bind="visible: GWPlayer.stats.red_cards > 0"></i>
+                                </td>
+                                <td data-bind="visible: $root.GWTeam().automatic_subs.length > 0">
+                                    <span data-bind="visible: $root.SubOn($data)">On</span>
+                                    <span data-bind="visible: $root.SubOff($data)">Off</span>
+                                </td>
+                                @*<td>
+                        <span data-bind="html: $root.GetOppositionShortName($data)"></span>
+                    </td>*@
+                                <td class="center aligned">
+                                    <span data-bind="text: $root.GetPoints($data), click: $root.viewPlayerGwBreakdown"></span>
+                                </td>
+                                <td class="center aligned">
+                                    <i class="green check circle icon" data-bind="visible: $root.IsPicksGwFinished($data)"></i>
+                                </td>
+                                <!--<td class="center aligned collapsing">
+                <span data-bind="html: $root.GetTimeOrResult($data)-->
+                                @*visible: !GWGame.started*@
+                                <!--"></span>
+                </td>-->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="ui bottom attached tab segment" data-tab="second">
                 <div class="ui grid">
@@ -342,7 +348,7 @@
                                         GW Points
                                     </div>
                                 </div>
-                                <div class="statistic">
+                                @*<div class="statistic">
                                     <div class="value" data-bind="text: GWPlayer.stats.bps"></div>
                                     <div class="label">
                                         BPS
@@ -353,6 +359,13 @@
                                     <div class="label">
                                         Rank
                                     </div>
+                                </div>*@
+                                <div class="statistic" style="margin-top: 1em">
+                                    <div class="text value">
+                                        <span style="font-size: 2.5rem !important;" data-bind="text: GWPlayer.stats.bps"></span>
+                                        <span data-bind="text: GWPlayer.stats.BpsRank"></span>
+                                    </div>
+                                    <div class="label">BPS (Rank)</div>
                                 </div>
                             </div>
                         </div>

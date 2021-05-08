@@ -324,8 +324,6 @@ div.dt-buttons {
 
 	#mobile-points-table {
 		display: table;
-		overflow-x: auto;
-		white-space: nowrap;
 	}
 
 	#desktop-points-table {

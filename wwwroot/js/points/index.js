@@ -25,6 +25,16 @@
         location.reload();
     }
 
+    self.IsPicksGwFinished = function (pick) {
+        var gwGames = pick.GWGames;
+
+        if (gwGames.every(x => x.finished_provisional) || gwGames.length == 0) {
+            return true;
+        }
+
+        return false;
+    }
+
     self.LastUpdated = function () {
 
         var lastUpdatedTime = new Date().toLocaleString("en-GB");
@@ -71,15 +81,10 @@
                 var gwGame = player.GWGames.filter(x => x.id == fixtureId);
                 var bonus = player.GWPlayer.stats.EstimatedBonus[i];
 
-                if (!gwGame[0].finished && bonus > 0 && !games[i].stats.some(x => x.identifier == "bonus")) {
+                if (!gwGame[0].finished && gwGame[0].started && bonus > 0 && !games[i].stats.some(x => x.identifier == "bonus")) {
                     games[i].stats.push({ identifier: "bonus", value: bonus, points: bonus })
                 }
 
-                if (player.is_captain) {
-                    for (var j = 0; j < games[i].stats.length; j++) {
-                        games[i].stats[j].points = games[i].stats[j].points * player.multiplier;
-                    }
-                }
             }
 
             self.SelectedPlayer(player);

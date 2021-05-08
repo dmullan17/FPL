@@ -1062,7 +1062,8 @@ namespace FPL.Controllers
                             //{
                             if (pick.is_captain)
                             {
-                                pick.GWPlayer.stats.gw_points += pick.GWPlayer.explain[j].stats[k].points * pick.multiplier;
+                                pick.GWPlayer.explain[j].stats[k].points = pick.GWPlayer.explain[j].stats[k].points * pick.multiplier;
+                                pick.GWPlayer.stats.gw_points += pick.GWPlayer.explain[j].stats[k].points;
                             }
                             else
                             {
