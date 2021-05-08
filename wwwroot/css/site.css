@@ -307,7 +307,7 @@ div.dt-buttons {
 }
 
 #player-tally-table {
-	display: block;
+	display: table;
 	overflow-x: auto;
 	white-space: nowrap;
 }

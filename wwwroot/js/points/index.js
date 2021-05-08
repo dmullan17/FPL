@@ -59,7 +59,7 @@
                 var gwGame = player.GWGames.filter(x => x.id == fixtureId);
                 var bonus = player.GWPlayer.stats.EstimatedBonus[i];
 
-                if (!gwGame[0].finished && bonus > 0) {
+                if (!gwGame[0].finished && bonus > 0 && !games[i].stats.some(x => x.identifier == "bonus")) {
                     games[i].stats.push({ identifier: "bonus", value: bonus, points: bonus })
                 }
 
