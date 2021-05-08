@@ -240,7 +240,7 @@
                             <th data-bind="visible: $root.GWTeam().automatic_subs.length > 0"></th>
                             <th>Opp</th>
                             <th class="center aligned">GW <span data-bind="text: $root.GameweekId()"></span></th>
-                            <th></th>
+                            @*<th></th>*@
                         </tr>
                     </thead>
                     <tbody data-bind="foreach: $root.GWTeam().picks">
@@ -263,9 +263,9 @@
                             <td class="center aligned">
                                 <span data-bind="text: $root.GetPoints($data), click: $root.viewPlayerGwBreakdown"></span>
                             </td>
-                            <td class="center aligned collapsing">
-                                <span data-bind="html: $root.GetTimeOrResult($data) @*visible: !GWGame.started*@"></span>
-                            </td>
+                            <!--<td class="center aligned collapsing">
+                                <span data-bind="html: $root.GetTimeOrResult($data)--> @*visible: !GWGame.started*@<!--"></span>
+                            </td>-->
                         </tr>
                     </tbody>
                 </table>
@@ -324,15 +324,31 @@
             <div class="content" data-bind="visible: GWGames[0].started">
                 <div class="ui grid">
                     <div class="sixteen wide center aligned column">
-                        <div class="ui small statistic">
-                            <div class="value" data-bind="text: GWPlayer.stats.gw_points"></div>
-                            <div class="label">
-                                GW Points
+                        <div class="row">
+                            <div class="ui three small statistics" style="margin-bottom: 1rem;">
+                                <div class="statistic">
+                                    <div class="value" data-bind="text: GWPlayer.stats.gw_points"></div>
+                                    <div class="label">
+                                        GW Points
+                                    </div>
+                                </div>
+                                <div class="statistic">
+                                    <div class="value" data-bind="text: GWPlayer.stats.bps"></div>
+                                    <div class="label">
+                                        BPS
+                                    </div>
+                                </div>
+                                <div class="statistic">
+                                    <div class="value" data-bind="text: GWPlayer.stats.BpsRank"></div>
+                                    <div class="label">
+                                        Rank
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div data-bind="foreach: { data: $root.SelectedPlayer().GWPlayer.explain, as: 'game' }">
-                            <h3 class="ui center aligned header" data-bind="text: $root.GetFixtureScore($root.SelectedPlayer().GWGames, game.fixture)"></h3>
-                            <table class="ui unstackable collapsing compact table" style="margin-right: auto; margin-left: auto;">
+                            <h3 class="ui center aligned header" data-bind="html: $root.GetFixtureScore($root.SelectedPlayer().GWGames, game.fixture)"></h3>
+                            <table class="ui unstackable collapsing compact table" style="margin-right: auto; margin-left: auto;" @*data-bind="visible: game.stats.length > 1"*@>
                                 <thead>
                                     <tr>
                                         <th>Statistic</th>
@@ -353,7 +369,9 @@
                 </div>
             </div>
             <div class="content" data-bind="visible: !GWGames[0].started">
-                <h3 class="ui center aligned header">Player Yet to Play</h3>
+                <div data-bind="foreach: { data: $root.SelectedPlayer().GWGames, as: 'game' }" style="margin-top: 1rem;">
+                    <h3 class="ui center aligned header" data-bind="html: $root.GetFixtureScore($root.SelectedPlayer().GWGames, game.id)"></h3>
+                </div>
             </div>
         </div>
     </div>

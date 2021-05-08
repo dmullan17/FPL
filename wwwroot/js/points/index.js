@@ -80,10 +80,21 @@
 
         var gwGame = gwGames.filter(x => x.id == fixtureId);
         var game = gwGame[0];
+        var time = getDayOfWeek(game.kickoff_time) + " @ " + new Date(game.kickoff_time).toTimeString().split(' ')[0].slice(0, -3)
 
-        var text = game.HomeTeam.short_name + " " + game.team_h_score + " - " + game.team_a_score + " " + game.AwayTeam.short_name;
+        var html;
 
-        return text;
+        if (game.started && !game.finished_provisional) {
+            html = game.HomeTeam.short_name + " " + game.team_h_score + " - " + game.team_a_score + " " + game.AwayTeam.short_name + "<div class=\"ui green basic label\">Live</div>";
+        }
+        else if (!game.started) {
+            html = game.HomeTeam.short_name + " vs " + game.AwayTeam.short_name + "<div class=\"ui basic label\">" + time + "</div>";
+        }
+        else if (game.finished_provisional) {
+            html = game.HomeTeam.short_name + " " + game.team_h_score + " - " + game.team_a_score + " " + game.AwayTeam.short_name + "<i class=\"green check circle icon\" style=\"font-size: 1.6rem !important;\"></i>";
+        }
+
+        return html;
     }
 
     self.getColor = function (position) {
