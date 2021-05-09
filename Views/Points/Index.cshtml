@@ -224,8 +224,8 @@
                                 @*<td>
                         <span data-bind="text: $root.GetBonusRank($data)"></span>
                     </td>*@
-                                <td class="center aligned">
-                                    <span data-bind="text: $root.GetPoints($data)"></span>
+                                <td class="clickable-cell center aligned" >
+                                    <span data-bind="text: $root.GetPoints($data), click: $root.viewPlayerGwBreakdown"></span>
                                 </td>
                                 <td @*data-bind="class: $root.GetResult($data, $data.GWGame)"*@ class="center aligned collapsing">
                                     @*<span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>*@
@@ -332,11 +332,15 @@
                 </div>*@
             </div>
         </div>
-        <div id="player-gw-breakdown-popup" class="ui modal" data-bind="with: $root.SelectedPlayer()">
+        <div id="player-gw-breakdown-popup" class="ui mini modal" data-bind="with: $root.SelectedPlayer()">
             <i class="close icon"></i>
-            <div class="header">
-                <div data-bind="text: player.web_name + ' in GW' + $root.GameweekId()"></div>
-            </div>
+            <h3 class="ui header">
+                <div class="content">
+                    <span data-bind="text: player.web_name + ' in GW' + $root.GameweekId()"></span>
+                    @*<div class="sub header">Check out our plug-in marketplace</div>*@
+                    <i class="copyright icon" data-bind="visible: is_captain"></i>
+                </div>
+            </h3>
             <div class="content" data-bind="visible: GWGames[0].started">
                 <div class="ui grid">
                     <div class="sixteen wide center aligned column">
@@ -349,17 +353,17 @@
                                     </div>
                                 </div>
                                 @*<div class="statistic">
-                                    <div class="value" data-bind="text: GWPlayer.stats.bps"></div>
-                                    <div class="label">
-                                        BPS
-                                    </div>
+                                <div class="value" data-bind="text: GWPlayer.stats.bps"></div>
+                                <div class="label">
+                                    BPS
                                 </div>
-                                <div class="statistic">
-                                    <div class="value" data-bind="text: GWPlayer.stats.BpsRank"></div>
-                                    <div class="label">
-                                        Rank
-                                    </div>
-                                </div>*@
+                            </div>
+                            <div class="statistic">
+                                <div class="value" data-bind="text: GWPlayer.stats.BpsRank"></div>
+                                <div class="label">
+                                    Rank
+                                </div>
+                            </div>*@
                                 <div class="statistic" style="margin-top: 1em">
                                     <div class="text value">
                                         <span style="font-size: 2.5rem !important;" data-bind="text: GWPlayer.stats.bps"></span>
