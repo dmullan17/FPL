@@ -88,8 +88,8 @@ namespace FPL.Models
         public int? creativity_rank_type { get; set; }
         public int? threat_rank { get; set; }
         public int? threat_rank_type { get; set; }
-        public int ict_index_rank { get; set; }
-        public int ict_index_rank_type { get; set; }
+        public int? ict_index_rank { get; set; }
+        public int? ict_index_rank_type { get; set; }
         public int? corners_and_indirect_freekicks_order { get; set; }
         public string corners_and_indirect_freekicks_text { get; set; }
         public int? direct_freekicks_order { get; set; }

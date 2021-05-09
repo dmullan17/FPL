@@ -74,7 +74,7 @@ body {
   line-height: 60px; /* Vertically center the text there */
 }
 
-#allPlayersTable_wrapper > div.DTFC_ScrollWrapper > div.DTFC_LeftWrapper > div.DTFC_LeftHeadWrapper > table {
+#player-tally-table_wrapper > div.DTFC_ScrollWrapper > div.DTFC_LeftWrapper > div.DTFC_LeftHeadWrapper > table {
 	border-bottom: none !important;
 }
 
@@ -306,10 +306,27 @@ div.dt-buttons {
 	margin-left: 0.8rem;
 }
 
-#player-tally-table {
+/*#player-tally-table {
 	display: table;
 	overflow-x: auto;
 	white-space: nowrap;
+}*/
+
+#player-tally-table_wrapper {
+	width: 100%;
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hide-scrollbar::-webkit-scrollbar {
+	display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.hide-scrollbar {
+	-ms-overflow-style: none; /* IE and Edge */
+	scrollbar-width: none; /* Firefox */
 }
 
 /* On screens that are 992px or less, set the background color to blue */
@@ -337,7 +354,7 @@ div.dt-buttons {
 	#mobile-standings-last-updated {
 		display: normal;
 		width: 2rem;
-		padding-right: 2rem;
+		padding-right: 1.5rem;
 	}
 
 	#desktop-points-last-updated {

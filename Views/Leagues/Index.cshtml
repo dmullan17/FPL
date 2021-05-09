@@ -10,6 +10,8 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.23/fh-3.1.7/datatables.min.css" />
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.23/fh-3.1.7/datatables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/fc-3.3.1/datatables.min.js"></script>
+
     <script type="text/javascript">
         const viewModel = new LeaguesViewModel(@Html.Raw(data));
         ko.applyBindings(viewModel, document.getElementById("app"));
@@ -18,7 +20,13 @@
 
 <div id="app">
     <div class="ui container">
-        <div class="ui grid">
+        <!-- ko if: false -->
+        <!--<div id="loader" class="ui inverted dimmer">
+            <div class="ui large loader">
+            </div>
+        </div>-->
+        <!-- /ko -->
+        <div class="ui grid main-grid hide">
             <div class="sixteen wide column">
                 <div class="row">
                     <h3 class="ui top attached header">
@@ -29,7 +37,7 @@
                     </h3>
                     <div id="standings-segment" class="ui attached segment" style="min-height:10rem;">
                         <div id="desktop-standings-last-updated" class="ui top right attached label" style="font-size: 0.9rem !important" data-bind="hidden: IsGameLive, text: $root.LastUpdated()"></div>
-                        <div id="mobile-standings-last-updated" class="ui top right attached label"><i class="large clock outline icon"></i></div>
+                        <div id="mobile-standings-last-updated" class="ui top right attached label"><i class="clock outline icon"></i></div>
                         <div id="standings-loader" class="ui inverted dimmer">
                             <div class="ui text large loader">
                                 <h3 class="ui top attached header" data-bind="text: 'Loading ' + $root.SelectedLeague().Standings.results.length + ' fantasy teams from ' + $root.SelectedLeague().name"></h3>
@@ -118,38 +126,38 @@
                         </div>
                         <div class="ui bottom attached tab segment" data-tab="second">
                             <div class="ui grid">
-                                <div class="column">
-                                    <table id="player-tally-table" class="ui unstackable table" style="width: 100%;">
-                                        <thead>
-                                            <tr>
-                                                <th>Player</th>
-                                                <th>Position</th>
-                                                <th>Team</th>
-                                                <th class="center aligned">Starting %</th>
-                                                <th class="center aligned">Bench %</th>
-                                                <th class="center aligned">Captain %</th>
-                                                <th class="center aligned">Transferred In %</th>
-                                                <th class="center aligned">Transferred Out %</th>
-                                                <th class="default-sort center aligned">GW Points</th>
-                                                <th class="no-sort"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody data-bind="foreach: $root.SelectedLeaguePlayersTally">
-                                            <tr>
-                                                <td data-bind="text: Pick.player.web_name"></td>
-                                                <td data-bind="text: $root.GetPosition(Pick.player.element_type)"></td>
-                                                <td data-bind="text: Pick.player.Team.name"></td>
-                                                <td class="clickable-cell center aligned" data-bind="text: StartingSelection, click: $root.FireStartingSelectionModal.bind($data)"></td>
-                                                <td class="clickable-cell center aligned" data-bind="text: BenchSelection, click: $root.FireBenchSelectionModal.bind($data)"></td>
-                                                <td class="clickable-cell center aligned" data-bind="text: CaptainSelection, click: $root.FireCaptainSelectionModal.bind($data)"></td>
-                                                <td class="clickable-cell center aligned" data-bind="text: TransferredIn, click: $root.FireTransferredInSelectionModal.bind($data)"></td>
-                                                <td class="clickable-cell center aligned" data-bind="text: TransferredOut, click: $root.FireTransferredOutSelectionModal.bind($data)"></td>
-                                                <td class="center aligned" data-bind="text: $root.GetPlayerTallyGwPoints($data)"></td>
-                                                <td><i class="green check circle icon" data-bind="visible: $root.IsAllGwGamesFinished(Pick.GWGames)"></i></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                @*<div style="width: 100%; overflow-x: auto;">*@
+                                <table id="player-tally-table" class="ui unstackable table" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Player</th>
+                                            <th>Position</th>
+                                            <th>Team</th>
+                                            <th class="center aligned">Starting %</th>
+                                            <th class="center aligned">Bench %</th>
+                                            <th class="center aligned">Captain %</th>
+                                            <th class="center aligned">Transferred In %</th>
+                                            <th class="center aligned">Transferred Out %</th>
+                                            <th class="default-sort center aligned">GW Points</th>
+                                            <th class="no-sort"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach: $root.SelectedLeaguePlayersTally">
+                                        <tr>
+                                            <td data-bind="text: Pick.player.web_name"></td>
+                                            <td data-bind="text: $root.GetPosition(Pick.player.element_type)"></td>
+                                            <td data-bind="text: Pick.player.Team.name"></td>
+                                            <td class="clickable-cell center aligned" data-bind="text: StartingSelection, click: $root.FireStartingSelectionModal.bind($data)"></td>
+                                            <td class="clickable-cell center aligned" data-bind="text: BenchSelection, click: $root.FireBenchSelectionModal.bind($data)"></td>
+                                            <td class="clickable-cell center aligned" data-bind="text: CaptainSelection, click: $root.FireCaptainSelectionModal.bind($data)"></td>
+                                            <td class="clickable-cell center aligned" data-bind="text: TransferredIn, click: $root.FireTransferredInSelectionModal.bind($data)"></td>
+                                            <td class="clickable-cell center aligned" data-bind="text: TransferredOut, click: $root.FireTransferredOutSelectionModal.bind($data)"></td>
+                                            <td class="clickable-cell center aligned" data-bind="text: $root.GetPlayerTallyGwPoints($data), click: $root.viewPlayerGwBreakdown.bind($data)"></td>
+                                            <td><i class="green check circle icon" data-bind="visible: $root.IsAllGwGamesFinished(Pick.GWGames)"></i></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                @*</div>*@
                             </div>
                         </div>
                         <div class="ui bottom attached tab segment" data-tab="third">
@@ -237,5 +245,61 @@
     </div>
     <div id="standings-last-updated-popup" class="ui hidden stat popup">
         <p data-bind="text: $root.LastUpdated()"></p>
+    </div>
+    <div id="player-gw-breakdown-popup" class="ui mini modal" data-bind="with: $root.SelectedPlayer()">
+        <i class="close icon"></i>
+        <h3 class="ui header">
+            <div class="content">
+                <span data-bind="text: player.web_name + ' in GW' @*+ $root.GameweekId()*@"></span>
+                <i class="copyright icon" data-bind="visible: is_captain"></i>
+            </div>
+        </h3>
+        <div class="content" data-bind="visible: GWGames[0].started">
+            <div class="ui grid">
+                <div class="sixteen wide center aligned column">
+                    <div class="row">
+                        <div class="ui three small statistics" style="margin-bottom: 1rem;">
+                            <div class="statistic">
+                                <div class="value" data-bind="text: GWPlayer.stats.gw_points"></div>
+                                <div class="label">
+                                    GW Points
+                                </div>
+                            </div>
+                            <div class="statistic" style="margin-top: 1em">
+                                <div class="text value">
+                                    <span style="font-size: 2.5rem !important;" data-bind="text: GWPlayer.stats.bps"></span>
+                                    <span data-bind="text: GWPlayer.stats.BpsRank"></span>
+                                </div>
+                                <div class="label">BPS (Rank)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-bind="foreach: { data: $root.SelectedPlayer().GWPlayer.explain, as: 'game' }">
+                        <h3 class="ui center aligned header" data-bind="html: $root.GetFixtureScore($root.SelectedPlayer().GWGames, game.fixture)"></h3>
+                        <table class="ui unstackable collapsing compact table" style="margin-right: auto; margin-left: auto;" data-bind="visible: $root.IsGameStarted($root.SelectedPlayer().GWGames, game.fixture)">
+                            <thead>
+                                <tr>
+                                    <th>Statistic</th>
+                                    <th class="center aligned">Value</th>
+                                    <th class="center aligned">Points</th>
+                                </tr>
+                            </thead>
+                            <tbody data-bind="foreach: { data: game.stats, as: 'stats' }">
+                                <tr>
+                                    <td data-bind="text: stats.identifier"></td>
+                                    <td class="center aligned" data-bind="text: stats.value"></td>
+                                    <td class="center aligned" data-bind="text: stats.points"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content" data-bind="visible: !GWGames[0].started">
+            <div data-bind="foreach: { data: $root.SelectedPlayer().GWGames, as: 'game' }" style="margin-top: 1rem;">
+                <h3 class="ui center aligned header" data-bind="html: $root.GetFixtureScore($root.SelectedPlayer().GWGames, game.id)"></h3>
+            </div>
+        </div>
     </div>
 </div>

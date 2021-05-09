@@ -22,6 +22,7 @@
     self.EventStatus = ko.observable(data.EventStatus);
     self.LastUpdatedTime = ko.observable(data.LastUpdated);
     self.SelectedPlayerFromTally = ko.observable();
+    self.SelectedPlayer = ko.observable();
 
     self.SelectedLeagueStandings = ko.observableArray(self.SelectedLeague().Standings.results);
     self.SelectedLeaguePlayersTally = ko.observableArray(self.SelectedLeague().PlayersTally);
@@ -68,7 +69,7 @@
             for (var j = 0; j < tally.Pick.GWPlayer.explain.length; j++) {
                 if (tally.Pick.GWGames[i].id == tally.Pick.GWPlayer.explain[j].fixture) {
                     if (!tally.Pick.GWGames[i].finished) {
-                        if (tally.Pick.GWPlayer.stats.EstimatedBonus.length > j) {
+                        if (tally.Pick.GWPlayer.stats.EstimatedBonus[i] != null) {
                             points += tally.Pick.GWPlayer.stats.EstimatedBonus[j];
                         }
                     }
@@ -477,16 +478,92 @@
         $('.ui.transferred-out-selection.modal').modal('show');
     }
 
+    self.viewPlayerGwBreakdown = function (player) {
+
+        player = player.Pick;
+        var gamesWithFplStats = player.GWPlayer.explain;
+        var gwGames = player.GWGames;
+
+        if (gamesWithFplStats.length > 0) {
+            for (var i = 0; i < gamesWithFplStats.length; i++) {
+
+                var fixtureId = gamesWithFplStats[i].fixture;
+
+                for (var j = 0; j < gwGames.length; j++) {
+                    if (fixtureId == gwGames[j].id) {
+                        //add timestamp to game
+                        gamesWithFplStats[i].date = new Date(gwGames[j].kickoff_time).getTime();
+                    }
+                }
+
+            }
+
+            //order by timestamp, this ensures the games in the modal appear in chronological order
+            gamesWithFplStats.sort(function (a, b) { return a.date - b.date });
+
+            for (i = 0; i < gamesWithFplStats.length; i++) {
+
+                var gwGame = player.GWGames.filter(x => x.id == fixtureId);
+                var bonus = player.GWPlayer.stats.EstimatedBonus[i];
+
+                //add estimated bonus to game stats
+                if (!gwGame[0].finished && gwGame[0].started && bonus > 0 && !gamesWithFplStats[i].stats.some(x => x.identifier == "bonus")) {
+                    gamesWithFplStats[i].stats.push({ identifier: "bonus", value: bonus, points: bonus })
+                }
+
+            }
+
+            self.SelectedPlayer(player);
+            $('#player-gw-breakdown-popup').modal().modal('show');
+        }
+
+    };
+
+    self.GetFixtureScore = function (gwGames, fixtureId) {
+
+        var gwGame = gwGames.filter(x => x.id == fixtureId);
+        var game = gwGame[0];
+        var time = getDayOfWeek(game.kickoff_time) + " @ " + new Date(game.kickoff_time).toTimeString().split(' ')[0].slice(0, -3)
+
+        var html;
+
+        if (game.started && !game.finished_provisional) {
+            html = game.HomeTeam.short_name + " " + game.team_h_score + " - " + game.team_a_score + " " + game.AwayTeam.short_name + "<div class=\"ui green label\">Live</div>";
+        }
+        else if (!game.started) {
+            html = game.HomeTeam.short_name + " vs " + game.AwayTeam.short_name + "<div class=\"ui basic label\">" + time + "</div>";
+        }
+        else if (game.finished_provisional) {
+            html = game.HomeTeam.short_name + " " + game.team_h_score + " - " + game.team_a_score + " " + game.AwayTeam.short_name + "<i class=\"green check circle icon\" style=\"font-size: 1rem !important; margin-top: -0.7rem; margin-left: 0.3rem;\"></i>";
+        }
+
+        return html;
+    }
+
+    self.IsGameStarted = function (gwGames, fixtureId) {
+        var gwGame = gwGames.filter(x => x.id == fixtureId)[0];
+
+        if (gwGame.started) {
+            return true;
+        }
+        return false;
+    }
+
     self.init = function () {
         $('.menu .item').tab({
-            //'onLoad': function (tabPath) {
-            //    if (tabPath == "second") {
-            //        if (!$.fn.dataTable.isDataTable(playerTallyTable)) {
-            //            //playerTallyTable.DataTable().clear().destroy();
-            //            initialiseTalliesDatatable();
-            //        }
-            //    }
-            //}
+            'onLoad': function (tabPath) {
+                if (tabPath == "second") {
+                    if ($.fn.dataTable.isDataTable(playerTallyTable)) {
+                        // Sort by column 1 and then re-draw
+                        playerTallyTable.DataTable()
+                            .order([8, 'desc'])
+                            .draw();
+                        //playerTallyTable.draw();
+                        //playerTallyTable.DataTable().clear().destroy();
+                        //initialiseTalliesDatatable();
+                    }
+                }
+            }
         });
 
         //$('#league-dropdown').dropdown();
@@ -706,17 +783,26 @@
     function initialiseTalliesDatatable() {
         $(document).ready(function () {
             var table = playerTallyTable.DataTable({
+                fixedColumns: {
+                    leftColumns: 1
+                },
                 order: [[$('#player-tally-table th.default-sort').index(), "desc"]],
                 columnDefs: [
                     { orderable: false, targets: "no-sort" }
                 ],
                 responsive: true,
-                searching: false
-                //scrollX: true
+                scrollX: true
                 //scrollY: true
             });
 
         });
+    }
+
+    // Accepts a Date object or date string that is recognized by the Date.parse() method
+    function getDayOfWeek(date) {
+        const dayOfWeek = new Date(date).getDay();
+        return isNaN(dayOfWeek) ? null :
+            ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][dayOfWeek];
     }
 
     // Add event listener for opening and closing details
@@ -805,3 +891,19 @@
 
 
 };
+
+//document.onreadystatechange = function (e) {
+//    $('#loader').show();
+//    $('.main-grid').hide();
+//    if (document.readyState === 'complete') {
+//        //dom is ready, window.onload fires later
+
+//    }
+//};
+//window.onload = function (e) {
+//    //document.readyState will be complete, it's one of the requirements for the window.onload event to be fired
+//    //do stuff for when everything is loaded
+//    $('#loader').hide();
+//    $('.main-grid').show();
+//};
+
