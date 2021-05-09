@@ -129,13 +129,13 @@
         var html;
 
         if (game.started && !game.finished_provisional) {
-            html = game.HomeTeam.short_name + " " + game.team_h_score + " - " + game.team_a_score + " " + game.AwayTeam.short_name + "<div class=\"ui green basic label\">Live</div>";
+            html = game.HomeTeam.short_name + " " + game.team_h_score + " - " + game.team_a_score + " " + game.AwayTeam.short_name + "<div class=\"ui green label\">Live</div>";
         }
         else if (!game.started) {
             html = game.HomeTeam.short_name + " vs " + game.AwayTeam.short_name + "<div class=\"ui basic label\">" + time + "</div>";
         }
         else if (game.finished_provisional) {
-            html = game.HomeTeam.short_name + " " + game.team_h_score + " - " + game.team_a_score + " " + game.AwayTeam.short_name + "<i class=\"green check circle icon\" style=\"font-size: 1.6rem !important;\"></i>";
+            html = game.HomeTeam.short_name + " " + game.team_h_score + " - " + game.team_a_score + " " + game.AwayTeam.short_name + "<i class=\"green check circle icon\" style=\"font-size: 1rem !important; margin-top: -0.7rem; margin-left: 0.3rem;\"></i>";
         }
 
         return html;

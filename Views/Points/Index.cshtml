@@ -254,7 +254,7 @@
                             </tr>
                         </thead>
                         <tbody data-bind="foreach: $root.GWTeam().picks">
-                            <tr class="single line" data-bind="style: { 'background-color': $root.getColor($data.position) }">
+                            <tr class="single line" data-bind="style: { 'background-color': $root.getColor($data.position) }, click: $root.viewPlayerGwBreakdown">
                                 <td>
                                     <a data-bind="click: $root.viewPlayer"><span data-bind="text: player.web_name"></span></a>
                                     <span data-bind="visible: is_captain"><i class="copyright icon"></i></span>
