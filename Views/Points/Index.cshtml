@@ -371,7 +371,7 @@
                         </div>
                         <div data-bind="foreach: { data: $root.SelectedPlayer().GWPlayer.explain, as: 'game' }">
                             <h3 class="ui center aligned header" data-bind="html: $root.GetFixtureScore($root.SelectedPlayer().GWGames, game.fixture)"></h3>
-                            <table class="ui unstackable collapsing compact table" style="margin-right: auto; margin-left: auto;" @*data-bind="visible: game.stats.length > 1"*@>
+                            <table class="ui unstackable collapsing compact table" style="margin-right: auto; margin-left: auto;" data-bind="visible: $root.IsGameStarted($root.SelectedPlayer().GWGames, game.fixture)">
                                 <thead>
                                     <tr>
                                         <th>Statistic</th>

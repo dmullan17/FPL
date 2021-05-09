@@ -71,18 +71,45 @@
 
     self.viewPlayerGwBreakdown = function (player) {
 
-        var games = player.GWPlayer.explain;
+        var gamesWithFplStats = player.GWPlayer.explain;
+        var gwGames = player.GWGames;
 
-        if (games.length > 0) {
-            for (var i = 0; i < games.length; i++) {
+        if (gamesWithFplStats.length > 0) {
+            for (var i = 0; i < gamesWithFplStats.length; i++) {
 
-                var fixtureId = games[i].fixture;
+                var fixtureId = gamesWithFplStats[i].fixture;
+
+                for (var j = 0; j < gwGames.length; j++) {
+                    if (fixtureId == gwGames[j].id) {
+                        //add timestamp to game
+                        gamesWithFplStats[i].date = new Date(gwGames[j].kickoff_time).getTime();
+                    }
+                }
+
+            }
+
+            //order by timestamp, this ensures the games in the modal appear in chronological order
+            gamesWithFplStats.sort(function (a, b) { return a.date - b.date });
+
+            for (i = 0; i < gamesWithFplStats.length; i++) {
 
                 var gwGame = player.GWGames.filter(x => x.id == fixtureId);
                 var bonus = player.GWPlayer.stats.EstimatedBonus[i];
 
-                if (!gwGame[0].finished && gwGame[0].started && bonus > 0 && !games[i].stats.some(x => x.identifier == "bonus")) {
-                    games[i].stats.push({ identifier: "bonus", value: bonus, points: bonus })
+                //add estimated bonus to game stats
+                if (!gwGame[0].finished && gwGame[0].started && bonus > 0 && !gamesWithFplStats[i].stats.some(x => x.identifier == "bonus")) {
+                    gamesWithFplStats[i].stats.push({ identifier: "bonus", value: bonus, points: bonus })
+                }
+
+                //apply multiplier if player is captain
+                if (player.is_captain && player.captainPointsAdded == null) {
+                    for (j = 0; j < gamesWithFplStats[i].stats.length; j++) {
+                        gamesWithFplStats[i].stats[j].points = gamesWithFplStats[i].stats[j].points * player.multiplier;
+                    }
+
+                    if (i == gamesWithFplStats.length - 1) {
+                        player.captainPointsAdded = true;
+                    }
                 }
 
             }
@@ -112,6 +139,15 @@
         }
 
         return html;
+    }
+
+    self.IsGameStarted = function (gwGames, fixtureId) {
+        var gwGame = gwGames.filter(x => x.id == fixtureId)[0];
+
+        if (gwGame.started) {
+            return true;
+        }
+        return false;
     }
 
     self.getColor = function (position) {
