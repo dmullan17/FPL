@@ -345,9 +345,9 @@ div.dt-buttons {
 	}
 
 	#mobile-points-last-updated {
-		display: normal;
+		display: block;
 		width: 2rem;
-		padding-right: 2rem;
+		padding-right: 1.5rem;
 	}
 
 	.hide-on-mobile {

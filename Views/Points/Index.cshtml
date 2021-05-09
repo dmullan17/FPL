@@ -148,7 +148,7 @@
                     <span class="ui green left pointing label" data-bind="visible: IsLive">Live</span>
                 </a>
                 <a class="item" data-tab="second">Standings</a>
-                <a class="item" data-tab="third">Third</a>
+                @*<a class="item" data-tab="third">Third</a>*@
             </div>
             <div class="ui bottom attached tab segment active" data-tab="first">
                 <div style="width: 100%; overflow-x: auto;">
@@ -290,9 +290,9 @@
                 <div class="ui grid">
                 </div>
             </div>
-            <div class="ui bottom attached tab segment" data-tab="third">
+            @*<div class="ui bottom attached tab segment" data-tab="third">
                 Third
-            </div>
+            </div>*@
         </div>
         <div id="gw-percentile-popup" class="ui hidden stat popup" data-bind="style: {'height': $root.GetGwPercentilePopupHeight($root.GameweekId())}">
             <p style="text-align: center;" data-bind="text: 'Ranked ' + $root.FormatLargeNumber(CompleteEntryHistory().rank) + ' out of ' + $root.FormatLargeNumber($root.EntryHistory().TotalPlayers)"></p>
