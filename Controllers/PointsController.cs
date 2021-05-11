@@ -908,6 +908,9 @@ namespace FPL.Controllers
             {
                 pick.GWPlayer = allGwPlayers.Find(x => x.id == pick.element);
 
+                if (pick.GWPlayer.stats.EstimatedBonus.Count > 0) pick.GWPlayer.stats.EstimatedBonus.Clear();
+                if (pick.GWPlayer.stats.BpsRank.Count > 0) pick.GWPlayer.stats.BpsRank.Clear();
+
                 foreach (Game g in gwGames.Where(x => x.team_h == pick.player.TeamId || x.team_a == pick.player.TeamId))
                 {
                     if (pick.player.TeamId == g.team_h)
@@ -1001,8 +1004,6 @@ namespace FPL.Controllers
                             //}
                         }
                     }
-
-                    pick.GWPlayer.stats.EstimatedBonus.Clear();
 
                     if (topPlayersByBps.Any(x => x.element == pick.element))
                     {

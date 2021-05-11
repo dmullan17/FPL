@@ -503,6 +503,8 @@
 
             for (i = 0; i < gamesWithFplStats.length; i++) {
 
+                fixtureId = gamesWithFplStats[i].fixture;
+
                 var gwGame = player.GWGames.filter(x => x.id == fixtureId);
                 var bonus = player.GWPlayer.stats.EstimatedBonus[i];
 
