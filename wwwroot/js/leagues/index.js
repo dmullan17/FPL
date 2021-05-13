@@ -390,7 +390,7 @@
 
         for (var i = 0; i < self.SelectedLeagueStandings().length; i++) {
 
-            if (self.SelectedLeagueStandings()[i].GWTeam.picks.filter(x => x.element == playerId && x.position < 12).length > 0) {
+            if (self.SelectedLeagueStandings()[i].GWTeam.picks.filter(x => x.element == playerId && x.multiplier > 0).length > 0) {
                 managers.push(self.SelectedLeagueStandings()[i]);
             }
         }
@@ -407,7 +407,7 @@
 
         for (var i = 0; i < self.SelectedLeagueStandings().length; i++) {
 
-            if (self.SelectedLeagueStandings()[i].GWTeam.picks.filter(x => x.element == playerId && x.position > 11).length > 0) {
+            if (self.SelectedLeagueStandings()[i].GWTeam.picks.filter(x => x.element == playerId && x.multiplier == 0).length > 0) {
                 managers.push(self.SelectedLeagueStandings()[i]);
             }
         }
