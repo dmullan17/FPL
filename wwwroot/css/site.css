@@ -423,6 +423,16 @@ div.dt-buttons {
 	}
 }
 
+.DTFC_LeftBodyWrapper {
+	border-right-color: rgba(34, 36, 38, 0.15) !important;
+	border-right-style: solid !important;
+	border-right-width: 1px !important;
+}
+
+.DTFC_LeftBodyLiner {
+	overflow-y: auto !important;
+}
+
 /*.tally-table-container {
 	max-height: 30rem;
 	overflow-y: scroll;
