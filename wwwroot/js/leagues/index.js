@@ -81,6 +81,28 @@
 
     }
 
+    //using this ensures a picks additional points for being a captain doesnt get reflected in the breakdown modal
+    self.GetPlayerGwPoints = function (pick) {
+
+	    //ensuring the gw points shown in the player tally table includes the estimated bonus
+	    var points = pick.GWPlayer.stats.total_points;
+
+	    for (var i = 0; i < pick.GWGames.length; i++) {
+		    for (var j = 0; j < pick.GWPlayer.explain.length; j++) {
+			    if (pick.GWGames[i].id == pick.GWPlayer.explain[j].fixture) {
+				    if (!pick.GWGames[i].finished) {
+					    if (pick.GWPlayer.stats.EstimatedBonus[i] != null) {
+						    points += pick.GWPlayer.stats.EstimatedBonus[j];
+					    }
+				    }
+			    }
+		    }
+	    }
+
+	    return points;
+
+    }
+
     self.changeLeague = function (league) {
         //self.SelectedLeague({});
         if (league != self.SelectedLeague()) {
@@ -291,6 +313,14 @@
 
         html += "<a class=\"team-name\" href=" + selectedPlayerUrl + " target=\"_blank\"" + ">" + player.entry_name + "</a></br > <span class=\"manager-name\">" + player.player_name + "</span>"
         return html;
+    }
+
+    self.ViewTeam = function (data) {
+        var playerId = data.entry;
+        var url = window.location.href;
+        var selectedPlayerUrl = url.replace('leagues', 'points?entry=' + playerId);
+
+        window.open(selectedPlayerUrl);
     }
 
     self.GetCaptain = function (picks) {
@@ -556,13 +586,10 @@
             'onLoad': function (tabPath) {
                 if (tabPath == "second") {
                     if ($.fn.dataTable.isDataTable(playerTallyTable)) {
-                        // Sort by column 1 and then re-draw
+                        // Sort by gw points and then re-draw
                         playerTallyTable.DataTable()
                             .order([8, 'desc'])
                             .draw();
-                        //playerTallyTable.draw();
-                        //playerTallyTable.DataTable().clear().destroy();
-                        //initialiseTalliesDatatable();
                     }
                 }
             }
@@ -783,21 +810,43 @@
     }
 
     function initialiseTalliesDatatable() {
-        $(document).ready(function () {
-            var table = playerTallyTable.DataTable({
-                fixedColumns: {
-                    leftColumns: 1
-                },
-                order: [[$('#player-tally-table th.default-sort').index(), "desc"]],
-                columnDefs: [
-                    { orderable: false, targets: "no-sort" }
-                ],
-                responsive: true,
-                scrollX: true
-                //scrollY: true
-            });
+	    // Size of browser viewport.
+	    var browserH = $(window).height();
+	    var browserW = $(window).width();
 
-        });
+	    if (browserW > 992) {
+		    $(document).ready(function () {
+			    var table = playerTallyTable.DataTable({
+				    fixedColumns: {
+					    leftColumns: 1
+				    },
+				    order: [[$('#player-tally-table th.default-sort').index(), "desc"]],
+				    columnDefs: [
+					    { orderable: false, targets: "no-sort" }
+				    ],
+				    responsive: true,
+				    scrollX: true
+				    //scrollY: true
+			    });
+
+		    });
+	    } else {
+		    $(document).ready(function () {
+			    var table = playerTallyTable.DataTable({
+				    fixedColumns: {
+					    leftColumns: 1
+				    },
+				    order: [[$('#player-tally-table th.default-sort').index(), "desc"]],
+				    columnDefs: [
+					    { orderable: false, targets: "no-sort" }
+				    ],
+				    responsive: true,
+				    scrollX: true,
+				    pagingType: "simple"
+			    });
+
+		    });
+	    }
     }
 
     // Accepts a Date object or date string that is recognized by the Date.parse() method

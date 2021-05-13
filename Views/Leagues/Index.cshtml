@@ -174,7 +174,7 @@
         </div>
         <div class="content">
             <div class="ui horizontal list" data-bind="foreach: $root.ManagersAffiliatedWithSelectedPlayerFromTally">
-                <div class="item" style="min-width: 12rem !important; padding-left: 0 !important; margin-left: 0 !important;">
+                <div class="item clickable-cell manager-list-item" data-bind="click: $root.ViewTeam.bind($data)">
                     <div class="content" data-bind="text: player_name + ' (' + rank + ')'"></div>
                 </div>
             </div>
@@ -189,7 +189,7 @@
         </div>
         <div class="content">
             <div class="ui horizontal list" data-bind="foreach: $root.ManagersAffiliatedWithSelectedPlayerFromTally">
-                <div class="item" style="min-width: 12rem !important; padding-left: 0 !important; margin-left: 0 !important;">
+                <div class="item clickable-cell manager-list-item" data-bind="click: $root.ViewTeam.bind($data)">
                     <div class="content" data-bind="text: player_name + ' (' + rank + ')'"></div>
                 </div>
             </div>
@@ -204,7 +204,7 @@
         </div>
         <div class="content">
             <div class="ui horizontal list" data-bind="foreach: $root.ManagersAffiliatedWithSelectedPlayerFromTally">
-                <div class="item" style="min-width: 12rem !important; padding-left: 0 !important; margin-left: 0 !important;">
+                <div class="item clickable-cell manager-list-item" data-bind="click: $root.ViewTeam.bind($data)">
                     <div class="content" data-bind="text: player_name + ' (' + rank + ')'"></div>
                 </div>
             </div>
@@ -219,7 +219,7 @@
         </div>
         <div class="content">
             <div class="ui horizontal list" data-bind="foreach: $root.ManagersAffiliatedWithSelectedPlayerFromTally">
-                <div class="item" style="min-width: 12rem !important; padding-left: 0 !important; margin-left: 0 !important;">
+                <div class="item clickable-cell manager-list-item" data-bind="click: $root.ViewTeam.bind($data)">
                     <div class="content" data-bind="text: player_name + ' (' + rank + ')'"></div>
                 </div>
             </div>
@@ -234,7 +234,7 @@
         </div>
         <div class="content">
             <div class="ui horizontal list" data-bind="foreach: $root.ManagersAffiliatedWithSelectedPlayerFromTally">
-                <div class="item" style="min-width: 12rem !important; padding-left: 0 !important; margin-left: 0 !important;">
+                <div class="item clickable-cell manager-list-item" data-bind="click: $root.ViewTeam.bind($data)">
                     <div class="content" data-bind="text: player_name + ' (' + rank + ')'"></div>
                 </div>
             </div>
@@ -250,8 +250,8 @@
         <i class="close icon"></i>
         <h3 class="ui header">
             <div class="content">
-                <span data-bind="text: player.web_name + ' in GW' @*+ $root.GameweekId()*@"></span>
-                <i class="copyright icon" data-bind="visible: is_captain"></i>
+                <span data-bind="text: player.web_name + ' in GW' + $root.CurrentGwId()"></span>
+                @*<i class="copyright icon" data-bind="visible: is_captain"></i>*@
             </div>
         </h3>
         <div class="content" data-bind="visible: GWGames[0].started">
@@ -260,7 +260,7 @@
                     <div class="row">
                         <div class="ui three small statistics" style="margin-bottom: 1rem;">
                             <div class="statistic">
-                                <div class="value" data-bind="text: GWPlayer.stats.gw_points"></div>
+                                <div class="value" data-bind="text: $root.GetPlayerGwPoints($data)"></div>
                                 <div class="label">
                                     GW Points
                                 </div>

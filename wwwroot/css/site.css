@@ -370,6 +370,13 @@ div.dt-buttons {
 	.hide-on-mobile {
 		display: none;
 	}
+
+	.manager-list-item {
+		min-width: 9rem !important;
+		padding-left: 0 !important;
+		margin-left: 0 !important;
+		font-size: 0.8rem !important;
+	}
 }
 
 @media screen and (min-width: 992px) {
@@ -407,6 +414,12 @@ div.dt-buttons {
 
 	.hide-on-mobile {
 		display: normal;
+	}
+
+	.manager-list-item {
+		min-width: 12rem !important;
+		padding-left: 0 !important;
+		margin-left: 0 !important;
 	}
 }
 
