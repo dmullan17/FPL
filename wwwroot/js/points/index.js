@@ -699,10 +699,16 @@
     self.GetLastTimeGwAvgWasUpdated = function (eventStatus) {
 
         var finishedEvents = eventStatus.status.filter(x => x.points == "r");
-        var lastFinishedEvent = finishedEvents[finishedEvents.length - 1];
-        var day = getDayOfWeek(lastFinishedEvent.date);
 
-        return "Last updated on " + day + " " + lastFinishedEvent.date;
+        if (finishedEvents.length > 0) {
+            var lastFinishedEvent = finishedEvents[finishedEvents.length - 1];
+            var day = getDayOfWeek(lastFinishedEvent.date);
+
+            return "Last updated on " + day + " " + lastFinishedEvent.date;
+        }
+        else {
+            return null;
+        }
     }
 
     self.FormatValue = function (value) {
