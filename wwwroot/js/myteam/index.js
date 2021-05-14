@@ -60,81 +60,72 @@
 
     self.MakeSub = function (pick, event) {
 
-        if (!self.PotentialSub1()) {
-            var allSubButtons = $("button.substitution");
-            var position = pick.position;
+		if (!self.PotentialSub1()) {
+			var allSubButtons = $("button.substitution");
+			var position = pick.position;
 
-            allSubButtons.splice(position - 1, 1);
+			allSubButtons.splice(position - 1, 1);
 
-            for (var i = 0; i < allSubButtons.length; i++) {
+			if (position < 12) {
+				for (var i = 0; i < allSubButtons.length; i++) {
 
-                if (i < 10) {
-                    allSubButtons[i].className += " disabled";
-                }
-                else {
-                    allSubButtons[i].className += " green";
-                }
+					if (i < 10) {
+						allSubButtons[i].className += " disabled";
+					} else {
+						allSubButtons[i].className += " green";
+					}
 
-            }
+				}
+			} else {
+				for (var i = 0; i < allSubButtons.length; i++) {
 
-            self.PotentialSub1(pick);
-        }
-        else if (self.PotentialSub1().element == pick.element) {
-            location.reload();
-            //var allSubButtons = $("button.substitution");
-            //var position = pick.position;
+					if (i < 11) {
+						allSubButtons[i].className += " green";
+					} else {
+						allSubButtons[i].className += " disabled";
+					}
 
-            ////allSubButtons.splice(position - 1, 1);
+				}
+			}
 
-            //$.each(allSubButtons, function (index, value) {
-            //    alert(index + ": " + value);
-            //});
+			self.PotentialSub1(pick);
+		}
+		else if (self.PotentialSub1().element == pick.element) {
+			location.reload();
+		}
+		else {
 
-            //for (var i = 0; i < allSubButtons.length; i++) {
-            //    allSubButtons[i].className.replace("disabled", "");
-            //    allSubButtons[i].className.replace("green", "");
+			self.PotentialSub2(pick);
 
-            //    //allSubButtons[i].className -= " disabled";
-            //    //allSubButtons[i].className -= " green";
-
-            //    //if (i < 10) {
-            //    //    allSubButtons[i].className += " disabled";
-            //    //}
-            //    //else {
-            //    //    allSubButtons[i].className += " green";
-            //    //}
-
-            //}
-        }
-        else {
-
-            self.PotentialSub2(pick);
-
-            $.ajax({
-                url: "/MyTeam/MakeSub",
-                type: "POST",
-                cache: true,
-                data: {
-                    sub1: self.PotentialSub1().element,
+			$.ajax({
+				url: "/MyTeam/MakeSub",
+				type: "POST",
+				cache: true,
+				data: {
+					sub1: self.PotentialSub1().element,
                     sub1Position: self.PotentialSub1().position,
-                    sub2: self.PotentialSub2().element,
-                    sub2Position: self.PotentialSub2().position
-                },
-                beforeSend: function () {
+					sub1ElementType: self.PotentialSub1().element_type,
+                    isSub1Captain: self.PotentialSub1().is_captain,
+					isSub1ViceCaptain: self.PotentialSub1().is_vice_captain,
+					sub2: self.PotentialSub2().element,
+                    sub2Position: self.PotentialSub2().position,
+					sub2ElementType: self.PotentialSub2().element_type
+				},
+				beforeSend: function () {
 
-                },
-                success: function (json, status, xhr) {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-                        location.reload();
-                        return;
-                    }
-                },
-                complete: function (xhr, status) {
-                    if (xhr.readyState === 4 && xhr.status !== 200) {
-                    }
-                }
-            });
-        }
+				},
+				success: function (json, status, xhr) {
+					if (xhr.readyState === 4 && xhr.status === 200) {
+						location.reload();
+						return;
+					}
+				},
+				complete: function (xhr, status) {
+					if (xhr.readyState === 4 && xhr.status !== 200) {
+					}
+				}
+			});
+		}
     }
 
     self.GetLastTimeTotalRankWasUpdated = function (eventStatus) {
@@ -266,7 +257,7 @@
         var team = player.player.Team;
         var html = "";
 
-        if (!self.IsEventFinished()) {
+        if (!self.IsEventFinished) {
             for (var i = 0; i < games.length; i++) {
                 if (team.id == games[i].team_h) {
                     html += "<div style='" + GetFdrStyle(games[i].team_h_difficulty) + "'>" + games[i].AwayTeam.short_name + " (H)</div>";
@@ -303,7 +294,7 @@
 
         var html = "";
 
-        if (!self.IsEventFinished()) {
+        if (!self.IsEventFinished) {
             var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId() + 1);
         }
         else {
@@ -335,7 +326,7 @@
 
         var html = "";
 
-        if (!self.IsEventFinished()) {
+        if (!self.IsEventFinished) {
             var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId() + 2);
         }
         else {
@@ -367,7 +358,7 @@
 
         var html = "";
 
-        if (!self.IsEventFinished()) {
+        if (!self.IsEventFinished) {
             var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId() + 3);
         }
         else {
@@ -399,7 +390,7 @@
 
         var html = "";
 
-        if (!self.IsEventFinished()) {
+        if (!self.IsEventFinished) {
             var fixtures = team.Fixtures.filter(x => x.Event == self.CurrentGwId() + 4);
         }
         else {

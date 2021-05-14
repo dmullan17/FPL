@@ -150,7 +150,7 @@ namespace FPL.Controllers
 
         }
 
-        public async Task<MyTeam> MakeSub(int sub1, int sub1Position, int sub2, int sub2Position)
+        public async Task<MyTeam> MakeSub(int sub1, int sub1Position, int sub1ElementType, bool isSub1Captain, bool isSub1ViceCaptain, int sub2, int sub2Position, int sub2ElementType)
         {
             HttpClientHandler handler = new HttpClientHandler();
             handler = CreateHandler(handler);
@@ -167,36 +167,54 @@ namespace FPL.Controllers
 
             MyTeam myTeam = JsonConvert.DeserializeObject<MyTeam>(myTeamJSON.ToString());
 
+            myTeam.picks = await AddPlayerSummaryDataToTeam(myTeam.picks);
+
             var payload = new SubPayload();
 
             payload.chip = null;
 
             foreach (var pick in myTeam.picks)
             {
-                var subPick = new SubPick
-                {
-                    element = pick.element,
-                    is_captain = pick.is_captain,
-                    is_vice_captain = pick.is_vice_captain
-                };
+				var subPick = new SubPick {
+					element = pick.element,
+                    element_type = pick.player.element_type,
+                    multiplier = pick.multiplier,
+					is_captain = pick.is_captain,
+					is_vice_captain = pick.is_vice_captain
+				};
 
-                if (pick.element == sub1)
+				if (pick.element == sub1)
                 {
-                    subPick.position = sub2Position;
+	                subPick.position = sub2Position;
+                    if (isSub1Captain) subPick.is_captain = false;
+                    if (isSub1ViceCaptain) subPick.is_vice_captain = false;
                 }
                 else if (pick.element == sub2)
                 {
-                    subPick.position = sub1Position;
+	                subPick.position = sub1Position;
+	                if (isSub1Captain)
+	                {
+		                subPick.is_captain = true;
+		                subPick.multiplier = 2;
+	                }
+	                if (isSub1ViceCaptain) subPick.is_vice_captain = true;
                 }
                 else
                 {
-                    subPick.position = pick.position;
+	                subPick.position = pick.position;
                 }
 
                 payload.picks.Add(subPick);
             }
 
-            var json = JsonConvert.SerializeObject(payload);
+            //need to figure out a way to ensure players get put in correct position, currently subs only work if the pick coming on plays in the same position as the pick coming off
+
+			//var picks = payload.picks.Where(x => x.position < 12).OrderBy(x => x.position).ToList();
+			var starter = payload.picks.Find(x => x.element == sub1);
+            var sub = payload.picks.Find(x => x.element == sub2);
+			payload.picks = AssignStarterPosition(payload.picks.Where(x => x.multiplier > 0).OrderBy(x => x.position).ToList(), starter, sub);
+
+			var json = JsonConvert.SerializeObject(payload);
 
             handler = ResetHandler(handler);
 
@@ -207,7 +225,96 @@ namespace FPL.Controllers
             content = await response.Content.ReadAsStringAsync();
 
             return myTeam;
-        } 
+        }
+
+        private List<SubPick> AssignStarterPosition(List<SubPick> picks, SubPick starter, SubPick sub) {
+            var starterElementType = starter.element_type;
+            var subElementType = sub.element_type;
+
+            var defs = picks.FindAll(x => x.element_type == 2);
+            var mids = picks.FindAll(x => x.element_type == 3);
+            var fwds = picks.FindAll(x => x.element_type == 4);
+
+            if (starterElementType == subElementType) {
+                var playersInPosition = picks.FindAll(x => x.element_type == starterElementType && x.multiplier > 0);
+                var playersInBehindPosition = picks.FindAll(x => x.element_type == (starterElementType - 1) && x.multiplier > 0);
+
+                for (var i = 0; i < playersInPosition.Count; i++) {
+                    playersInPosition[i].position = playersInBehindPosition.LastOrDefault().position + (i + 1);
+                }
+            } else {
+                //midfielder coming off & forward coming on
+                if (starterElementType == 3 && subElementType == 4) {
+                    for (var i = 0; i < mids.Count; i++) {
+                        mids[i].position = defs.LastOrDefault().position + (i + 1);
+                    }
+
+                    for (var i = 0; i < fwds.Count; i++) {
+                        fwds[i].position = mids.LastOrDefault().position + (i + 1);
+                    }
+                }
+                //midfielder coming off & defender coming on
+                else if (starterElementType == 3 && subElementType == 2) {
+                    for (var i = 0; i < defs.Count; i++) {
+                        defs[i].position = (i + 2);
+                    }
+
+                    for (var i = 0; i < mids.Count; i++) {
+                        mids[i].position = defs.LastOrDefault().position + (i + 1);
+                    }
+                }
+                //fwd coming off & defender coming on
+                else if (starterElementType == 4 && subElementType == 2) {
+                    for (var i = 0; i < defs.Count; i++) {
+                        defs[i].position = (i + 2);
+                    }
+
+                    for (var i = 0; i < mids.Count; i++) {
+                        mids[i].position = defs.LastOrDefault().position + (i + 1);
+                    }
+
+                    for (var i = 0; i < fwds.Count; i++) {
+                        fwds[i].position = mids.LastOrDefault().position + (i + 1);
+                    }
+                }
+                //fwd coming off & mid coming on
+                else if (starterElementType == 4 && subElementType == 3) {
+                    for (var i = 0; i < mids.Count; i++) {
+                        mids[i].position = defs.LastOrDefault().position + (i + 1);
+                    }
+
+                    for (var i = 0; i < fwds.Count; i++) {
+                        fwds[i].position = mids.LastOrDefault().position + (i + 1);
+                    }
+                }
+                //def coming off & mid coming on
+                else if (starterElementType == 2 && subElementType == 3) {
+                    for (var i = 0; i < defs.Count; i++) {
+                        defs[i].position = (i + 2);
+                    }
+
+                    for (var i = 0; i < mids.Count; i++) {
+                        mids[i].position = defs.LastOrDefault().position + (i + 1);
+                    }
+                }
+                //def coming off & fwd coming on
+                else if (starterElementType == 2 && subElementType == 4) {
+                    for (var i = 0; i < defs.Count; i++) {
+                        defs[i].position = (i + 2);
+                    }
+
+                    for (var i = 0; i < mids.Count; i++) {
+                        mids[i].position = defs.LastOrDefault().position + (i + 1);
+                    }
+
+                    for (var i = 0; i < fwds.Count; i++) {
+                        fwds[i].position = mids.LastOrDefault().position + (i + 1);
+                    }
+                }
+            }
+
+            return picks.OrderBy(x => x.position).ToList();
+        }
 
         private async Task<List<Pick>> GetLastWeeksTeam(List<Pick> teamPicksLastWeek, int teamId, int currentGwId)
         {
