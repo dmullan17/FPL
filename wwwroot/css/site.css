@@ -372,10 +372,10 @@ div.dt-buttons {
 	}
 
 	.manager-list-item {
-		min-width: 9rem !important;
+		min-width: 11rem !important;
 		padding-left: 0 !important;
 		margin-left: 0 !important;
-		font-size: 0.8rem !important;
+		font-size: 1rem !important;
 	}
 }
 
