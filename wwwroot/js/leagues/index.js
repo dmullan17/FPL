@@ -309,7 +309,7 @@
     self.FormatNames = function (player) {
         var html = "";
         var url = window.location.href;
-        var selectedPlayerUrl = url.replace('leagues', 'points?entry=' + player.entry);
+        var selectedPlayerUrl = url.replace(window.location.pathname, '/points?entry=' + player.entry);
 
         html += "<a class=\"team-name\" href=" + selectedPlayerUrl + " target=\"_blank\"" + ">" + player.entry_name + "</a></br > <span class=\"manager-name\">" + player.player_name + "</span>"
         return html;
@@ -318,7 +318,7 @@
     self.ViewTeam = function (data) {
         var playerId = data.entry;
         var url = window.location.href;
-        var selectedPlayerUrl = url.replace('leagues', 'points?entry=' + playerId);
+        var selectedPlayerUrl = url.replace(window.location.pathname, '/points?entry=' + playerId);
 
         window.open(selectedPlayerUrl);
     }

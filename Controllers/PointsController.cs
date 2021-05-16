@@ -419,7 +419,7 @@ namespace FPL.Controllers
                                         gwTeam.automatic_subs.Add(autoSub);
                                         break;
                                     }
-                                    else if (starterWhoDidNotPlay.player.element_type == 3 && startingDefenders.Count > 3)
+                                    else if (starterWhoDidNotPlay.player.element_type == 3 /*&& startingDefenders.Count > 3*/)
                                     {
                                         var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
                                         gwTeam.automatic_subs.Add(autoSub);
