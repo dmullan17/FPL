@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using FPL.Helpers
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -8,33 +10,98 @@
     <!-- <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> -->
     <link rel="stylesheet" href="~/css/site.css" />
     <link href="~/lib/semantic-ui/semantic.css" rel="stylesheet" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/semantic-ui/semantic.min.js"></script>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">FPL</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+        <div id="desktop-header" class="ui secondary pointing menu">
+            <div class="ui container">
+                <div class="menu">
+                    <a class="item" style="padding-left: 0!important; margin-right: 2rem !important;">
+                        <img src="~/img/lion.png" class="ui small image" style="width: 100px !important">
+                    </a>
                 </div>
-                <a class="ui button" asp-controller="Login" asp-action="Index">Login</a>
-                <a class="ui button" asp-controller="Logout" asp-action="Index">Logout</a>
+                <a class="@Html.IsSelected(actions: "Index", controllers: "Home") item" asp-controller="Home" asp-action="Index">
+                    <h3>Home</h3>
+                </a>
+                <a class="@Html.IsSelected(actions: "Index", controllers: "Points") item" asp-controller="Points" asp-action="Index">
+                    <h3>Points</h3>
+                </a>
+                <a class="@Html.IsSelected(actions: "Index", controllers: "MyTeam") item" asp-controller="MyTeam" asp-action="Index">
+                    <h3>My Team</h3>
+                </a>
+                <a class="@Html.IsSelected(actions: "Index", controllers: "Leagues") item" asp-controller="Leagues" asp-action="Index">
+                    <h3>Leagues</h3>
+                </a>
+                <a class="@Html.IsSelected(actions: "Index", controllers: "Players") item" asp-controller="Players" asp-action="Index">
+                    <h3>All Players</h3>
+                </a>
+                <div class="right menu">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <div id="logout-item" class="ui item" style="padding-right: 0;">
+                            <a class="ui right labeled icon button" asp-controller="Logout" asp-action="Index" style="background-color: #784818; color: white;">
+                                Logout
+                                <i class="sign-out icon"></i>
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="login-item" class="ui item" style="padding-right: 0;">
+                            <a class="ui right labeled icon button" asp-controller="Login" asp-action="Index" style="background-color: #784818; color: white;">
+                                Login
+                                <i class="sign-in icon"></i>
+                            </a>
+                        </div>
+                    }
+                </div>
             </div>
-        </nav>
+        </div>
+        <div id="mobile-header" style="background-color: #F0A848;">
+            <div class="ui eight wide column center aligned page grid" style="margin-bottom: 0.5rem; margin-top: 0.5rem;">
+                <a asp-controller="Home" asp-action="Index">
+                    <img class="ui small image" src="~/img/lion.png" alt="" style="width: 110px !important;"/>
+                </a>
+            </div>
+            <div class="mobile only narrow row">
+                <div class="ui inverted navbar menu" style="border-radius: 0px !important; margin-bottom: 0px;">
+                    <div class="left menu open">
+                        <a href="" class="menu item">
+                            <i class="bars icon"></i>
+                        </a>
+                    </div>
+                    <div class="right menu open">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <a class="item" asp-controller="Logout" asp-action="Index">
+                                Logout
+                                <i class="sign-out icon"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="item" asp-controller="Login" asp-action="Index">
+                                Login
+                                <i class="sign-in icon"></i>
+                            </a>
+                        }
+
+                    </div>
+                </div>
+                <div class="ui vertical navbar menu" style="background-color: #F0A848; width: 100% !important; border-radius: 0 !important; margin-top: 0;">
+                    <a class="@Html.IsSelected(actions: "Index", controllers: "Home") item" asp-controller="Home" asp-action="Index">Home</a>
+                    <a class="@Html.IsSelected(actions: "Index", controllers: "Points") item" asp-controller="Points" asp-action="Index">Points</a>
+                    <a class="@Html.IsSelected(actions: "Index", controllers: "MyTeam") item" asp-controller="MyTeam" asp-action="Index">My Team</a>
+                    <a class="@Html.IsSelected(actions: "Index", controllers: "Leagues") item" asp-controller="Leagues" asp-action="Index">Leagues</a>
+                    <a class="@Html.IsSelected(actions: "Index", controllers: "Players") item" asp-controller="Players" asp-action="Index">All Players</a>
+                </div>
+            </div>
+        </div>
     </header>
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main">
             @RenderBody()
         </main>
         <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -46,9 +113,9 @@
     </div>
 
     @*<footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2020 - FPL - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>*@
+            <div class="container">
+                &copy; 2020 - FPL - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </div>
+        </footer>*@
 </body>
 </html>

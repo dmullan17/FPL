@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using FPL.Contracts;
 using FPL.Http;
 using FPL.Models;
 using FPL.ViewModels;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -65,6 +68,16 @@ namespace FPL.Controllers
             {
                 Response.Cookies.Append(cookie.Name, cookie.Value);
             }
+
+            var claims = new[] { new Claim(ClaimTypes.Name, model.Email),
+                new Claim(ClaimTypes.Role, "SomeRoleName") };
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(identity));
+            // Do your redirect here
 
             var currentGameweek = await GetCurrentGameWeek();
 
