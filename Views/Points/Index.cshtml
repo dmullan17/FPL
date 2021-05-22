@@ -16,11 +16,12 @@
     </script>
 }
 
-<div id="app">
+<partial name="_PartialLoading" />
+<div id="app" style="display: none;">
     <div class="ui container">
         @*<h3 class="ui header" data-bind="with: $root.Team()">
-            <span data-bind="text: name"></span>
-        </h3>*@
+                <span data-bind="text: name"></span>
+            </h3>*@
         <div id="desktop-points-header-grid" class="ui grid">
             <div class="row">
                 <div class="column" style="padding-top: 0.5rem; width: fit-content; margin-right: 1rem;">
@@ -66,9 +67,9 @@
                             <div class="label" data-bind="text: $root.GWTeam().ActiveChips"></div>
                         </div>
                         @*<div class="statistic" data-bind="with: $root.GameWeek()">
-                            <div data-bind="text: highest_score" class="value"></div>
-                            <div class="label" data-bind="text: 'GW' + $root.GameweekId() + ' Top Score'"></div>
-                        </div>*@
+                                <div data-bind="text: highest_score" class="value"></div>
+                                <div class="label" data-bind="text: 'GW' + $root.GameweekId() + ' Top Score'"></div>
+                            </div>*@
                     </div>
                 </div>
                 <div class="right floated column" style="width: 8.5% !important;">
@@ -138,7 +139,7 @@
                 <i class="sync link icon" data-bind="click: $root.reload"></i>
                 <span data-bind="text: $root.LastUpdated()"></span>
             </div>
-            <div id="mobile-points-last-updated" class="ui top right attached label"  data-bind="visible: IsLive">
+            <div id="mobile-points-last-updated" class="ui top right attached label" data-bind="visible: IsLive">
                 <i class="sync link icon" data-bind="click: $root.reload"></i>
                 @*<i class="large clock outline icon"></i>*@
             </div>
@@ -196,7 +197,7 @@
                                 <!--<td data-bind="class: GWGame.finished_provisional || !GWGame.started ? '' : 'center aligned'">-->
                                 @*<span data-bind="text: $root.GetTime($data), visible: GWGame.finished_provisional || !GWGame.started"></span>*@
                                 <!--<span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>
-                </td>-->
+                                </td>-->
                                 <td class="center aligned">
                                     <span data-bind="text: GWPlayer.stats.minutes"></span>
                                 </td>
@@ -222,8 +223,8 @@
                                     <span data-bind="text: GWPlayer.stats.bps + ' (' + $root.GetBonusRank($data) + ')'"></span>
                                 </td>
                                 @*<td>
-                        <span data-bind="text: $root.GetBonusRank($data)"></span>
-                    </td>*@
+                                        <span data-bind="text: $root.GetBonusRank($data)"></span>
+                                    </td>*@
                                 <td class="clickable-cell center aligned" data-bind="click: $root.viewPlayerGwBreakdown">
                                     <span data-bind="text: $root.GetPoints($data)"></span>
                                 </td>
@@ -234,11 +235,11 @@
                                     @*<span data-bind="visible: GWGame.finished_provisional"><i class="check icon"></i></span>*@
                                 </td>
                                 @*<td data-bind="class: $root.GetResult($data, $data.GWGame)" class="center aligned collapsing">
-                        <span class="ui mini green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>
-                        <span data-bind="visible: GWGame.finished_provisional">
-                            <i class="small check icon"></i>
-                        </span>
-                    </td>*@
+                                        <span class="ui mini green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>
+                                        <span data-bind="visible: GWGame.finished_provisional">
+                                            <i class="small check icon"></i>
+                                        </span>
+                                    </td>*@
                             </tr>
                         </tbody>
                     </table>
@@ -268,8 +269,8 @@
                                     <span data-bind="visible: $root.SubOff($data)">Off</span>
                                 </td>
                                 @*<td>
-                        <span data-bind="html: $root.GetOppositionShortName($data)"></span>
-                    </td>*@
+                                        <span data-bind="html: $root.GetOppositionShortName($data)"></span>
+                                    </td>*@
                                 <td class="center aligned">
                                     <span data-bind="text: $root.GetPoints($data), click: $root.viewPlayerGwBreakdown"></span>
                                 </td>
@@ -277,10 +278,10 @@
                                     <i class="green check circle icon" data-bind="visible: $root.IsPicksGwFinished($data)"></i>
                                 </td>
                                 <!--<td class="center aligned collapsing">
-                <span data-bind="html: $root.GetTimeOrResult($data)-->
+                                <span data-bind="html: $root.GetTimeOrResult($data)-->
                                 @*visible: !GWGame.started*@
                                 <!--"></span>
-                </td>-->
+                                </td>-->
                             </tr>
                         </tbody>
                     </table>
@@ -291,8 +292,8 @@
                 </div>
             </div>
             @*<div class="ui bottom attached tab segment" data-tab="third">
-                Third
-            </div>*@
+                    Third
+                </div>*@
         </div>
         <div id="gw-percentile-popup" class="ui hidden stat popup" data-bind="style: {'height': $root.GetGwPercentilePopupHeight($root.GameweekId())}">
             <p style="text-align: center;" data-bind="text: 'Ranked ' + $root.FormatLargeNumber(CompleteEntryHistory().rank) + ' out of ' + $root.FormatLargeNumber($root.EntryHistory().TotalPlayers)"></p>
@@ -318,18 +319,18 @@
                 <!-- <span data-bind="text: $root.SelectedGame().team_a_score"> -->
                 <!-- <span data-bind="text: $root.SelectedGame().team_h_score + ' - ' + $root.SelectedGame().team_a_score"> -->
                 @*<div class="ui grid">
-                    <div class="six wide right aligned middle aligned column">
-                        <h2 class="ui header" data-bind="text: HomeTeam.name"></h3>
-                    </div>
-                    <div class="four wide center aligned column">
-                        <div class="ui large statistic">
-                            <div class="value" data-bind="text: team_h_score + ' - ' + team_a_score"></div>
+                        <div class="six wide right aligned middle aligned column">
+                            <h2 class="ui header" data-bind="text: HomeTeam.name"></h3>
                         </div>
-                    </div>
-                    <div class="six wide middle aligned column">
-                        <h2 class="ui header" data-bind="text: AwayTeam.name"></h3>
-                    </div>
-                </div>*@
+                        <div class="four wide center aligned column">
+                            <div class="ui large statistic">
+                                <div class="value" data-bind="text: team_h_score + ' - ' + team_a_score"></div>
+                            </div>
+                        </div>
+                        <div class="six wide middle aligned column">
+                            <h2 class="ui header" data-bind="text: AwayTeam.name"></h3>
+                        </div>
+                    </div>*@
             </div>
         </div>
         <div id="player-gw-breakdown-popup" class="ui mini modal" data-bind="with: $root.SelectedPlayer()">
@@ -353,17 +354,17 @@
                                     </div>
                                 </div>
                                 @*<div class="statistic">
-                                <div class="value" data-bind="text: GWPlayer.stats.bps"></div>
-                                <div class="label">
-                                    BPS
-                                </div>
-                            </div>
-                            <div class="statistic">
-                                <div class="value" data-bind="text: GWPlayer.stats.BpsRank"></div>
-                                <div class="label">
-                                    Rank
-                                </div>
-                            </div>*@
+                                        <div class="value" data-bind="text: GWPlayer.stats.bps"></div>
+                                        <div class="label">
+                                            BPS
+                                        </div>
+                                    </div>
+                                    <div class="statistic">
+                                        <div class="value" data-bind="text: GWPlayer.stats.BpsRank"></div>
+                                        <div class="label">
+                                            Rank
+                                        </div>
+                                    </div>*@
                                 <div class="statistic" style="margin-top: 1em">
                                     <div class="text value">
                                         <span style="font-size: 2.5rem !important;" data-bind="text: GWPlayer.stats.bps"></span>

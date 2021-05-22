@@ -12,7 +12,8 @@
     </script>
 }
 
-<div id="app">
+<partial name="_PartialLoading" />
+<div id="app" style="display: none;">
     @*<div class="text-center">
             <h1 class="display-4">Welcome</h1>
             <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
@@ -22,13 +23,13 @@
         @*<div class="sub header" data-bind="text: moment(Published_Date__c).format('MMMM D, YYYY')"></div>*@
     </h4>
     @*<table class="ui very basic table">
-        <tbody data-bind="foreach: $root.Gameweeks">
-            <tr>
-                <td>
-                    <a data-bind="text: name"></a>
-                </td>
-            </tr>
-        </tbody>
-    </table>*@
+            <tbody data-bind="foreach: $root.Gameweeks">
+                <tr>
+                    <td>
+                        <a data-bind="text: name"></a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>*@
 </div>
 

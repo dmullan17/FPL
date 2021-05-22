@@ -22,7 +22,8 @@
     </script>
 }
 
-<div id="app">
+<partial name="_PartialLoading" />
+<div id="app" style="display: none;">
     <input type="number" placeholder="Max Value" id="val" step="0.2" />
     <table id="allPlayersTable" class="ui unstackable collapsing table">
         <thead>
@@ -119,8 +120,8 @@
                     <span data-bind="text: PointsPerMillion"></span>
                 </td>
                 @*<td>
-            <span data-bind="text: Team.Results.length"></span>
-        </td>*@
+                        <span data-bind="text: Team.Results.length"></span>
+                    </td>*@
                 <td>
                     <span data-bind="text: minutes"></span>
                 </td>

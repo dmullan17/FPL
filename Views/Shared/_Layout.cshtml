@@ -40,21 +40,21 @@
                 <div class="right menu">
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <div id="logout-item" class="ui item" style="padding-right: 0;">
-                            <a class="ui right labeled icon button" asp-controller="Logout" asp-action="Index" style="background-color: #784818; color: white;">
-                                Logout
-                                <i class="sign-out icon"></i>
-                            </a>
-                        </div>
+                    <div id="logout-item" class="ui item" style="padding-right: 0;">
+                        <a class="ui right labeled icon button" asp-controller="Logout" asp-action="Index" style="background-color: #784818; color: white;">
+                            Logout
+                            <i class="sign-out icon"></i>
+                        </a>
+                    </div>
                     }
                     else
                     {
-                        <div id="login-item" class="ui item" style="padding-right: 0;">
-                            <a class="ui right labeled icon button" asp-controller="Login" asp-action="Index" style="background-color: #784818; color: white;">
-                                Login
-                                <i class="sign-in icon"></i>
-                            </a>
-                        </div>
+                    <div id="login-item" class="ui item" style="padding-right: 0;">
+                        <a class="ui right labeled icon button" asp-controller="Login" asp-action="Index" style="background-color: #784818; color: white;">
+                            Login
+                            <i class="sign-in icon"></i>
+                        </a>
+                    </div>
                     }
                 </div>
             </div>
@@ -62,7 +62,7 @@
         <div id="mobile-header" style="background-color: #F0A848;">
             <div class="ui eight wide column center aligned page grid" style="margin-bottom: 0.5rem; margin-top: 0.5rem;">
                 <a asp-controller="Home" asp-action="Index">
-                    <img class="ui small image" src="~/img/lion.png" alt="" style="width: 110px !important;"/>
+                    <img class="ui small image" src="~/img/lion.png" alt="" style="width: 110px !important;" />
                 </a>
             </div>
             <div class="mobile only narrow row">
@@ -75,22 +75,22 @@
                     <div class="right menu open">
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <a class="item" asp-controller="Logout" asp-action="Index">
-                                Logout
-                                <i class="sign-out icon"></i>
-                            </a>
+                        <a class="item" asp-controller="Logout" asp-action="Index">
+                            Logout
+                            <i class="sign-out icon"></i>
+                        </a>
                         }
                         else
                         {
-                            <a class="item" asp-controller="Login" asp-action="Index">
-                                Login
-                                <i class="sign-in icon"></i>
-                            </a>
+                        <a class="item" asp-controller="Login" asp-action="Index">
+                            Login
+                            <i class="sign-in icon"></i>
+                        </a>
                         }
 
                     </div>
                 </div>
-                <div class="ui vertical navbar menu" style="background-color: #F0A848; width: 100% !important; border-radius: 0 !important; margin-top: 0;">
+                <div class="ui vertical navbar menu" style="background-color: #F0A848; width: 100% !important; border-radius: 0 !important; margin-top: 0; display:none;">
                     <a class="@Html.IsSelected(actions: "Index", controllers: "Home") item" asp-controller="Home" asp-action="Index">Home</a>
                     <a class="@Html.IsSelected(actions: "Index", controllers: "Points") item" asp-controller="Points" asp-action="Index">Points</a>
                     <a class="@Html.IsSelected(actions: "Index", controllers: "MyTeam") item" asp-controller="MyTeam" asp-action="Index">My Team</a>
@@ -117,5 +117,12 @@
                 &copy; 2020 - FPL - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
             </div>
         </footer>*@
+
+    <script>
+        $(window).on('load', function () {
+            $('#loading').hide();
+            $('#app').show();
+        })
+    </script>
 </body>
 </html>

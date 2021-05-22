@@ -3,22 +3,13 @@
 
 // Write your JavaScript code.
 $(document).ready(function () {
-    //if (getCookie("pl_profile") == null) {
-    //    $("#login-item").show();
-    //}
-    //else {
-    //    $("#logout-item").show();
-    //}
     //script for navbar mobile
-    $('.ui.vertical.menu').toggle();
+    //$('.ui.vertical.menu').toggle();
     $('.left.menu.open').on("click", function (e) {
         e.preventDefault();
         $('.ui.vertical.menu').toggle();
     });
-
-    //$('.ui.dropdown').dropdown();
 });
-
 
 EventTarget.prototype['addEventListenerBase'] = EventTarget.prototype.addEventListener;
 EventTarget.prototype.addEventListener = function (type, listener) {

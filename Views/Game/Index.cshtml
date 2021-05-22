@@ -5,14 +5,15 @@
 @{ var data = JsonConvert.SerializeObject(Model); }
 
 @section PageScripts {
-<script src="~/js/game/index.js"></script>
-<script type="text/javascript">
+    <script src="~/js/game/index.js"></script>
+    <script type="text/javascript">
     const viewModel = new GameViewModel(@Html.Raw(data));
     ko.applyBindings(viewModel, document.getElementById("app"));
-</script>
+    </script>
 }
 
-<div id="app">
+<partial name="_PartialLoading" />
+<div id="app" style="display: none;">
     Total Games: <p data-bind="text: TotalGameCount"></p>
     <p data-bind="using: Game">
         code: <span data-bind="text: code"> </span>
@@ -26,19 +27,19 @@
     <div>
         <table class="ui table">
             <thead>
-                <th></th>
-                <th data-bind="text: $root.Game().HomeTeam.name"></th>
-                <th data-bind="text: $root.Game().AwayTeam.name"></th>
+            <th></th>
+            <th data-bind="text: $root.Game().HomeTeam.name"></th>
+            <th data-bind="text: $root.Game().AwayTeam.name"></th>
             </thead>
             <tbody data-bind="foreach: GameStats">
                 <tr>
                     <td data-bind="text: identifier"></td>
                     <td data-bind="foreach: h">
-                        <span data-bind="text: Player.web_name"></span> 
+                        <span data-bind="text: Player.web_name"></span>
                         <span data-bind="text: value"></span>
                     </td>
                     <td data-bind="foreach: a">
-                        <span data-bind="text: Player.web_name"></span> 
+                        <span data-bind="text: Player.web_name"></span>
                         <span data-bind="text: value"></span>
                     </td>
                 </tr>
@@ -47,10 +48,10 @@
     </div>
     <table class="ui table">
         <thead>
-            <th>Date</th>
-            <th>Home Team</th>
-            <th>Score</th>
-            <th>Away team</th>
+        <th>Date</th>
+        <th>Home Team</th>
+        <th>Score</th>
+        <th>Away team</th>
         </thead>
         <tbody data-bind="foreach: $root.AllGames">
             <tr>
