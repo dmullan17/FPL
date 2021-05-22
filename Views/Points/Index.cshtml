@@ -224,8 +224,8 @@
                                 @*<td>
                         <span data-bind="text: $root.GetBonusRank($data)"></span>
                     </td>*@
-                                <td class="clickable-cell center aligned" >
-                                    <span data-bind="text: $root.GetPoints($data), click: $root.viewPlayerGwBreakdown"></span>
+                                <td class="clickable-cell center aligned" data-bind="click: $root.viewPlayerGwBreakdown">
+                                    <span data-bind="text: $root.GetPoints($data)"></span>
                                 </td>
                                 <td @*data-bind="class: $root.GetResult($data, $data.GWGame)"*@ class="center aligned collapsing">
                                     @*<span class="ui green label" data-bind="visible: !GWGame.finished_provisional && GWGame.started">Live</span>*@

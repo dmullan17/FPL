@@ -2,8 +2,27 @@
 for details on configuring this project to bundle and minify static web assets. */
 
 #app {
-	margin-top: 2rem;
+	padding-top: 1rem;
 }
+
+#desktop-header {
+	background-color: #F0A848;
+	height: 9rem;
+	padding-bottom: 35px;
+}
+
+	#desktop-header > div > .item {
+		margin-right: 1rem;
+	}
+
+		#desktop-header > div > .item:hover {
+			border-bottom-style: solid;
+			border-color: #1B1C1D;
+		}
+
+/*	#desktop-header > div > .active.item {
+		border-color: white !important;
+	}*/
 
 a.navbar-brand {
   white-space: normal;
@@ -329,8 +348,24 @@ div.dt-buttons {
 	scrollbar-width: none; /* Firefox */
 }
 
+.ui.modal {
+	overflow-y: auto;
+}
+
+.ui.vertical.menu .active.item {
+    font-weight: bold;
+}
+
 /* On screens that are 992px or less, set the background color to blue */
 @media screen and (max-width: 992px) {
+	#mobile-header {
+		display: grid;
+	}
+
+	#desktop-header {
+		display: none;
+	}
+
 	#mobile-points-header-grid {
 		display: block;
 	}
@@ -380,6 +415,14 @@ div.dt-buttons {
 }
 
 @media screen and (min-width: 992px) {
+	#mobile-header {
+		display: none;
+	}
+
+	#desktop-header {
+		display: flex;
+	}
+
 	#mobile-points-header-grid {
 		display: none;
 	}
@@ -393,7 +436,7 @@ div.dt-buttons {
 	}
 
 	#desktop-points-table {
-		display: normal;
+		display: table;
 	}
 
 	#desktop-standings-last-updated {

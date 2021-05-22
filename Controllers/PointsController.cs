@@ -16,9 +16,11 @@ using Team = FPL.Models.Team;
 using FPLTeam = FPL.Models.FPL.Team;
 using FPL.Models.GWPlayerStats;
 using FPL.Contracts;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FPL.Controllers
 {
+    //[AllowAnonymous]
     [FPLCookie]
     public class PointsController : BaseController
     {
