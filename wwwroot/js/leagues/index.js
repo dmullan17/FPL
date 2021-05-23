@@ -35,6 +35,50 @@
         return "Last updated: " + formattedTime;
     }
 
+    self.reload = function () {
+
+        if ($.fn.dataTable.isDataTable(standingsTable)) {
+            standingsTable.DataTable().clear().destroy();
+            playerTallyTable.DataTable().clear().destroy();
+
+            $.ajax({
+                url: "/Leagues/GetPlayerStandingsForClassicLeague",
+                type: "GET",
+                cache: false,
+                data: {
+                    leagueId: self.SelectedLeague().id,
+                    gameweekId: self.CurrentGwId()
+                },
+                beforeSend: function () {
+                    standingsLoader.addClass("active");
+                    leagueDropdown.addClass("disabled");
+                    standingsTable.hide();
+                    playerTallyTable.hide();
+                },
+                success: function (json, status, xhr) {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        self.SelectedLeagueStandings(json.Standings.results);
+                        self.SelectedLeaguePlayersTally(json.PlayersTally);
+                        self.AllGwTransfersInLeague(json.AllGwTransfers);
+                        self.UserTeam(json.UserTeam);
+                        initialiseStandingsDatatable();
+                        initialiseTalliesDatatable();
+                        return;
+                    }
+                },
+                complete: function (xhr, status) {
+                    standingsLoader.removeClass("active");
+                    leagueDropdown.removeClass("disabled");
+                    standingsTable.show();
+                    playerTallyTable.show();
+                    if (xhr.readyState === 4 && xhr.status !== 200) {
+                    }
+                }
+            });
+        }
+
+    }
+
     self.viewPlayer = function (player) {
         self.SelectedPlayer(player);
         $('.ui.modal').modal().modal('show');
@@ -148,6 +192,7 @@
                 standingsLoader.addClass("active");
                 leagueDropdown.addClass("disabled");
                 standingsTable.hide();
+                playerTallyTable.hide();
                 return true;
             };
             options.success = function (data, textStatus) {
@@ -157,6 +202,7 @@
                 standingsLoader.removeClass("active");
                 leagueDropdown.removeClass("disabled");
                 standingsTable.show();
+                playerTallyTable.show();
                 //localCache.set(url, data, complete);
             };
         }
