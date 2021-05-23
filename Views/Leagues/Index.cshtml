@@ -37,11 +37,11 @@
                         </select>
                     </h3>
                     <div id="standings-segment" class="ui attached segment" style="min-height:30rem;">
-                        <div id="desktop-standings-last-updated" class="ui top right attached label" style="font-size: 0.9rem !important">
+                        <div id="desktop-standings-last-updated" class="ui top right attached label" style="font-size: 0.9rem !important" data-bind="visible: IsGameLive">
                             <i class="sync link icon" data-bind="click: $root.reload, visible: IsGameLive"></i>
-                            <span data-bind="text: $root.LastUpdated(), hidden: IsGameLive"></span>
+                            <span data-bind="text: LastUpdated()@*, hidden: IsGameLive*@"></span>
                         </div>
-                        <div id="mobile-standings-last-updated" class="ui top right attached label">
+                        <div id="mobile-standings-last-updated" class="ui top right attached label" data-bind="visible: IsGameLive">
                             <i class="sync link icon" data-bind="click: $root.reload, visible: IsGameLive"></i>
                             <i class="clock outline icon" data-bind="hidden: IsGameLive"></i>
                         </div>

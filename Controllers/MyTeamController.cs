@@ -43,6 +43,11 @@ namespace FPL.Controllers
             
             var response = await _httpClient.GetAuthAsync(CreateHandler(handler), $"my-team/{teamId}");
 
+            if (!response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             //look for 404 error here
 
             response.EnsureSuccessStatusCode();

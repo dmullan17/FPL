@@ -342,6 +342,10 @@
                     }
                 }
                 else {
+                    if (results[i].team_h_score == null && results[i].team_a_score == null) {
+                        results[i].team_h_score = 0;
+                        results[i].team_a_score = 0;
+                    }
                     html += "<span style=\"font-weight: bold\">" + results[i].team_h_score + " - " + results[i].team_a_score + "</span> <span class=\"blinker\">'</span> <br/>";
                 }
 

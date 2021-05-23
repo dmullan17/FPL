@@ -20,6 +20,7 @@
     self.TeamId = ko.observable(data.TeamId);
     self.UserTeam = ko.observable(data.SelectedLeague.UserTeam);
     self.EventStatus = ko.observable(data.EventStatus);
+    self.LastUpdated = ko.observable();
     self.LastUpdatedTime = ko.observable(data.LastUpdated);
     self.SelectedPlayerFromTally = ko.observable();
     self.SelectedPlayer = ko.observable();
@@ -30,9 +31,16 @@
     self.ManagersAffiliatedWithSelectedPlayerFromTally = ko.observableArray();
 
     self.LastUpdated = function () {
-        var lastUpdatedTime = new Date(self.LastUpdatedTime()).toLocaleString("en-GB");
-        var formattedTime = lastUpdatedTime.slice(0, -3);
-        return "Last updated: " + formattedTime;
+
+        if (self.IsGameLive()) {
+            var lastUpdatedTime = new Date().toLocaleString("en-GB");
+            var formattedTime = lastUpdatedTime.slice(0, -3);
+            return "Last updated: " + formattedTime;
+        } else {
+            var lastUpdatedTime = new Date(self.LastUpdatedTime()).toLocaleString("en-GB");
+            var formattedTime = lastUpdatedTime.slice(0, -3);
+            return "Last updated: " + formattedTime;
+        }
     }
 
     self.reload = function () {
@@ -808,7 +816,7 @@
                 '</br>' +
                 picks[i].player.web_name + captain +
                 '</h5>' +
-                '<p style="text-align: center">' + picks[i].GWPlayer.stats.gw_points + '</p>' +
+                '<p style="text-align: center" data-bind="click: $root.viewPlayerGwBreakdown.bind(' + picks[i] + ')">' + picks[i].GWPlayer.stats.gw_points + '</p>' +
                 '</div>' +
                 '</div>'
         }  
