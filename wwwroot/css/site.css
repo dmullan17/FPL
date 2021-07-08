@@ -86,11 +86,14 @@ body {
   margin-bottom: 60px;
 }
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px; /* Vertically center the text there */
+	position: fixed !important;
+	bottom: 0;
+	width: 100%;
+	white-space: nowrap;
+	line-height: 40px; /* Vertically center the text there */
+	padding: 0 !important;
+	/*margin-top: 20px !important;*/
+	text-align: right;
 }
 
 #player-tally-table_wrapper > div.DTFC_ScrollWrapper > div.DTFC_LeftWrapper > div.DTFC_LeftHeadWrapper > table {
