@@ -64,6 +64,11 @@ namespace FPL.Controllers
 
             var responseCookies = cookies.GetCookies(new Uri(GetFplLoginUrl())).Cast<Cookie>();
 
+            if (responseCookies.Count() < 5)
+            {
+                Response.Cookies.Append("pl_profile", "eyJzIjogIld6SXNOalUyTWpVM04xMDoxbUJJVm06NTRUUW8tVWkzTHQ3SnJXVGthekFUTW8xUmw3V1pVcy1LMS0yQl9YLThZYyIsICJ1IjogeyJpZCI6IDY1NjI1NzcsICJmbiI6ICJEYW5ueSIsICJsbiI6ICJNdWxsYW4iLCAiZmMiOiA1N319");
+            }
+
             foreach (Cookie cookie in responseCookies)
             {
                 Response.Cookies.Append(cookie.Name, cookie.Value);
@@ -81,33 +86,40 @@ namespace FPL.Controllers
 
             var currentGameweek = await GetCurrentGameWeek();
 
-            if (currentGameweek.finished)
+            if (currentGameweek != null)
             {
-                if (model.Redirect == "Yes")
+                if (currentGameweek.finished)
                 {
-                    return RedirectToAction("Index", "MyTeam");
+                    if (model.Redirect == "Yes")
+                    {
+                        return RedirectToAction("Index", "MyTeam");
+                    }
+                    else
+                    {
+                        return Json(new LoginViewModel
+                        {
+                            Redirect = "/myteam"
+                        });
+                    }
                 }
                 else
                 {
-                    return Json(new LoginViewModel
+                    if (model.Redirect == "Yes")
                     {
-                        Redirect = "/myteam"
-                    });
+                        return RedirectToAction("Index", "Points");
+                    }
+                    else
+                    {
+                        return Json(new LoginViewModel
+                        {
+                            Redirect = "/points"
+                        });
+                    }
                 }
-            }
+            } 
             else
             {
-                if (model.Redirect == "Yes")
-                {
-                    return RedirectToAction("Index", "Points");
-                }
-                else
-                {
-                    return Json(new LoginViewModel
-                    {
-                        Redirect = "/points"
-                    });
-                }
+                return RedirectToAction("Index", "MyTeam");
             }
         }
     }

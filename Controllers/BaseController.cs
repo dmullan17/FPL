@@ -70,25 +70,33 @@ namespace FPL.Controllers
 
         public async Task<List<GWPlayer>> GetAllGwPlayers(int gameweekId)
         {
-            var response = await _httpClient.GetAsync("event/" + gameweekId + "/live/");
-
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-
-            var allPlayersJSON = AllChildren(JObject.Parse(content))
-                .First(c => c.Type == JTokenType.Array && c.Path.Contains("elements"))
-                .Children<JObject>();
-
-            List<GWPlayer> allGwPlayers = new List<GWPlayer>();
-
-            foreach (JObject result in allPlayersJSON)
+            if (gameweekId != 0)
             {
-                GWPlayer p = result.ToObject<GWPlayer>();
-                allGwPlayers.Add(p);
+                var response = await _httpClient.GetAsync("event/" + gameweekId + "/live/");
+
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                var allPlayersJSON = AllChildren(JObject.Parse(content))
+                    .First(c => c.Type == JTokenType.Array && c.Path.Contains("elements"))
+                    .Children<JObject>();
+
+                List<GWPlayer> allGwPlayers = new List<GWPlayer>();
+
+                foreach (JObject result in allPlayersJSON)
+                {
+                    GWPlayer p = result.ToObject<GWPlayer>();
+                    allGwPlayers.Add(p);
+                }
+
+                return allGwPlayers;
+            }
+            else
+            {
+                return new List<GWPlayer>();
             }
 
-            return allGwPlayers;
         }
 
         public async Task<List<Player>> GetAllPlayers()
@@ -207,8 +215,11 @@ namespace FPL.Controllers
                 }
             }
 
-            var lastEventIndex = completeEntryHistory.CurrentSeasonEntryHistory.Count() - 2;
-            entryHistory.LastEventOverallRank = completeEntryHistory.CurrentSeasonEntryHistory[lastEventIndex].overall_rank;
+            if (completeEntryHistory.CurrentSeasonEntryHistory.Count() > 1)
+            {
+                var lastEventIndex = completeEntryHistory.CurrentSeasonEntryHistory.Count() - 2;
+                entryHistory.LastEventOverallRank = completeEntryHistory.CurrentSeasonEntryHistory[lastEventIndex].overall_rank;
+            }
 
             return entryHistory;
         }
@@ -255,29 +266,30 @@ namespace FPL.Controllers
 
         public async Task<int> GetTeamId()
         {
-            HttpClientHandler handler = new HttpClientHandler();
+            //HttpClientHandler handler = new HttpClientHandler();
 
-            var response = await _httpClient.GetAuthAsync(CreateHandler(handler), "me/");
+            //var response = await _httpClient.GetAuthAsync(CreateHandler(handler), "me/");
 
-            response.EnsureSuccessStatusCode();
+            //response.EnsureSuccessStatusCode();
 
-            var content = await response.Content.ReadAsStringAsync();
+            //var content = await response.Content.ReadAsStringAsync();
 
-            var userDetailsJson = AllChildren(JObject.Parse(content))
-                .First(c => c.Type == JTokenType.Object && c.Path.Contains("player"));
+            //var userDetailsJson = AllChildren(JObject.Parse(content))
+            //    .First(c => c.Type == JTokenType.Object && c.Path.Contains("player"));
 
-            FplPlayer fplPlayer = new FplPlayer();
+            //FplPlayer fplPlayer = new FplPlayer();
 
-            fplPlayer = userDetailsJson.ToObject<FplPlayer>();
+            //fplPlayer = userDetailsJson.ToObject<FplPlayer>();
 
-            string cookie = Request.Cookies["teamId"];
+            //string cookie = Request.Cookies["teamId"];
 
-            if (cookie == null)
-            {
-                SetCookie("teamId", fplPlayer.entry.ToString(), null);
-            }
+            //if (cookie == null)
+            //{
+            //    SetCookie("teamId", fplPlayer.entry.ToString(), null);
+            //}
 
-            return fplPlayer.entry;
+            //return fplPlayer.entry;
+            return 666471;
         }
 
         public async Task<EventStatus> GetEventStatus()
@@ -430,6 +442,11 @@ namespace FPL.Controllers
             }
 
             GameWeek currentGameweek = gws.FirstOrDefault(a => a.is_current);
+
+            if (currentGameweek == null)
+            {
+                return 0;
+            }
 
             return currentGameweek.id;
         }

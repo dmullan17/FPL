@@ -483,13 +483,16 @@ namespace FPL.Controllers
 
         private void CalculateRankAndPFF(Classic league)
         {
-            var standingsByLivePointsTotal = league.Standings.results.OrderByDescending(x => x.total).ToList();
-            int topOfLeaguePoints = league.Standings.results.OrderByDescending(x => x.total).FirstOrDefault().total;
-
-            foreach (var player in league.Standings.results)
+            if (league.Standings.results.Count > 0)
             {
-                player.rank = standingsByLivePointsTotal.IndexOf(player) + 1;
-                player.PointsFromFirst = topOfLeaguePoints - player.total;
+                var standingsByLivePointsTotal = league.Standings.results.OrderByDescending(x => x.total).ToList();
+                int topOfLeaguePoints = league.Standings.results.OrderByDescending(x => x.total).FirstOrDefault().total;
+
+                foreach (var player in league.Standings.results)
+                {
+                    player.rank = standingsByLivePointsTotal.IndexOf(player) + 1;
+                    player.PointsFromFirst = topOfLeaguePoints - player.total;
+                }
             }
         }
 

@@ -40,58 +40,67 @@ namespace FPL.Controllers
             List<Team> allTeams = await GetAllTeams();
             List<Game> allGames = await GetAllGames();        
             if (gameweekId == 0) gameweekId = await GetCurrentGameWeekId();
-            List<GWPlayer> allGwPlayers = await GetAllGwPlayers(gameweekId);
-            EventStatus eventStatus = await GetEventStatus();
-            List<Game> gwGames = await GetGwGames(gameweekId);
 
-            if (entry != 0) teamId = entry;
-            else if (Request.Cookies["teamId"] == null) teamId = await GetTeamId();
-            else teamId = Convert.ToInt32(Request.Cookies["teamId"]);   
-
-            GWTeam gwTeam = new GWTeam();
-            gwTeam = await PopulateGwTeam(gwTeam, gameweekId, teamId);
-            gwTeam = AddPlayerSummaryDataToTeam(allPlayers, allTeams, allGames, gwTeam, teamId, gameweekId);
-            gwTeam = await AddTransfersToGwTeam(allPlayers, gwTeam, teamId, gameweekId);
-            gwTeam.picks = AddPlayerGameweekDataToTeam(gwGames, allGwPlayers, gwTeam.picks, gameweekId);
-            gwTeam.CompleteEntryHistory = await GetCompleteEntryHistory(gwTeam.CompleteEntryHistory, teamId);
-            gwTeam.EntryHistory = await AddExtraDatatoEntryHistory(gwTeam.EntryHistory, gwTeam.CompleteEntryHistory);
-            gwTeam = AddAutoSubs(gwTeam, gwTeam.picks, teamId, eventStatus, gameweekId);
-            gwTeam.picks = AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
-            int gwpoints = GetGameWeekPoints(gwTeam.picks, eventStatus);
-            FPLTeam teamDetails = await GetTeamInfo(teamId);
-            var allStartedGameWeeks = await GetAllStartedGameWeeks();
-
-            foreach (var pick in gwTeam.picks)
+            if (gameweekId != 0)
             {
-                foreach (var game in pick.player.Team.Results)
+                List<GWPlayer> allGwPlayers = await GetAllGwPlayers(gameweekId);
+                EventStatus eventStatus = await GetEventStatus();
+                List<Game> gwGames = await GetGwGames(gameweekId);
+
+                if (entry != 0) teamId = entry;
+                else if (Request.Cookies["teamId"] == null) teamId = await GetTeamId();
+                else teamId = Convert.ToInt32(Request.Cookies["teamId"]);
+
+                GWTeam gwTeam = new GWTeam();
+                gwTeam = await PopulateGwTeam(gwTeam, gameweekId, teamId);
+                gwTeam = AddPlayerSummaryDataToTeam(allPlayers, allTeams, allGames, gwTeam, teamId, gameweekId);
+                gwTeam = await AddTransfersToGwTeam(allPlayers, gwTeam, teamId, gameweekId);
+                gwTeam.picks = AddPlayerGameweekDataToTeam(gwGames, allGwPlayers, gwTeam.picks, gameweekId);
+                gwTeam.CompleteEntryHistory = await GetCompleteEntryHistory(gwTeam.CompleteEntryHistory, teamId);
+                gwTeam.EntryHistory = await AddExtraDatatoEntryHistory(gwTeam.EntryHistory, gwTeam.CompleteEntryHistory);
+                gwTeam = AddAutoSubs(gwTeam, gwTeam.picks, teamId, eventStatus, gameweekId);
+                gwTeam.picks = AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
+                int gwpoints = GetGameWeekPoints(gwTeam.picks, eventStatus);
+                FPLTeam teamDetails = await GetTeamInfo(teamId);
+                var allStartedGameWeeks = await GetAllStartedGameWeeks();
+
+                foreach (var pick in gwTeam.picks)
                 {
-                    if ((game.started ?? true) && game.started != null && game.Event == gameweekId)
+                    foreach (var game in pick.player.Team.Results)
                     {
-                        if (!game.finished_provisional)
+                        if ((game.started ?? true) && game.started != null && game.Event == gameweekId)
                         {
-                            viewModel.IsLive = true;
-                            break;
+                            if (!game.finished_provisional)
+                            {
+                                viewModel.IsLive = true;
+                                break;
+                            }
                         }
                     }
+
+                    CalculatePlayersYetToPlay(gwTeam, pick);
                 }
 
-                CalculatePlayersYetToPlay(gwTeam, pick);
+                ViewData["Title"] = teamDetails.player_first_name + " " + teamDetails.player_last_name + "'s GW" + gameweekId;
+                viewModel.AllStartedGameWeeks = allStartedGameWeeks.OrderByDescending(x => x.id).ToList();
+                viewModel.GameWeek = await GetGameWeekById(gameweekId);
+                viewModel.GWTeam = gwTeam;
+                viewModel.CompleteEntryHistory = gwTeam.CompleteEntryHistory;
+                viewModel.EntryHistory = gwTeam.EntryHistory;
+                viewModel.EventStatus = eventStatus;
+                viewModel.Team = teamDetails;
+                viewModel.GWPoints = gwpoints;
+                viewModel.TotalPoints = ((int)teamDetails.summary_overall_points - (int)teamDetails.summary_event_points) + gwpoints;
+                viewModel.GameweekId = gameweekId;
+                viewModel.CurrentGameweekId = await GetCurrentGameWeekId();
+
+                return View(viewModel);
+            }
+            else
+            {
+                return RedirectToAction("Error", "Home");
             }
 
-            ViewData["Title"] = teamDetails.player_first_name + " " + teamDetails.player_last_name + "'s GW" + gameweekId;
-            viewModel.AllStartedGameWeeks = allStartedGameWeeks.OrderByDescending(x => x.id).ToList();
-            viewModel.GameWeek = await GetGameWeekById(gameweekId);
-            viewModel.GWTeam = gwTeam;
-            viewModel.CompleteEntryHistory = gwTeam.CompleteEntryHistory;
-            viewModel.EntryHistory = gwTeam.EntryHistory;
-            viewModel.EventStatus = eventStatus;
-            viewModel.Team = teamDetails;
-            viewModel.GWPoints = gwpoints;
-            viewModel.TotalPoints = ((int)teamDetails.summary_overall_points - (int)teamDetails.summary_event_points) + gwpoints;
-            viewModel.GameweekId = gameweekId;
-            viewModel.CurrentGameweekId = await GetCurrentGameWeekId();
-
-            return View(viewModel);
         }
 
         //[HttpGet]

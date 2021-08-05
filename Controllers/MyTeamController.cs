@@ -76,13 +76,16 @@ namespace FPL.Controllers
             //    teamPicks.Add(p);
             //}
 
-            teamPicksLastWeek = await GetLastWeeksTeam(teamPicksLastWeek, teamId, currentGwId);
-
-            foreach (var p in myTeam.picks)
+            if (currentGwId > 1)
             {
-                if (teamPicksLastWeek.FindAll(x => x.element == p.element).Count == 0)
+                teamPicksLastWeek = await GetLastWeeksTeam(teamPicksLastWeek, teamId, currentGwId);
+
+                foreach (var p in myTeam.picks)
                 {
-                    p.IsNewTransfer = true;
+                    if (teamPicksLastWeek.FindAll(x => x.element == p.element).Count == 0)
+                    {
+                        p.IsNewTransfer = true;
+                    }
                 }
             }
 
@@ -91,14 +94,18 @@ namespace FPL.Controllers
             var lastEvent = eventStatus.status.LastOrDefault();
             var isEventFinished = false;
 
-            if (lastEvent.bonus_added && eventStatus.leagues != "Updating")
+            if (lastEvent != null)
             {
-                isEventFinished = true;
+                if (lastEvent.bonus_added && eventStatus.leagues != "Updating")
+                {
+                    isEventFinished = true;
+                }
+
             }
 
             transfers = await GetTeamTransfers(teamId);
             positions = await GetPlayerPositionInfo();
-            myTeam.picks = await AddPlayerSummaryDataToTeam(myTeam.picks);
+            myTeam.picks = await AddPlayerSummaryDataToTeam(myTeam.picks, gameweekId);
             myTeam.picks = await AddPlayerGameweekDataToTeam(myTeam.picks, gameweekId);
             myTeam.picks = await CalculateTotalPointsContributed(myTeam.picks, transfers, gameweekId);
             myTeam.picks = myTeam.picks.OrderBy(x => x.position).ToList();
@@ -138,20 +145,27 @@ namespace FPL.Controllers
 
         private async Task<EntryHistory> GetEntryHistory(int teamId, int gameweekId)
         {
-            var response = await _httpClient.GetAsync($"entry/{teamId}/event/{gameweekId}/picks/");
+            if (gameweekId != 0)
+            {
+                var response = await _httpClient.GetAsync($"entry/{teamId}/event/{gameweekId}/picks/");
 
-            response.EnsureSuccessStatusCode();
+                response.EnsureSuccessStatusCode();
 
-            var content = await response.Content.ReadAsStringAsync();
+                var content = await response.Content.ReadAsStringAsync();
 
-            var entryHistoryJSON = AllChildren(JObject.Parse(content))
-                .First(c => c.Type == JTokenType.Object && c.Path.Contains("entry_history"));
+                var entryHistoryJSON = AllChildren(JObject.Parse(content))
+                    .First(c => c.Type == JTokenType.Object && c.Path.Contains("entry_history"));
 
-            EntryHistory entryHistory = new EntryHistory();
+                EntryHistory entryHistory = new EntryHistory();
 
-            entryHistory = entryHistoryJSON.ToObject<EntryHistory>();
+                entryHistory = entryHistoryJSON.ToObject<EntryHistory>();
 
-            return entryHistory;
+                return entryHistory;
+            }
+            else
+            {
+                return new EntryHistory();
+            }
 
         }
 
@@ -172,7 +186,7 @@ namespace FPL.Controllers
 
             MyTeam myTeam = JsonConvert.DeserializeObject<MyTeam>(myTeamJSON.ToString());
 
-            myTeam.picks = await AddPlayerSummaryDataToTeam(myTeam.picks);
+            //myTeam.picks = await AddPlayerSummaryDataToTeam(myTeam.picks, gameweekId);
 
             var payload = new SubPayload();
 
@@ -344,7 +358,7 @@ namespace FPL.Controllers
             return teamPicksLastWeek;
         }
 
-        private async Task<List<Pick>> AddPlayerSummaryDataToTeam(List<Pick> teamPicks)
+        private async Task<List<Pick>> AddPlayerSummaryDataToTeam(List<Pick> teamPicks, int gameweekId)
         {
             var response = await _httpClient.GetAsync("bootstrap-static/");
 
@@ -524,11 +538,18 @@ namespace FPL.Controllers
 
             foreach (Pick pick in teamPicks)
             {
-                pick.player.MinsPlayedPercentage = Math.Round((pick.player.minutes / (pick.player.Team.Results.Count * 90m)) * 100m, 1);
-
-                if (pick.player.MinsPlayedPercentage > 100)
+                if (gameweekId != 0)
                 {
-                    pick.player.MinsPlayedPercentage = 100;
+                    pick.player.MinsPlayedPercentage = Math.Round((pick.player.minutes / (pick.player.Team.Results.Count * 90m)) * 100m, 1);
+
+                    if (pick.player.MinsPlayedPercentage > 100)
+                    {
+                        pick.player.MinsPlayedPercentage = 100;
+                    }
+                }
+                else
+                {
+                    pick.player.MinsPlayedPercentage = 0;
                 }
             }
 
