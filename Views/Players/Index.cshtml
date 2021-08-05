@@ -22,206 +22,219 @@
     </script>
 }
 
+@*@section PageStyle { 
+    <style>
+        table.dataTable.no-footer {
+            display: none !important;
+        }
+    </style>
+}*@
+
 <partial name="_PartialLoading" />
 <div id="app" style="display: none;">
-    <input type="number" placeholder="Max Value" id="val" step="0.2" />
-    <table id="allPlayersTable" class="ui unstackable collapsing table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th id="value">
-                    Val
-                </th>
-                <th>PPG Prev 30 days</th>
-                <th>% Mins Played</th>
-                <th>Avg FDR Next 5</th>
-                <th>FPL Index</th>
-                <th>Team</th>
-                <th class="position">Pos</th>
-                <th>Points rank by Val Interval</th>
-                <th>Points Pos rank by Val Interval</th>
-                <th>Price Change</th>
-                <th>GW Price Change</th>
-                <th>Pts</th>
-                <th>PPG</th>
-                <th>PPM</th>
-                @*<th>Games played</th>*@
-                <th>Mins</th>
-                <th>Goals</th>
-                <th>Assists</th>
-                <th>Clean Sheets</th>
-                <th>Saves</th>
-                <th><i class="yellow square icon"></i></th>
-                <th><i class="red square icon"></i></th>
-                <th><i class="star icon"></i></th>
-                <th class="natural-sorter">ICT Index</th>
-                <th class="natural-sorter">ICT Rank</th>
-                <th class="natural-sorter">Pos ICT Rank</th>
-                <th>Bps</th>
-                <th class="natural-sorter">Bps Rank</th>
-                <th class="natural-sorter">Pos Bps Rank</th>
-                <th>Fpl Index</th>
-                <th class="natural-sorter">Fpl Rank</th>
-                <th class="natural-sorter">Pos Fpl Rank</th>
-                <th>% Selected by</th>
-                <th>Net Transfers</th>
-                <th>GW Net Transfers</th>
-                <th>Next Game</th>
-                <th>Next 5</th>
-            </tr>
-        </thead>
-        <tbody class="single line" data-bind="foreach: $root.AllPlayers">
-            <tr>
-                <td>
-                    <span data-bind="text: web_name"></span>
-                    <span data-bind="visible: in_dreamteam"><i class="star icon"></i></span>
-                    <i class="ui icon" data-bind="visible: $root.DoesPlayerHaveStatus(status), class: $root.GetPlayerStatusIcon(status)"></i>
-                </td>
-                <td>
-                    <span data-bind="text: $root.FormatValue(now_cost)"></span>
-                </td>
-                <td>
-                    <span data-bind="text: form"></span>
-                </td>
-                <td>
-                    <span data-bind="text: MinsPlayedPercentage"></span>
-                </td>
-                <td>
-                    <span data-bind="text: $root.CalculateFixtureDifficulty(Team)"></span>
-                </td>
-                <td>
-                    <span data-bind="text: FplIndex"></span>
-                </td>
-                <td>
-                    <span data-bind="text: Team.short_name"></span>
-                </td>
-                <td>
-                    <span data-bind="text: $root.GetPosition(element_type)"></span>
-                </td>
-                <td>
-                    <span data-bind="text: CostInterval.PointsRanking"></span>
-                </td>
-                <td>
-                    <span data-bind="text: CostInterval.PointsPositionRanking"></span>
-                </td>
-                <td>
-                    <span data-bind="text: cost_change_start"></span>
-                </td>
-                <td>
-                    <span data-bind="text: cost_change_event"></span>
-                </td>
-                <td>
-                    <span data-bind="text: total_points"></span>
-                </td>
-                <td>
-                    <span data-bind="text: points_per_game"></span>
-                </td>
-                <td>
-                    <span data-bind="text: PointsPerMillion"></span>
-                </td>
-                @*<td>
-                        <span data-bind="text: Team.Results.length"></span>
-                    </td>*@
-                <td>
-                    <span data-bind="text: minutes"></span>
-                </td>
-                <td>
-                    <span data-bind="text: goals_scored"></span>
-                </td>
-                <td>
-                    <span data-bind="text: assists"></span>
-                </td>
-                <td>
-                    <span data-bind="text: clean_sheets"></span>
-                </td>
-                <td>
-                    <span data-bind="text: saves"></span>
-                </td>
-                <td>
-                    <span data-bind="text: yellow_cards"></span>
-                </td>
-                <td>
-                    <span data-bind="text: red_cards"></span>
-                </td>
-                <td>
-                    <span data-bind="text: dreamteam_count"></span>
-                </td>
-                <td>
-                    <span data-bind="text: ict_index"></span>
-                </td>
-                <td>
-                    <span data-bind="text: $root.FormatOverallRank(ict_index_rank)"></span>
-                </td>
-                <td>
-                    <span data-bind="text: $root.FormatPositionRankType(element_type, ict_index_rank_type)"></span>
-                </td>
-                <td>
-                    <span data-bind="text: bps"></span>
-                </td>
-                <td>
-                    <span data-bind="text: $root.FormatOverallRank(BpsRank)"></span>
-                </td>
-                <td>
-                    <span data-bind="text: $root.FormatPositionRankType(element_type, BpsPositionRank)"></span>
-                </td>
-                <td>
-                    <span data-bind="text: FplIndex"></span>
-                </td>
-                <td>
-                    <span data-bind="text: FplRank"></span>
-                </td>
-                <td>
-                    <span data-bind="text: FplPositionRank"></span>
-                </td>
-                <td>
-                    <span data-bind="text: selected_by_percent"></span>
-                </td>
-                <td>
-                    <span data-bind="text: $root.CreateNetTransfers($data)"></span>
-                </td>
-                <td>
-                    <span data-bind="text: $root.CreateGWNetTransfers($data)"></span>
-                </td>
-                <td>
-                    <span data-bind="text: $root.GetPlayersNextFixture(Team)"></span>
-                </td>
-                <td>
-                    <span data-bind="text: $root.GetNextFiveFixtures(Team)"></span>
-                </td>
-            </tr>
-        </tbody>
-        @*<tfoot>
+    <div class="ui container">
+        <input type="number" placeholder="Max Value" id="val" step="0.2" />
+        <table id="allPlayersTable" class="ui unstackable collapsing table">
+            <thead>
                 <tr>
                     <th>Name</th>
-                    <th id="value">Val</th>
+                    <th id="value">
+                        Val
+                    </th>
                     <th>PPG Prev 30 days</th>
                     <th>% Mins Played</th>
                     <th>Avg FDR Next 5</th>
+                    <th>FPL Index</th>
                     <th>Team</th>
-                    <th>Pos</th>
+                    <th class="position">Pos</th>
                     <th>Points rank by Val Interval</th>
                     <th>Points Pos rank by Val Interval</th>
                     <th>Price Change</th>
                     <th>GW Price Change</th>
                     <th>Pts</th>
                     <th>PPG</th>
+                    <th>PPM</th>
+                    @*<th>Games played</th>*@
                     <th>Mins</th>
                     <th>Goals</th>
                     <th>Assists</th>
                     <th>Clean Sheets</th>
                     <th>Saves</th>
+                    <th><i class="yellow square icon"></i></th>
+                    <th><i class="red square icon"></i></th>
                     <th><i class="star icon"></i></th>
+                    <th class="natural-sorter">ICT Index</th>
+                    <th class="natural-sorter">ICT Rank</th>
+                    <th class="natural-sorter">Pos ICT Rank</th>
                     <th>Bps</th>
-                    <th>ICT Rank</th>
-                    <th>Pos ICT Rank</th>
-                    <th>Bps Rank</th>
-                    <th>Pos Bps Rank</th>
+                    <th class="natural-sorter">Bps Rank</th>
+                    <th class="natural-sorter">Pos Bps Rank</th>
+                    <th>Fpl Index</th>
+                    <th class="natural-sorter">Fpl Rank</th>
+                    <th class="natural-sorter">Pos Fpl Rank</th>
                     <th>% Selected by</th>
                     <th>Net Transfers</th>
                     <th>GW Net Transfers</th>
                     <th>Next Game</th>
                     <th>Next 5</th>
                 </tr>
-            </tfoot>*@
-    </table>
+            </thead>
+            <tbody class="single line" data-bind="foreach: $root.AllPlayers">
+                <tr>
+                    <td>
+                        <span data-bind="text: web_name"></span>
+                        <span data-bind="visible: in_dreamteam"><i class="star icon"></i></span>
+                        <i class="ui icon" data-bind="visible: $root.DoesPlayerHaveStatus(status), class: $root.GetPlayerStatusIcon(status)"></i>
+                    </td>
+                    <td>
+                        <span data-bind="text: $root.FormatValue(now_cost)"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: form"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: MinsPlayedPercentage"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: $root.CalculateFixtureDifficulty(Team)"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: FplIndex"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: Team.short_name"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: $root.GetPosition(element_type)"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: CostInterval.PointsRanking"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: CostInterval.PointsPositionRanking"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: cost_change_start"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: cost_change_event"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: total_points"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: points_per_game"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: PointsPerMillion"></span>
+                    </td>
+                    @*<td>
+                            <span data-bind="text: Team.Results.length"></span>
+                        </td>*@
+                    <td>
+                        <span data-bind="text: minutes"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: goals_scored"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: assists"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: clean_sheets"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: saves"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: yellow_cards"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: red_cards"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: dreamteam_count"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: ict_index"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: $root.FormatOverallRank(ict_index_rank)"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: $root.FormatPositionRankType(element_type, ict_index_rank_type)"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: bps"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: $root.FormatOverallRank(BpsRank)"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: $root.FormatPositionRankType(element_type, BpsPositionRank)"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: FplIndex"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: FplRank"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: FplPositionRank"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: selected_by_percent"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: $root.CreateNetTransfers($data)"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: $root.CreateGWNetTransfers($data)"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: $root.GetPlayersNextFixture(Team)"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: $root.GetNextFiveFixtures(Team)"></span>
+                    </td>
+                </tr>
+            </tbody>
+            @*<tfoot>
+                    <tr>
+                        <th>Name</th>
+                        <th id="value">Val</th>
+                        <th>PPG Prev 30 days</th>
+                        <th>% Mins Played</th>
+                        <th>Avg FDR Next 5</th>
+                        <th>Team</th>
+                        <th>Pos</th>
+                        <th>Points rank by Val Interval</th>
+                        <th>Points Pos rank by Val Interval</th>
+                        <th>Price Change</th>
+                        <th>GW Price Change</th>
+                        <th>Pts</th>
+                        <th>PPG</th>
+                        <th>Mins</th>
+                        <th>Goals</th>
+                        <th>Assists</th>
+                        <th>Clean Sheets</th>
+                        <th>Saves</th>
+                        <th><i class="star icon"></i></th>
+                        <th>Bps</th>
+                        <th>ICT Rank</th>
+                        <th>Pos ICT Rank</th>
+                        <th>Bps Rank</th>
+                        <th>Pos Bps Rank</th>
+                        <th>% Selected by</th>
+                        <th>Net Transfers</th>
+                        <th>GW Net Transfers</th>
+                        <th>Next Game</th>
+                        <th>Next 5</th>
+                    </tr>
+                </tfoot>*@
+        </table>
+
+    </div>
+
+
 </div>

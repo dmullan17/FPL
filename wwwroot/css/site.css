@@ -489,6 +489,12 @@ div.dt-buttons {
 	}
 }
 
+.DTFC_LeftHeadWrapper {
+	border-right-color: rgba(34, 36, 38, 0.15) !important;
+	border-right-style: solid !important;
+	border-right-width: 1px !important;
+}
+
 .DTFC_LeftBodyWrapper {
 	border-right-color: rgba(34, 36, 38, 0.15) !important;
 	border-right-style: solid !important;
@@ -496,8 +502,31 @@ div.dt-buttons {
 }
 
 .DTFC_LeftBodyLiner {
+	overflow: hidden;
+}
+
+.DTFC_LeftBodyLiner {
 	overflow-y: auto !important;
 }
+
+table.dataTable.no-footer {
+	border-bottom-color: rgba(34, 36, 38, 0.15);
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+}
+
+#allPlayersTable_wrapper > div.DTFC_ScrollWrapper > div.DTFC_LeftWrapper > div.DTFC_LeftHeadWrapper > table {
+	margin-bottom: 1px;
+}
+
+
+/*#allPlayersTable_wrapper > div.DTFC_ScrollWrapper > div.DTFC_LeftWrapper > div.DTFC_LeftBodyWrapper > div > table {
+	border: none;
+}
+
+#allPlayersTable_wrapper > div.DTFC_ScrollWrapper > div.DTFC_LeftWrapper > div.DTFC_LeftHeadWrapper > table {
+	border-bottom: none;
+}*/
 
 /*.tally-table-container {
 	max-height: 30rem;

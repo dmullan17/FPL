@@ -79,7 +79,7 @@ PlayersViewModel = function (data) {
         var oppositionStrength = 0;
         //var FDR = 0;
 
-        for (var i = 0; i < team.Fixtures.length - 1; i++) {
+        for (var i = 0; i < 5; i++) {
 
             if (team.id == team.Fixtures[i].team_h) {
                 oppositionStrength += team.Fixtures[i].team_h_difficulty;
@@ -102,7 +102,7 @@ PlayersViewModel = function (data) {
 
         var games = [];
 
-        for (var i = 0; i < team.Fixtures.length - 1; i++) {
+        for (var i = 0; i < 5; i++) {
 
             if (team.id == team.Fixtures[i].team_h) {
                 games.push(' ' + team.Fixtures[i].team_a_name.substring(0, 3) + ' (H)');
