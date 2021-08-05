@@ -246,9 +246,18 @@ namespace FPL.Controllers
 
                 var leagueJSON = JObject.Parse(content);
 
-                JObject leagueStandingsObject = (JObject)leagueJSON["standings"];
+                var temp = new JObject();
 
-                var leaguePlayersJSON = AllChildren(leagueStandingsObject)
+                if (gameweekId == 0)
+                {
+                    temp = (JObject)leagueJSON["new_entries"];
+                }
+                else
+                {
+                    temp = (JObject)leagueJSON["standings"];
+                }
+
+                var leaguePlayersJSON = AllChildren(temp)
                     .First(c => c.Type == JTokenType.Array && c.Path.Contains("results"))
                     .Children<JObject>();
 
@@ -298,7 +307,7 @@ namespace FPL.Controllers
                 int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
                 player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
                 //player.total += (gwpoints - player.event_total);
-                player.total = ((int)teamDetails.summary_overall_points - (int)teamDetails.summary_event_points) + gwpoints;
+                player.total = (teamDetails.summary_overall_points ?? 0 - teamDetails.summary_event_points ?? 0) + gwpoints;
                 player.event_total = gwpoints;
                 //player.event_total += (gwpoints - player.event_total);
                 player.GWTeam = gwTeam;
@@ -340,12 +349,21 @@ namespace FPL.Controllers
 
             l = leagueDetailsJSON.ToObject<Classic>();
 
-            JObject leagueStandingsObject = (JObject)leagueJSON["standings"];
+            var temp = new JObject();
 
-            l.Standings.has_next = (bool)leagueStandingsObject["has_next"];
-            l.Standings.page = (int)leagueStandingsObject["page"];
+            if (gameweekId == 0)
+            {
+                temp = (JObject)leagueJSON["new_entries"];
+            }
+            else 
+            {
+                temp = (JObject)leagueJSON["standings"];
+            }
 
-            var leaguePlayersJSON = AllChildren(leagueStandingsObject)
+            l.Standings.has_next = (bool)temp["has_next"];
+            l.Standings.page = (int)temp["page"];
+
+            var leaguePlayersJSON = AllChildren(temp)
                 .First(c => c.Type == JTokenType.Array && c.Path.Contains("results"))
                 .Children<JObject>();
 
@@ -386,7 +404,7 @@ namespace FPL.Controllers
                 player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
                 //player.total += (gwpoints - player.event_total);
                 //player.event_total += (gwpoints - player.event_total);
-                player.total = ((int)teamDetails.summary_overall_points - (int)teamDetails.summary_event_points) + gwpoints;
+                player.total = (teamDetails.summary_overall_points ?? 0 - teamDetails.summary_event_points ?? 0) + gwpoints;
                 player.event_total = gwpoints;
                 player.GWTeam = gwTeam;
 

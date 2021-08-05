@@ -12,6 +12,7 @@
     <link href="~/lib/semantic-ui/semantic.css" rel="stylesheet" />
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/semantic-ui/semantic.min.js"></script>
+    @RenderSection("PageStyle", false)
 </head>
 <body>
     <header>
@@ -100,7 +101,7 @@
             </div>
         </div>
     </header>
-    <div class="container">
+    <div class="container" style="padding-bottom: 2rem;">
         <main role="main">
             @RenderBody()
         </main>
@@ -112,11 +113,11 @@
         @RenderSection("PageScripts", false)
     </div>
 
-    <footer class="ui inverted vertical footer segment">
+    @*<footer class="ui inverted vertical footer segment">
         <div class="ui container">
             &copy; 2020 - FPL - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
-    </footer>
+    </footer>*@
 
     <script>
         $(window).on('load', function () {

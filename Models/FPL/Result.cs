@@ -26,5 +26,8 @@ namespace FPL.Models.FPL
         public int total { get; set; }
         public int entry { get; set; }
         public string entry_name { get; set; }
+        public DateTime joined_time { get; set; }
+        public string player_first_name { get; set; }
+        public string player_last_name { get; set; }
     }
 }

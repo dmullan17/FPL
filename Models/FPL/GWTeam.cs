@@ -14,6 +14,7 @@ namespace FPL.Models.FPL
             automatic_subs = new List<AutomaticSub>();
             ActiveChips = new List<string>();
             GWTransfers = new List<Transfer>();
+            EntryHistory = new EntryHistory();
         }
         //public Player player { get; set; }
         //public GWPlayer GWPlayer { get; set; }

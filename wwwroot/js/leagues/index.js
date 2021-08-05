@@ -4,7 +4,9 @@
     var self = this,
         standingsSegment = $('#standings-segment'),
         standingsLoader = $('#standings-loader'),
+        entriesLoader = $('#entries-loader'),
         standingsTable = $('#standings-table'),
+        entriesTable = $('#entries-table'),
         standingsTableBody = $('#standings-table tbody'),
         standingsTableFooter = $('#standings-table tfoot'),
         playerTallyTable = $('#player-tally-table'),
@@ -59,6 +61,7 @@
                 },
                 beforeSend: function () {
                     standingsLoader.addClass("active");
+                    entriesLoader.addClass("active");
                     leagueDropdown.addClass("disabled");
                     standingsTable.hide();
                     playerTallyTable.hide();
@@ -71,11 +74,13 @@
                         self.UserTeam(json.UserTeam);
                         initialiseStandingsDatatable();
                         initialiseTalliesDatatable();
+                        initialiseEntriesTable();
                         return;
                     }
                 },
                 complete: function (xhr, status) {
                     standingsLoader.removeClass("active");
+                    entriesLoader.removeClass("active");
                     leagueDropdown.removeClass("disabled");
                     standingsTable.show();
                     playerTallyTable.show();
@@ -162,6 +167,7 @@
                 standingsTable.DataTable().clear().destroy();
             }
             initialiseStandingsDatatable();
+            initialiseEntriesTable();
             self.SelectedLeague(league);
         }
 
@@ -198,6 +204,7 @@
                     return false;
                 }
                 standingsLoader.addClass("active");
+                entriesLoader.addClass("active");
                 leagueDropdown.addClass("disabled");
                 standingsTable.hide();
                 playerTallyTable.hide();
@@ -208,6 +215,7 @@
             };
             options.complete = function (data, textStatus) {
                 standingsLoader.removeClass("active");
+                entriesLoader.removeClass("active");
                 leagueDropdown.removeClass("disabled");
                 standingsTable.show();
                 playerTallyTable.show();
@@ -239,9 +247,10 @@
 
     self.SelectedLeague.subscribe(function (league) {
 
-        if ($.fn.dataTable.isDataTable(standingsTable)) {
+        if ($.fn.dataTable.isDataTable(standingsTable) || $.fn.dataTable.isDataTable(entriesTable)) {
             standingsTable.DataTable().clear().destroy();
             playerTallyTable.DataTable().clear().destroy();
+            entriesTable.DataTable().clear().destroy();
 
             $.ajax({
                 url: "/Leagues/GetPlayerStandingsForClassicLeague",
@@ -262,6 +271,7 @@
                         self.UserTeam(json.UserTeam);
                         initialiseStandingsDatatable();
                         initialiseTalliesDatatable();
+                        initialiseEntriesTable();
                         return;
                     //}
                 }
@@ -364,8 +374,15 @@
         var html = "";
         var url = window.location.href;
         var selectedPlayerUrl = url.replace(window.location.pathname, '/points?entry=' + player.entry);
+        var name = "";
 
-        html += "<a class=\"team-name\" href=" + selectedPlayerUrl + " target=\"_blank\"" + ">" + player.entry_name + "</a></br > <span class=\"manager-name\">" + player.player_name + "</span>"
+        if (player.player_name == null) {
+            name = player.player_first_name + " " + player.player_last_name;
+        } else {
+            name = player.player_name
+        }
+
+        html += "<a class=\"team-name\" href=" + selectedPlayerUrl + " target=\"_blank\"" + ">" + player.entry_name + "</a></br > <span class=\"manager-name\">" + name + "</span>"
         return html;
     }
 
@@ -661,6 +678,7 @@
 
         initialiseStandingsDatatable();
         initialiseTalliesDatatable();
+        initialiseEntriesTable();
 
         $("#th-bonus-points").attr('title', 'This is the hover-over text');
 
@@ -901,6 +919,12 @@
 
 		    });
 	    }
+    }
+
+    function initialiseEntriesTable() {
+        $(document).ready(function () {
+            var table = entriesTable.DataTable();
+        });
     }
 
     // Accepts a Date object or date string that is recognized by the Date.parse() method

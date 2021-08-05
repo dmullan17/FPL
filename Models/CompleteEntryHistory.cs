@@ -29,16 +29,19 @@ namespace FPL.Models
 
             var last6 = CurrentSeasonEntryHistory.Skip(Math.Max(0, CurrentSeasonEntryHistory.Count() - 6)).ToList();
 
-            for (int i = 0; i < 6; i++)
+            if (last6.Count != 0)
             {
-                if (i == 5)
+                for (int i = 0; i < 6; i++)
                 {
-                    continue;
+                    if (i == 5)
+                    {
+                        continue;
+                    }
+                    last5.Add(last6[i].points);
                 }
-                last5.Add(last6[i].points);
-            }
 
-            last5.Reverse();
+                last5.Reverse();
+            }
 
             return last5;
         }

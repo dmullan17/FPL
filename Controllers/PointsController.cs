@@ -159,70 +159,78 @@ namespace FPL.Controllers
 
         public async Task<GWTeam> PopulateGwTeam(GWTeam gwTeam, int gameweekId, int teamId)
         {
-            HttpClientHandler handler = new HttpClientHandler();
-
-            var response = await _httpClient.GetAuthAsync(CreateHandler(handler), $"entry/{teamId}/event/{gameweekId}/picks/");
-
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-
-            var teamPicksJSON = AllChildren(JObject.Parse(content))
-                .First(c => c.Type == JTokenType.Array && c.Path.Contains("picks"))
-                .Children<JObject>();
-
-            List<Pick> teamPicks = new List<Pick>();
-
-            foreach (JObject result in teamPicksJSON)
+            if (gameweekId != 0)
             {
-                Pick p = result.ToObject<Pick>();
-                teamPicks.Add(p);
-            }
+                HttpClientHandler handler = new HttpClientHandler();
 
-            var teamAutoSubsJSON = AllChildren(JObject.Parse(content))
-                .First(c => c.Type == JTokenType.Array && c.Path.Contains("automatic_subs"))
-                .Children<JObject>();
+                var response = await _httpClient.GetAuthAsync(CreateHandler(handler), $"entry/{teamId}/event/{gameweekId}/picks/");
 
-            List<AutomaticSub> autoSubs = new List<AutomaticSub>();
+                response.EnsureSuccessStatusCode();
 
-            foreach (JObject result in teamAutoSubsJSON)
-            {
-                AutomaticSub sub = result.ToObject<AutomaticSub>();
-                autoSubs.Add(sub);
-            }
+                var content = await response.Content.ReadAsStringAsync();
 
-            var entryHistoryJSON = AllChildren(JObject.Parse(content))
-                .First(c => c.Type == JTokenType.Object && c.Path.Contains("entry_history"));
+                var teamPicksJSON = AllChildren(JObject.Parse(content))
+                    .First(c => c.Type == JTokenType.Array && c.Path.Contains("picks"))
+                    .Children<JObject>();
 
-            EntryHistory entryHistory = new EntryHistory();
+                List<Pick> teamPicks = new List<Pick>();
 
-            entryHistory = entryHistoryJSON.ToObject<EntryHistory>();
-
-            var activeChipsJSON = AllChildren(JObject.Parse(content))
-                .First(c => (c.Type == JTokenType.String || c.Type == JTokenType.Null || c.Type == JTokenType.Array) && c.Path.Contains("active_chip"));
-
-            List<string> activeChips = new List<string>();
-
-            if (activeChipsJSON.Type is JTokenType.String)
-            {
-                var activeChip = activeChipsJSON.ToString();
-                activeChips.Add(activeChip);
-            }
-            else if (activeChipsJSON.Type is JTokenType.Array)
-            {
-                foreach (JObject result in activeChipsJSON)
+                foreach (JObject result in teamPicksJSON)
                 {
-                    var ac = result.ToObject<string>();
-                    activeChips.Add(ac);
+                    Pick p = result.ToObject<Pick>();
+                    teamPicks.Add(p);
                 }
+
+                var teamAutoSubsJSON = AllChildren(JObject.Parse(content))
+                    .First(c => c.Type == JTokenType.Array && c.Path.Contains("automatic_subs"))
+                    .Children<JObject>();
+
+                List<AutomaticSub> autoSubs = new List<AutomaticSub>();
+
+                foreach (JObject result in teamAutoSubsJSON)
+                {
+                    AutomaticSub sub = result.ToObject<AutomaticSub>();
+                    autoSubs.Add(sub);
+                }
+
+                var entryHistoryJSON = AllChildren(JObject.Parse(content))
+                    .First(c => c.Type == JTokenType.Object && c.Path.Contains("entry_history"));
+
+                EntryHistory entryHistory = new EntryHistory();
+
+                entryHistory = entryHistoryJSON.ToObject<EntryHistory>();
+
+                var activeChipsJSON = AllChildren(JObject.Parse(content))
+                    .First(c => (c.Type == JTokenType.String || c.Type == JTokenType.Null || c.Type == JTokenType.Array) && c.Path.Contains("active_chip"));
+
+                List<string> activeChips = new List<string>();
+
+                if (activeChipsJSON.Type is JTokenType.String)
+                {
+                    var activeChip = activeChipsJSON.ToString();
+                    activeChips.Add(activeChip);
+                }
+                else if (activeChipsJSON.Type is JTokenType.Array)
+                {
+                    foreach (JObject result in activeChipsJSON)
+                    {
+                        var ac = result.ToObject<string>();
+                        activeChips.Add(ac);
+                    }
+                }
+
+                gwTeam.picks = teamPicks;
+                gwTeam.automatic_subs = autoSubs;
+                gwTeam.ActiveChips = activeChips;
+                gwTeam.EntryHistory = entryHistory;
+
+                return gwTeam;
+            }
+            else
+            {
+                return new GWTeam();
             }
 
-            gwTeam.picks = teamPicks;
-            gwTeam.automatic_subs = autoSubs;
-            gwTeam.ActiveChips = activeChips;
-            gwTeam.EntryHistory = entryHistory;
-
-            return gwTeam;
         }
 
         //public async Task<CompleteEntryHistory> GetCompleteEntryHistory(CompleteEntryHistory completeEntryHistory, int teamId)
@@ -372,403 +380,406 @@ namespace FPL.Controllers
         {
             var lastEvent = eventStatus.status.LastOrDefault();
 
-            if (lastEvent.bonus_added && eventStatus.leagues != "Updating")
+            if (lastEvent != null)
             {
-                return gwTeam;
-            }
-            else if (lastEvent.@event != gameweekId)
-            {
-                return gwTeam;
-            }
-            else if (gwTeam.ActiveChips.Contains("bboost"))
-            {
-                return gwTeam;
-            }
-            else
-            {
-                var starters = picks.FindAll(x => x.position < 12);
-                var IsPlayerOnTeamWithNoGWGames = starters.Any(x => x.GWGames.Count == 0);
-                var startersWhoDidNotPlay = GetStartersWhoDidNotPlay(picks, IsPlayerOnTeamWithNoGWGames);
-                var availableSubs = picks.FindAll(x => x.position > 11 && (x.player.status != "u" && x.player.status != "i"));
-                var subsWhoPlayed = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes > 0);
-                var subsYetToPlay = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes == 0 && (x.player.status != "u" && x.player.status != "i") && x.GWGames.Any(y => !y.finished_provisional));
-
-                if (startersWhoDidNotPlay.Count > 0)
+                if (lastEvent.bonus_added && eventStatus.leagues != "Updating")
                 {
-                    foreach (var sub in availableSubs)
+                    return gwTeam;
+                }
+                else if (lastEvent.@event != gameweekId)
+                {
+                    return gwTeam;
+                }
+                else if (gwTeam.ActiveChips.Contains("bboost"))
+                {
+                    return gwTeam;
+                }
+                else
+                {
+                    var starters = picks.FindAll(x => x.position < 12);
+                    var IsPlayerOnTeamWithNoGWGames = starters.Any(x => x.GWGames.Count == 0);
+                    var startersWhoDidNotPlay = GetStartersWhoDidNotPlay(picks, IsPlayerOnTeamWithNoGWGames);
+                    var availableSubs = picks.FindAll(x => x.position > 11 && (x.player.status != "u" && x.player.status != "i"));
+                    var subsWhoPlayed = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes > 0);
+                    var subsYetToPlay = picks.FindAll(x => x.position > 11 && x.GWPlayer.stats.minutes == 0 && (x.player.status != "u" && x.player.status != "i") && x.GWGames.Any(y => !y.finished_provisional));
+
+                    if (startersWhoDidNotPlay.Count > 0)
                     {
-                        startersWhoDidNotPlay = GetStartersWhoDidNotPlay(picks, IsPlayerOnTeamWithNoGWGames);
-                        var startingDefenders = starters.FindAll(x => x.player.element_type == 2);
-
-                        foreach (var starterWhoDidNotPlay in startersWhoDidNotPlay)
+                        foreach (var sub in availableSubs)
                         {
-                            if (sub.GWPlayer.stats.minutes > 0 || sub.GWGames.Any(x => !(bool)x.started))
+                            startersWhoDidNotPlay = GetStartersWhoDidNotPlay(picks, IsPlayerOnTeamWithNoGWGames);
+                            var startingDefenders = starters.FindAll(x => x.player.element_type == 2);
+
+                            foreach (var starterWhoDidNotPlay in startersWhoDidNotPlay)
                             {
-                                if (sub.player.element_type == 1 && starterWhoDidNotPlay.player.element_type == 1)
+                                if (sub.GWPlayer.stats.minutes > 0 || sub.GWGames.Any(x => !(bool)x.started))
                                 {
-                                    AutomaticSub autoSub = new AutomaticSub
+                                    if (sub.player.element_type == 1 && starterWhoDidNotPlay.player.element_type == 1)
                                     {
-                                        element_out = starterWhoDidNotPlay.element,
-                                        element_in = sub.element,
-                                        @event = eventStatus.status[0].@event
-                                    };
+                                        AutomaticSub autoSub = new AutomaticSub
+                                        {
+                                            element_out = starterWhoDidNotPlay.element,
+                                            element_in = sub.element,
+                                            @event = eventStatus.status[0].@event
+                                        };
 
-                                    var starterPosition = starterWhoDidNotPlay.position;
-                                    var subPosition = sub.position;
-                                    sub.multiplier = 1;
-                                    starterWhoDidNotPlay.multiplier = 0;
-                                    starterWhoDidNotPlay.position = subPosition;
-                                    sub.position = starterPosition;
-                                    gwTeam.automatic_subs.Add(autoSub);
-
-                                }
-                                else if (sub.player.element_type == 2)
-                                {
-                                    if (starterWhoDidNotPlay.player.element_type == 2)
-                                    {
-                                        var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
+                                        var starterPosition = starterWhoDidNotPlay.position;
+                                        var subPosition = sub.position;
+                                        sub.multiplier = 1;
+                                        starterWhoDidNotPlay.multiplier = 0;
+                                        starterWhoDidNotPlay.position = subPosition;
+                                        sub.position = starterPosition;
                                         gwTeam.automatic_subs.Add(autoSub);
-                                        break;
-                                    }
-                                    else if (starterWhoDidNotPlay.player.element_type == 3 /*&& startingDefenders.Count > 3*/)
-                                    {
-                                        var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
-                                        gwTeam.automatic_subs.Add(autoSub);
-                                        break;
 
                                     }
-                                    else if (starterWhoDidNotPlay.player.element_type == 4 /*&& startingDefenders.Count > 3*/)
+                                    else if (sub.player.element_type == 2)
                                     {
-                                        var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
-                                        gwTeam.automatic_subs.Add(autoSub);
-                                        break;
-                                    }
-                                }
-                                else if (sub.player.element_type == 3)
-                                {
-                                    if (starterWhoDidNotPlay.player.element_type == 2 && startingDefenders.Count > 3)
-                                    {
-                                        var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
-                                        gwTeam.automatic_subs.Add(autoSub);
-                                        break;
-                                    }
-                                    else if (starterWhoDidNotPlay.player.element_type == 3)
-                                    {
-                                        var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
-                                        gwTeam.automatic_subs.Add(autoSub);
-                                        break;
+                                        if (starterWhoDidNotPlay.player.element_type == 2)
+                                        {
+                                            var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
+                                            gwTeam.automatic_subs.Add(autoSub);
+                                            break;
+                                        }
+                                        else if (starterWhoDidNotPlay.player.element_type == 3 /*&& startingDefenders.Count > 3*/)
+                                        {
+                                            var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
+                                            gwTeam.automatic_subs.Add(autoSub);
+                                            break;
 
+                                        }
+                                        else if (starterWhoDidNotPlay.player.element_type == 4 /*&& startingDefenders.Count > 3*/)
+                                        {
+                                            var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
+                                            gwTeam.automatic_subs.Add(autoSub);
+                                            break;
+                                        }
                                     }
-
-                                    else if (starterWhoDidNotPlay.player.element_type == 4)
+                                    else if (sub.player.element_type == 3)
                                     {
-                                        var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
-                                        gwTeam.automatic_subs.Add(autoSub);
-                                        break;
+                                        if (starterWhoDidNotPlay.player.element_type == 2 && startingDefenders.Count > 3)
+                                        {
+                                            var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
+                                            gwTeam.automatic_subs.Add(autoSub);
+                                            break;
+                                        }
+                                        else if (starterWhoDidNotPlay.player.element_type == 3)
+                                        {
+                                            var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
+                                            gwTeam.automatic_subs.Add(autoSub);
+                                            break;
+
+                                        }
+
+                                        else if (starterWhoDidNotPlay.player.element_type == 4)
+                                        {
+                                            var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
+                                            gwTeam.automatic_subs.Add(autoSub);
+                                            break;
+                                        }
                                     }
-                                }
-                                else if (sub.player.element_type == 4)
-                                {
-                                    if (starterWhoDidNotPlay.player.element_type == 2 && startingDefenders.Count > 3)
+                                    else if (sub.player.element_type == 4)
                                     {
-                                        var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
-                                        gwTeam.automatic_subs.Add(autoSub);
-                                        break;
-                                    }
+                                        if (starterWhoDidNotPlay.player.element_type == 2 && startingDefenders.Count > 3)
+                                        {
+                                            var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
+                                            gwTeam.automatic_subs.Add(autoSub);
+                                            break;
+                                        }
 
-                                    else if (starterWhoDidNotPlay.player.element_type == 3)
-                                    {
-                                        var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
-                                        gwTeam.automatic_subs.Add(autoSub);
-                                        break;
+                                        else if (starterWhoDidNotPlay.player.element_type == 3)
+                                        {
+                                            var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
+                                            gwTeam.automatic_subs.Add(autoSub);
+                                            break;
 
-                                    }
+                                        }
 
-                                    else if (starterWhoDidNotPlay.player.element_type == 4)
-                                    {
-                                        var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
-                                        gwTeam.automatic_subs.Add(autoSub);
-                                        break;
+                                        else if (starterWhoDidNotPlay.player.element_type == 4)
+                                        {
+                                            var autoSub = MakeOutfieldAutoSub(picks, starterWhoDidNotPlay, sub, eventStatus.status[0].@event, teamId);
+                                            gwTeam.automatic_subs.Add(autoSub);
+                                            break;
+                                        }
                                     }
                                 }
                             }
                         }
+
                     }
+
+                    //if (startersWhoDidNotPlay.Count > 0 && subsWhoPlayed.Count > 0)
+                    //{
+                    //    for (var i = 0; i < startersWhoDidNotPlay.Count; i++)
+                    //    {
+                    //        bool IsSubAdded = false;
+                    //        subsWhoPlayed = subsWhoPlayed.FindAll(x => x.multiplier == 0);
+                    //        if (startersWhoDidNotPlay[i].player.element_type == 1 && !IsSubAdded)
+                    //        {
+                    //            if (subsWhoPlayed.Find(x => x.player.element_type == 1) != null)
+                    //            {
+                    //                AutomaticSub autoSub = new AutomaticSub
+                    //                {
+                    //                    element_out = startersWhoDidNotPlay[i].element,
+                    //                    element_in = subsWhoPlayed.Find(x => x.player.element_type == 1).element,
+                    //                    @event = eventStatus.status[0].@event
+                    //                };
+
+                    //                var starterPosition = startersWhoDidNotPlay[i].position;
+                    //                var subPosition = subsWhoPlayed.Find(x => x.player.element_type == 1).position;
+                    //                subsWhoPlayed.Find(x => x.player.element_type == 1).multiplier = 1;
+                    //                startersWhoDidNotPlay[i].multiplier = 0;
+                    //                startersWhoDidNotPlay[i].position = subPosition;
+                    //                subsWhoPlayed.Find(x => x.player.element_type == 1).position = starterPosition;
+
+                    //                gwTeam.automatic_subs.Add(autoSub);
+                    //                IsSubAdded = true;
+                    //                continue;
+                    //            }
+                    //            else
+                    //            {
+                    //                continue;
+                    //            }
+
+                    //        }
+
+                    //        if (startersWhoDidNotPlay[i].player.element_type == 2 && !IsSubAdded)
+                    //        {
+                    //            var startingDefenders = starters.FindAll(x => x.player.element_type == 2);
+
+                    //            for (var k = 0; k < subsWhoPlayed.Count; k++)
+                    //            {
+                    //                if (subsWhoPlayed[k].player.element_type == 2)
+                    //                {
+                    //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                    //                    gwTeam.automatic_subs.Add(autoSub);
+                    //                    IsSubAdded = true;
+                    //                    break;
+                    //                }
+
+                    //                if (subsWhoPlayed[k].player.element_type == 3 && startingDefenders.Count > 3)
+                    //                {
+                    //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                    //                    gwTeam.automatic_subs.Add(autoSub);
+                    //                    IsSubAdded = true;
+                    //                    break;
+
+                    //                }
+
+                    //                if (subsWhoPlayed[k].player.element_type == 4 && startingDefenders.Count > 3)
+                    //                {
+                    //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                    //                    gwTeam.automatic_subs.Add(autoSub);
+                    //                    IsSubAdded = true;
+                    //                    break;
+                    //                }
+                    //            }
+                    //        }
+
+                    //        if (startersWhoDidNotPlay[i].player.element_type == 3 && !IsSubAdded)
+                    //        {
+                    //            for (var k = 0; k < subsWhoPlayed.Count; k++)
+                    //            {
+                    //                if (subsWhoPlayed[k].player.element_type == 2)
+                    //                {
+                    //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                    //                    gwTeam.automatic_subs.Add(autoSub);
+                    //                    IsSubAdded = true;
+                    //                    break;
+                    //                }
+
+                    //                if (subsWhoPlayed[k].player.element_type == 3)
+                    //                {
+                    //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                    //                    gwTeam.automatic_subs.Add(autoSub);
+                    //                    IsSubAdded = true;
+                    //                    break;
+
+                    //                }
+
+                    //                if (subsWhoPlayed[k].player.element_type == 4)
+                    //                {
+                    //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                    //                    gwTeam.automatic_subs.Add(autoSub);
+                    //                    IsSubAdded = true;
+                    //                    break;
+                    //                }
+                    //            }
+                    //        }
+
+                    //        if (startersWhoDidNotPlay[i].player.element_type == 4 && !IsSubAdded)
+                    //        {
+                    //            for (var k = 0; k < subsWhoPlayed.Count; k++)
+                    //            {
+                    //                if (subsWhoPlayed[k].player.element_type == 2)
+                    //                {
+                    //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                    //                    gwTeam.automatic_subs.Add(autoSub);
+                    //                    IsSubAdded = true;
+                    //                    break;
+                    //                }
+
+                    //                if (subsWhoPlayed[k].player.element_type == 3)
+                    //                {
+                    //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                    //                    gwTeam.automatic_subs.Add(autoSub);
+                    //                    IsSubAdded = true;
+                    //                    break;
+
+                    //                }
+
+                    //                if (subsWhoPlayed[k].player.element_type == 4)
+                    //                {
+                    //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
+                    //                    gwTeam.automatic_subs.Add(autoSub);
+                    //                    IsSubAdded = true;
+                    //                    break;
+                    //                }
+                    //            }
+                    //        }
+
+                    //    }
+                    //}
+
+                    //startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().finished_provisional || x.GWGames.Count == 0 || x.player.status == "i" || x.player.status == "u"));
+
+                    //if (startersWhoDidNotPlay.Count > 0 && subsYetToPlay.Count > 0)
+                    //{
+                    //    for (var i = 0; i < startersWhoDidNotPlay.Count; i++)
+                    //    {
+                    //        bool IsSubAdded = false;
+                    //        subsYetToPlay = subsYetToPlay.FindAll(x => x.multiplier == 0);
+                    //        if (startersWhoDidNotPlay[i].player.element_type == 1 && !IsSubAdded)
+                    //        {
+                    //            if (subsYetToPlay.Find(x => x.player.element_type == 1) != null)
+                    //            {
+                    //                AutomaticSub autoSub = new AutomaticSub
+                    //                {
+                    //                    element_out = startersWhoDidNotPlay[i].element,
+                    //                    element_in = subsYetToPlay.Find(x => x.player.element_type == 1).element,
+                    //                    @event = eventStatus.status[0].@event
+                    //                };
+
+                    //                var starterPosition = startersWhoDidNotPlay[i].position;
+                    //                var subPosition = subsYetToPlay.Find(x => x.player.element_type == 1).position;
+                    //                subsYetToPlay.Find(x => x.player.element_type == 1).multiplier = 1;
+                    //                startersWhoDidNotPlay[i].multiplier = 0;
+                    //                startersWhoDidNotPlay[i].position = subPosition;
+                    //                subsYetToPlay.Find(x => x.player.element_type == 1).position = starterPosition;
+
+                    //                gwTeam.automatic_subs.Add(autoSub);
+                    //                IsSubAdded = true;
+                    //                continue;
+                    //            }
+                    //            else
+                    //            {
+                    //                continue;
+                    //            }
+
+                    //        }
+
+                    //        if (startersWhoDidNotPlay[i].player.element_type == 2 && !IsSubAdded)
+                    //        {
+                    //            //var subDefenders = subsYetToPlay.FindAll(x => x.player.element_type == 2);
+                    //            var startingDefenders = starters.FindAll(x => x.player.element_type == 2 && x.multiplier > 0);
+
+                    //            for (var k = 0; k < subsYetToPlay.Count; k++)
+                    //            {
+                    //                if (subsYetToPlay[k].player.element_type == 2)
+                    //                {
+                    //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                    //                    gwTeam.automatic_subs.Add(autoSub);
+                    //                    IsSubAdded = true;
+                    //                    break;
+                    //                }
+
+                    //                if (subsYetToPlay[k].player.element_type == 3 && startingDefenders.Count > 3)
+                    //                {
+                    //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                    //                    gwTeam.automatic_subs.Add(autoSub);
+                    //                    IsSubAdded = true;
+                    //                    break;
+
+                    //                }
+
+                    //                if (subsYetToPlay[k].player.element_type == 4 && startingDefenders.Count > 3)
+                    //                {
+                    //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                    //                    gwTeam.automatic_subs.Add(autoSub);
+                    //                    IsSubAdded = true;
+                    //                    break;
+                    //                }
+                    //            }
+                    //        }
+
+                    //        if (startersWhoDidNotPlay[i].player.element_type == 3 && !IsSubAdded)
+                    //        {
+                    //            for (var k = 0; k < subsYetToPlay.Count; k++)
+                    //            {
+                    //                if (subsYetToPlay[k].player.element_type == 2)
+                    //                {
+                    //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                    //                    gwTeam.automatic_subs.Add(autoSub);
+                    //                    IsSubAdded = true;
+                    //                    break;
+                    //                }
+
+                    //                if (subsYetToPlay[k].player.element_type == 3)
+                    //                {
+                    //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                    //                    gwTeam.automatic_subs.Add(autoSub);
+                    //                    IsSubAdded = true;
+                    //                    break;
+
+                    //                }
+
+                    //                if (subsYetToPlay[k].player.element_type == 4)
+                    //                {
+                    //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                    //                    gwTeam.automatic_subs.Add(autoSub);
+                    //                    IsSubAdded = true;
+                    //                    break;
+                    //                }
+                    //            }
+                    //        }
+
+                    //        if (startersWhoDidNotPlay[i].player.element_type == 4 && !IsSubAdded)
+                    //        {
+                    //            for (var k = 0; k < subsYetToPlay.Count; k++)
+                    //            {
+                    //                if (subsYetToPlay[k].player.element_type == 2)
+                    //                {
+                    //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                    //                    gwTeam.automatic_subs.Add(autoSub);
+                    //                    IsSubAdded = true;
+                    //                    break;
+                    //                }
+
+                    //                if (subsYetToPlay[k].player.element_type == 3)
+                    //                {
+                    //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                    //                    gwTeam.automatic_subs.Add(autoSub);
+                    //                    IsSubAdded = true;
+                    //                    break;
+
+                    //                }
+
+                    //                if (subsYetToPlay[k].player.element_type == 4)
+                    //                {
+                    //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
+                    //                    gwTeam.automatic_subs.Add(autoSub);
+                    //                    IsSubAdded = true;
+                    //                    break;
+                    //                }
+                    //            }
+                    //        }
+
+                    //    }
+                    //}
 
                 }
 
-                //if (startersWhoDidNotPlay.Count > 0 && subsWhoPlayed.Count > 0)
-                //{
-                //    for (var i = 0; i < startersWhoDidNotPlay.Count; i++)
-                //    {
-                //        bool IsSubAdded = false;
-                //        subsWhoPlayed = subsWhoPlayed.FindAll(x => x.multiplier == 0);
-                //        if (startersWhoDidNotPlay[i].player.element_type == 1 && !IsSubAdded)
-                //        {
-                //            if (subsWhoPlayed.Find(x => x.player.element_type == 1) != null)
-                //            {
-                //                AutomaticSub autoSub = new AutomaticSub
-                //                {
-                //                    element_out = startersWhoDidNotPlay[i].element,
-                //                    element_in = subsWhoPlayed.Find(x => x.player.element_type == 1).element,
-                //                    @event = eventStatus.status[0].@event
-                //                };
-
-                //                var starterPosition = startersWhoDidNotPlay[i].position;
-                //                var subPosition = subsWhoPlayed.Find(x => x.player.element_type == 1).position;
-                //                subsWhoPlayed.Find(x => x.player.element_type == 1).multiplier = 1;
-                //                startersWhoDidNotPlay[i].multiplier = 0;
-                //                startersWhoDidNotPlay[i].position = subPosition;
-                //                subsWhoPlayed.Find(x => x.player.element_type == 1).position = starterPosition;
-
-                //                gwTeam.automatic_subs.Add(autoSub);
-                //                IsSubAdded = true;
-                //                continue;
-                //            }
-                //            else
-                //            {
-                //                continue;
-                //            }
-
-                //        }
-
-                //        if (startersWhoDidNotPlay[i].player.element_type == 2 && !IsSubAdded)
-                //        {
-                //            var startingDefenders = starters.FindAll(x => x.player.element_type == 2);
-
-                //            for (var k = 0; k < subsWhoPlayed.Count; k++)
-                //            {
-                //                if (subsWhoPlayed[k].player.element_type == 2)
-                //                {
-                //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
-                //                    gwTeam.automatic_subs.Add(autoSub);
-                //                    IsSubAdded = true;
-                //                    break;
-                //                }
-
-                //                if (subsWhoPlayed[k].player.element_type == 3 && startingDefenders.Count > 3)
-                //                {
-                //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
-                //                    gwTeam.automatic_subs.Add(autoSub);
-                //                    IsSubAdded = true;
-                //                    break;
-
-                //                }
-
-                //                if (subsWhoPlayed[k].player.element_type == 4 && startingDefenders.Count > 3)
-                //                {
-                //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
-                //                    gwTeam.automatic_subs.Add(autoSub);
-                //                    IsSubAdded = true;
-                //                    break;
-                //                }
-                //            }
-                //        }
-
-                //        if (startersWhoDidNotPlay[i].player.element_type == 3 && !IsSubAdded)
-                //        {
-                //            for (var k = 0; k < subsWhoPlayed.Count; k++)
-                //            {
-                //                if (subsWhoPlayed[k].player.element_type == 2)
-                //                {
-                //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
-                //                    gwTeam.automatic_subs.Add(autoSub);
-                //                    IsSubAdded = true;
-                //                    break;
-                //                }
-
-                //                if (subsWhoPlayed[k].player.element_type == 3)
-                //                {
-                //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
-                //                    gwTeam.automatic_subs.Add(autoSub);
-                //                    IsSubAdded = true;
-                //                    break;
-
-                //                }
-
-                //                if (subsWhoPlayed[k].player.element_type == 4)
-                //                {
-                //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
-                //                    gwTeam.automatic_subs.Add(autoSub);
-                //                    IsSubAdded = true;
-                //                    break;
-                //                }
-                //            }
-                //        }
-
-                //        if (startersWhoDidNotPlay[i].player.element_type == 4 && !IsSubAdded)
-                //        {
-                //            for (var k = 0; k < subsWhoPlayed.Count; k++)
-                //            {
-                //                if (subsWhoPlayed[k].player.element_type == 2)
-                //                {
-                //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
-                //                    gwTeam.automatic_subs.Add(autoSub);
-                //                    IsSubAdded = true;
-                //                    break;
-                //                }
-
-                //                if (subsWhoPlayed[k].player.element_type == 3)
-                //                {
-                //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
-                //                    gwTeam.automatic_subs.Add(autoSub);
-                //                    IsSubAdded = true;
-                //                    break;
-
-                //                }
-
-                //                if (subsWhoPlayed[k].player.element_type == 4)
-                //                {
-                //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsWhoPlayed[k], eventStatus.status[0].@event, teamId);
-                //                    gwTeam.automatic_subs.Add(autoSub);
-                //                    IsSubAdded = true;
-                //                    break;
-                //                }
-                //            }
-                //        }
-
-                //    }
-                //}
-
-                //startersWhoDidNotPlay = picks.FindAll(x => x.position < 12 && x.GWPlayer.stats.minutes == 0 && (x.GWGames.DefaultIfEmpty(new Game()).LastOrDefault().finished_provisional || x.GWGames.Count == 0 || x.player.status == "i" || x.player.status == "u"));
-
-                //if (startersWhoDidNotPlay.Count > 0 && subsYetToPlay.Count > 0)
-                //{
-                //    for (var i = 0; i < startersWhoDidNotPlay.Count; i++)
-                //    {
-                //        bool IsSubAdded = false;
-                //        subsYetToPlay = subsYetToPlay.FindAll(x => x.multiplier == 0);
-                //        if (startersWhoDidNotPlay[i].player.element_type == 1 && !IsSubAdded)
-                //        {
-                //            if (subsYetToPlay.Find(x => x.player.element_type == 1) != null)
-                //            {
-                //                AutomaticSub autoSub = new AutomaticSub
-                //                {
-                //                    element_out = startersWhoDidNotPlay[i].element,
-                //                    element_in = subsYetToPlay.Find(x => x.player.element_type == 1).element,
-                //                    @event = eventStatus.status[0].@event
-                //                };
-
-                //                var starterPosition = startersWhoDidNotPlay[i].position;
-                //                var subPosition = subsYetToPlay.Find(x => x.player.element_type == 1).position;
-                //                subsYetToPlay.Find(x => x.player.element_type == 1).multiplier = 1;
-                //                startersWhoDidNotPlay[i].multiplier = 0;
-                //                startersWhoDidNotPlay[i].position = subPosition;
-                //                subsYetToPlay.Find(x => x.player.element_type == 1).position = starterPosition;
-
-                //                gwTeam.automatic_subs.Add(autoSub);
-                //                IsSubAdded = true;
-                //                continue;
-                //            }
-                //            else
-                //            {
-                //                continue;
-                //            }
-
-                //        }
-
-                //        if (startersWhoDidNotPlay[i].player.element_type == 2 && !IsSubAdded)
-                //        {
-                //            //var subDefenders = subsYetToPlay.FindAll(x => x.player.element_type == 2);
-                //            var startingDefenders = starters.FindAll(x => x.player.element_type == 2 && x.multiplier > 0);
-
-                //            for (var k = 0; k < subsYetToPlay.Count; k++)
-                //            {
-                //                if (subsYetToPlay[k].player.element_type == 2)
-                //                {
-                //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
-                //                    gwTeam.automatic_subs.Add(autoSub);
-                //                    IsSubAdded = true;
-                //                    break;
-                //                }
-
-                //                if (subsYetToPlay[k].player.element_type == 3 && startingDefenders.Count > 3)
-                //                {
-                //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
-                //                    gwTeam.automatic_subs.Add(autoSub);
-                //                    IsSubAdded = true;
-                //                    break;
-
-                //                }
-
-                //                if (subsYetToPlay[k].player.element_type == 4 && startingDefenders.Count > 3)
-                //                {
-                //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
-                //                    gwTeam.automatic_subs.Add(autoSub);
-                //                    IsSubAdded = true;
-                //                    break;
-                //                }
-                //            }
-                //        }
-
-                //        if (startersWhoDidNotPlay[i].player.element_type == 3 && !IsSubAdded)
-                //        {
-                //            for (var k = 0; k < subsYetToPlay.Count; k++)
-                //            {
-                //                if (subsYetToPlay[k].player.element_type == 2)
-                //                {
-                //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
-                //                    gwTeam.automatic_subs.Add(autoSub);
-                //                    IsSubAdded = true;
-                //                    break;
-                //                }
-
-                //                if (subsYetToPlay[k].player.element_type == 3)
-                //                {
-                //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
-                //                    gwTeam.automatic_subs.Add(autoSub);
-                //                    IsSubAdded = true;
-                //                    break;
-
-                //                }
-
-                //                if (subsYetToPlay[k].player.element_type == 4)
-                //                {
-                //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
-                //                    gwTeam.automatic_subs.Add(autoSub);
-                //                    IsSubAdded = true;
-                //                    break;
-                //                }
-                //            }
-                //        }
-
-                //        if (startersWhoDidNotPlay[i].player.element_type == 4 && !IsSubAdded)
-                //        {
-                //            for (var k = 0; k < subsYetToPlay.Count; k++)
-                //            {
-                //                if (subsYetToPlay[k].player.element_type == 2)
-                //                {
-                //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
-                //                    gwTeam.automatic_subs.Add(autoSub);
-                //                    IsSubAdded = true;
-                //                    break;
-                //                }
-
-                //                if (subsYetToPlay[k].player.element_type == 3)
-                //                {
-                //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
-                //                    gwTeam.automatic_subs.Add(autoSub);
-                //                    IsSubAdded = true;
-                //                    break;
-
-                //                }
-
-                //                if (subsYetToPlay[k].player.element_type == 4)
-                //                {
-                //                    var autoSub = MakeOutfieldAutoSub(picks, startersWhoDidNotPlay[i], subsYetToPlay[k], eventStatus.status[0].@event, teamId);
-                //                    gwTeam.automatic_subs.Add(autoSub);
-                //                    IsSubAdded = true;
-                //                    break;
-                //                }
-                //            }
-                //        }
-
-                //    }
-                //}
-
+                gwTeam.picks = picks.OrderBy(x => x.position).ToList();
             }
-
-            gwTeam.picks = picks.OrderBy(x => x.position).ToList();
 
             return gwTeam;
 
