@@ -169,6 +169,19 @@ namespace FPL.Http
             {
                 client.DefaultRequestHeaders.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.Add("authority", "users.premierleague.com");
+                client.DefaultRequestHeaders.Add("cache-control", "max-age=0");
+                client.DefaultRequestHeaders.Add("upgrade-insecure-requests", "1");
+                client.DefaultRequestHeaders.Add("origin", "https://fantasy.premierleague.com");
+                client.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36");
+                client.DefaultRequestHeaders.Add("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+                client.DefaultRequestHeaders.Add("sec-fetch-site", "same-site");
+                client.DefaultRequestHeaders.Add("sec-fetch-mode", "navigate");
+                client.DefaultRequestHeaders.Add("sec-fetch-user", "?1");
+                client.DefaultRequestHeaders.Add("sec-fetch-dest", "document");
+                client.DefaultRequestHeaders.Add("referer", "https://fantasy.premierleague.com");
+                client.DefaultRequestHeaders.Add("accept-language", "en-US,en;q=0.9,he;q=0.8");
+        
                 client.Timeout = DefaultTimeout;
 
                 IList<KeyValuePair<string, string>> fplLoginRequest = new List<KeyValuePair<string, string>> {
