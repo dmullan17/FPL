@@ -23,13 +23,14 @@ namespace FPL.Models
 
         //public List<int> Last5GwPoints { get; set } = 
 
-        public List<int> GetLast5GwPoints()
+        public List<int> GetLast5GwPoints(int gwPoints)
         {
             List<int> last5 = new List<int>();
 
             var last6 = CurrentSeasonEntryHistory.Skip(Math.Max(0, CurrentSeasonEntryHistory.Count() - 6)).ToList();
 
-            if (last6.Count != 0)
+            //if there have been at least 6 games played, get last 5 point totals
+            if (last6.Count == 6)
             {
                 for (int i = 0; i < 6; i++)
                 {
@@ -38,6 +39,20 @@ namespace FPL.Models
                         continue;
                     }
                     last5.Add(last6[i].points);
+                }
+
+                last5.Reverse();
+            }
+            //if there has been less than 6 games, add how many games that have been played. 
+            else
+            {
+                for (int i = 0; i < CurrentSeasonEntryHistory.Count(); i++)
+                {
+                    //only add total from gws that are finished
+                    if (i != CurrentSeasonEntryHistory.Count() - 1)
+                    {
+                        last5.Add(last6[i].points);
+                    }               
                 }
 
                 last5.Reverse();

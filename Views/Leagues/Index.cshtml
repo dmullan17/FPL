@@ -80,7 +80,7 @@
                                             <th class="center aligned hide-on-mobile" data-tooltip="GameWeek Transfers (Cost)">GWT (C)</th>
                                             <th class="center aligned hide-on-mobile" data-tooltip="Total Transfers (Cost)">TT (C)</th>
                                             <th class="hide-on-mobile" data-tooltip="Used Chips (GameWeek)">UC (GW)</th>
-                                            <th class="hide-on-mobile">Last 5</th>
+                                            <th class="hide-on-mobile" data-bind="visible: $root.CurrentGwId > 1">Last <span data-bind="text: $root.CurrentGwId() < 6 ? $root.CurrentGwId() - 1 : 5"></span></th>
                                         </tr>
                                     </thead>
                                     <tbody data-bind="foreach: $root.SelectedLeagueStandings">
@@ -104,7 +104,7 @@
                                             <td class="center aligned hide-on-mobile" data-bind="text: $root.GetGwTransfers($data.GWTeam)"></td>
                                             <td class="center aligned hide-on-mobile" data-bind="text: CompleteEntryHistory.TotalTransfersMade + ' (' + CompleteEntryHistory.TotalTransfersCost + ')'"></td>
                                             <td class="single line hide-on-mobile" data-bind="html: $root.GetChipsUsed($data.CompleteEntryHistory.chips)"></td>
-                                            <td class="single line hide-on-mobile" data-bind="text: $root.FormatLast5GwPoints(Last5GwPoints)"></td>
+                                            <td class="single line hide-on-mobile" data-bind="text: $root.FormatLast5GwPoints(Last5GwPoints), visible: $root.CurrentGwId > 1"></td>
                                         </tr>
                                     </tbody>
                                     <tfoot data-bind="visible: $root.SelectedLeagueStandings().length > 10">
@@ -128,7 +128,7 @@
                                             <td class="center aligned hide-on-mobile" data-bind="text: $root.GetGwTransfers($data.GWTeam)"></td>
                                             <td class="center aligned hide-on-mobile" data-bind="text: CompleteEntryHistory.TotalTransfersMade + ' (' + CompleteEntryHistory.TotalTransfersCost + ')'"></td>
                                             <td class="single line hide-on-mobile" data-bind="html: $root.GetChipsUsed($data.CompleteEntryHistory.chips)"></td>
-                                            <td class="single line hide-on-mobile" data-bind="text: $root.FormatLast5GwPoints(Last5GwPoints)"></td>
+                                            <td class="single line hide-on-mobile" data-bind="text: $root.FormatLast5GwPoints(Last5GwPoints), visible: $root.CurrentGwId > 1"></td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -173,39 +173,39 @@
                                 Third
                             </div>
                         </div>
-                    } else {
-                    <div id="entries-segment" class="ui attached segment" style="min-height:30rem;">
-                        <div class="ui attached tabular menu">
-                            <a class="item active" data-tab="first">
-                                Entries
-                            </a>
-                        </div>
-                        <div class="ui bottom attached tab segment active" data-tab="first">
-                            <div id="entries-loader" class="ui inverted dimmer">
-                                <div class="ui text large loader">
-                                    <h3 class="ui top attached header" data-bind="text: 'Loading ' + $root.SelectedLeague().Standings.results.length + ' fantasy teams from ' + $root.SelectedLeague().name"></h3>
-                                </div>
-                            </div>
-                            <table id="entries-table" class="ui unstackable table" style="width: 100%;">
-                                <thead>
-                                    <tr class="single line">
-                                        <th class="no-sort" style="display:none"></th>
-                                        <th class="no-sort single line">Team & Manager</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-bind="foreach: $root.SelectedLeagueStandings">
-                                    <tr class="single line" data-bind="class: $root.GetRowClass(entry)">
-                                        <td style="display:none" data-bind="text: entry"></td>
-                                        <td style="font-weight:bold" data-bind="html: $root.FormatNames($data)"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                    </div>
-
                     }
+                    else
+                    {
+                        <div id="entries-segment" class="ui attached segment" style="min-height:30rem;">
+                            <div class="ui attached tabular menu">
+                                <a class="item active" data-tab="first">
+                                    Entries
+                                </a>
+                            </div>
+                            <div class="ui bottom attached tab segment active" data-tab="first">
+                                <div id="entries-loader" class="ui inverted dimmer">
+                                    <div class="ui text large loader">
+                                        <h3 class="ui top attached header" data-bind="text: 'Loading ' + $root.SelectedLeague().Standings.results.length + ' fantasy teams from ' + $root.SelectedLeague().name"></h3>
+                                    </div>
+                                </div>
+                                <table id="entries-table" class="ui unstackable table" style="width: 100%;">
+                                    <thead>
+                                        <tr class="single line">
+                                            <th class="no-sort" style="display:none"></th>
+                                            <th class="no-sort single line">Team & Manager</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach: $root.SelectedLeagueStandings">
+                                        <tr class="single line" data-bind="class: $root.GetRowClass(entry)">
+                                            <td style="display:none" data-bind="text: entry"></td>
+                                            <td style="font-weight:bold" data-bind="html: $root.FormatNames($data)"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
 
+                        </div>
+                    }
                 </div>
             </div>
         </div>

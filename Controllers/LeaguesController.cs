@@ -14,6 +14,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Team = FPL.Models.Team;
+using FPLTeam = FPL.Models.FPL.Team;
 
 namespace FPL.Controllers
 {
@@ -305,9 +306,10 @@ namespace FPL.Controllers
                 }
 
                 int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
-                player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
+                player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints(gwpoints);
                 //player.total += (gwpoints - player.event_total);
-                player.total = (teamDetails.summary_overall_points ?? 0 - teamDetails.summary_event_points ?? 0) + gwpoints;
+                //player.total = (teamDetails.summary_overall_points ?? 0 - teamDetails.summary_event_points ?? 0) + gwpoints;
+                player.total = CalculatePlayerTotal(teamDetails, gwpoints);
                 player.event_total = gwpoints;
                 //player.event_total += (gwpoints - player.event_total);
                 player.GWTeam = gwTeam;
@@ -321,6 +323,14 @@ namespace FPL.Controllers
             smallestLeague.AllGwTransfers = allGwTransfers;
 
             return leagues;
+        }
+
+        private int CalculatePlayerTotal(FPLTeam teamDetails, int gwPoints)
+        {
+            var overallPoints = teamDetails.summary_overall_points ?? 0;
+            var eventPoints = teamDetails.summary_event_points ?? 0;
+            int total = (overallPoints - eventPoints) + gwPoints;
+            return total;
         }
 
         public async Task<Classic> GetPlayerStandingsForClassicLeague(int leagueId, int gameweekId)
@@ -401,10 +411,10 @@ namespace FPL.Controllers
                 }
 
                 int gwpoints = PointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
-                player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints();
+                player.Last5GwPoints = player.CompleteEntryHistory.GetLast5GwPoints(gwpoints);
                 //player.total += (gwpoints - player.event_total);
                 //player.event_total += (gwpoints - player.event_total);
-                player.total = (teamDetails.summary_overall_points ?? 0 - teamDetails.summary_event_points ?? 0) + gwpoints;
+                player.total = CalculatePlayerTotal(teamDetails, gwpoints);
                 player.event_total = gwpoints;
                 player.GWTeam = gwTeam;
 
@@ -464,8 +474,8 @@ namespace FPL.Controllers
             //CalculateRankAndPFF(l);
 
             int gwpoints = pointsController.GetGameWeekPoints(gwTeam.picks, eventStatus);
-            userTeam.Last5GwPoints = userTeam.CompleteEntryHistory.GetLast5GwPoints();
-            userTeam.total = (teamDetails.summary_overall_points ?? 0 - teamDetails.summary_event_points ?? 0) + gwpoints;
+            userTeam.Last5GwPoints = userTeam.CompleteEntryHistory.GetLast5GwPoints(gwpoints);
+            userTeam.total = CalculatePlayerTotal(teamDetails, gwpoints);
             userTeam.PointsFromFirst = topOfLeaguePointsTotal - userTeam.total;
             userTeam.event_total = gwpoints;
             userTeam.GWTeam = gwTeam;

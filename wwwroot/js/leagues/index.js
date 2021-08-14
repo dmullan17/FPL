@@ -293,17 +293,19 @@
     }
 
     self.GetPointsMovement = function (manager) {
-        if (manager.rank > manager.last_rank) {
-            return "red arrow alternate circle down small icon";
-        }
-        else if (manager.rank < manager.last_rank) {
-            return "green arrow alternate circle up small icon";
-        }
-        else if (manager.rank == manager.last_rank) {
+        if (manager.last_rank != 0) {
+            if (manager.rank > manager.last_rank) {
+                return "red arrow alternate circle down small icon";
+            }
+            else if (manager.rank < manager.last_rank) {
+                return "green arrow alternate circle up small icon";
+            }
+            else if (manager.rank == manager.last_rank) {
+                return "grey circle small icon";
+            }
+        } else {
             return "grey circle small icon";
         }
-        return;
-
     }
 
     self.GetPosition = function (position) {
