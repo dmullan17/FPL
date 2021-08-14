@@ -538,7 +538,7 @@ namespace FPL.Controllers
 
             foreach (Pick pick in teamPicks)
             {
-                if (gameweekId != 0)
+                if (gameweekId != 0 && pick.player.Team.Results.Count > 0)
                 {
                     pick.player.MinsPlayedPercentage = Math.Round((pick.player.minutes / (pick.player.Team.Results.Count * 90m)) * 100m, 1);
 
