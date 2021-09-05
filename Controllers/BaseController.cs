@@ -266,30 +266,36 @@ namespace FPL.Controllers
 
         public async Task<int> GetTeamId()
         {
-            //HttpClientHandler handler = new HttpClientHandler();
+            HttpClientHandler handler = new HttpClientHandler();
 
-            //var response = await _httpClient.GetAuthAsync(CreateHandler(handler), "me/");
+            var response = await _httpClient.GetAuthAsync(CreateHandler(handler), "me/");
 
-            //response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
 
-            //var content = await response.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadAsStringAsync();
 
-            //var userDetailsJson = AllChildren(JObject.Parse(content))
-            //    .First(c => c.Type == JTokenType.Object && c.Path.Contains("player"));
+            //if teamId not found from api call
+            if (JObject.Parse(content).SelectToken("player").Type == JTokenType.Null)
+            {
+                return 0;
+            }
 
-            //FplPlayer fplPlayer = new FplPlayer();
+            var userDetailsJson = AllChildren(JObject.Parse(content))
+                .First(c => c.Type == JTokenType.Object && c.Path.Contains("player"));
 
-            //fplPlayer = userDetailsJson.ToObject<FplPlayer>();
+            FplPlayer fplPlayer = new FplPlayer();
 
-            //string cookie = Request.Cookies["teamId"];
+            fplPlayer = userDetailsJson.ToObject<FplPlayer>();
 
-            //if (cookie == null)
-            //{
-            //    SetCookie("teamId", fplPlayer.entry.ToString(), null);
-            //}
+            string cookie = Request.Cookies["teamId"];
 
-            //return fplPlayer.entry;
-            return 666471;
+            if (cookie == null)
+            {
+                SetCookie("teamId", fplPlayer.entry.ToString(), null);
+            }
+
+            return fplPlayer.entry;
+            //return 666471;
         }
 
         public async Task<EventStatus> GetEventStatus()
