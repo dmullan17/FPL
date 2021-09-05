@@ -5,32 +5,114 @@
         standingsSegment = $('#standings-segment'),
         standingsLoader = $('#standings-loader'),
         entriesLoader = $('#entries-loader'),
+        searchedLoader = $('.searched-loader'),
         standingsTable = $('#standings-table'),
         entriesTable = $('#entries-table'),
         standingsTableBody = $('#standings-table tbody'),
         standingsTableFooter = $('#standings-table tfoot'),
         playerTallyTable = $('#player-tally-table'),
-        leagueDropdown = $('#league-dropdown');
+        leagueDropdown = $('#league-dropdown'),
+        leagueSearchInput = $("#league-search"),
+        leagueSearchInput2 = $("#league-search-2"),
+        leagueSearchButton = $("#league-search-button");
 
     self.ClassicLeagues = ko.observableArray(data.ClassicLeagues);
     self.H2HLeagues = ko.observableArray(data.H2HLeagues);
     self.SelectedLeague = ko.observable(data.SelectedLeague);
+    self.SearchedLeague = ko.observable({});
     self.Cup = ko.observable(data.Cup);
     self.IsEventLive = ko.observable(data.IsEventLive);
     self.IsGameLive = ko.observable(data.IsGameLive);
     self.CurrentGwId = ko.observable(data.CurrentGwId);
     self.TeamId = ko.observable(data.TeamId);
-    self.UserTeam = ko.observable(data.SelectedLeague.UserTeam);
     self.EventStatus = ko.observable(data.EventStatus);
     self.LastUpdated = ko.observable();
     self.LastUpdatedTime = ko.observable(data.LastUpdated);
     self.SelectedPlayerFromTally = ko.observable();
     self.SelectedPlayer = ko.observable();
+    self.SearchedLeagueId = ko.observable();
+    self.CurrentLeagueId = ko.observable();
+    self.UserTeam = ko.observable();
+    self.HideLeagueUI = ko.observable(false);
 
-    self.SelectedLeagueStandings = ko.observableArray(self.SelectedLeague().Standings.results);
-    self.SelectedLeaguePlayersTally = ko.observableArray(self.SelectedLeague().PlayersTally);
-    self.AllGwTransfersInLeague = ko.observableArray(self.SelectedLeague().AllGwTransfers);
+    self.SelectedLeagueStandings = ko.observableArray();
+    self.SelectedLeaguePlayersTally = ko.observableArray();
+    self.AllGwTransfersInLeague = ko.observableArray();
     self.ManagersAffiliatedWithSelectedPlayerFromTally = ko.observableArray();
+
+    if (data.SelectedLeague != null) {
+        self.UserTeam(data.SelectedLeague.UserTeam);
+        self.SelectedLeagueStandings(self.SelectedLeague().Standings.results);
+        self.SelectedLeaguePlayersTally(self.SelectedLeague().PlayersTally);
+        self.AllGwTransfersInLeague(self.SelectedLeague().AllGwTransfers);
+    } else {
+        self.HideLeagueUI(true);
+    }
+
+    self.GetSelectedLeagueStandingsLoaderText = function (data) {
+
+        if (self.SelectedLeague() != null) {
+            return 'Loading ' + self.SelectedLeague().Standings.results.length + ' fantasy teams from ' + self.SelectedLeague().name;
+        } else {
+            return "";
+        }
+    }
+
+    self.GetSearchedLeagueStandingsLoaderText = function (data) {
+
+        //if searched league is not null and object is not empty
+        if (self.SearchedLeague() != null && Object.keys(self.SearchedLeague()).length > 0) {
+            return 'Loading ' + self.SearchedLeague().Standings.results.length + ' fantasy teams from ' + self.SearchedLeague().name;
+        } else {
+            return "";
+        }
+    }
+
+
+    self.SearchLeagues = function () {
+
+        //get basic info about searched league
+        $.when(self.GetBasicInfoForLeague()).done(function (a1, a2, a3, a4) {
+            //if successful load entire searched league
+            if (a2 == "success") {
+                self.HideLeagueUI(false);
+                $.when(self.LoadSearchedLeague()).done(function (b1, b2, b3, b4) {
+                    if (b2 == "success") {
+                    }
+                });
+            }
+        });
+
+    }
+
+    self.GetBasicInfoForLeague = function () {
+        return $.ajax({
+            url: "/Leagues/GetBasicInfoForLeague",
+            type: "GET",
+            cache: false,
+            data: {
+                leagueId: self.SearchedLeagueId()
+            },
+            beforeSend: function () {
+                leagueSearchInput.removeClass("error");
+                leagueSearchInput2.removeClass("error");
+                leagueSearchButton.addClass("loading");
+            },
+            success: function (json, status, xhr) {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    self.SearchedLeague(json);
+                    leagueSearchButton.addClass("disabled");
+                }
+            },
+            complete: function (xhr, status) {
+                if (xhr.readyState === 4 && xhr.status !== 200) {
+                    leagueSearchInput.addClass("error");
+                    leagueSearchInput2.addClass("error");
+                }
+                leagueSearchButton.removeClass("loading");
+            }
+        });
+    }
 
     self.LastUpdated = function () {
 
@@ -45,23 +127,22 @@
         }
     }
 
-    self.reload = function () {
+    self.LoadSearchedLeague = function () {
 
         if ($.fn.dataTable.isDataTable(standingsTable)) {
             standingsTable.DataTable().clear().destroy();
             playerTallyTable.DataTable().clear().destroy();
 
-            $.ajax({
+            return $.ajax({
                 url: "/Leagues/GetPlayerStandingsForClassicLeague",
                 type: "GET",
                 cache: false,
                 data: {
-                    leagueId: self.SelectedLeague().id,
+                    leagueId: self.SearchedLeagueId(),
                     gameweekId: self.CurrentGwId()
                 },
                 beforeSend: function () {
-                    standingsLoader.addClass("active");
-                    entriesLoader.addClass("active");
+                    searchedLoader.addClass("active");
                     leagueDropdown.addClass("disabled");
                     standingsTable.hide();
                     playerTallyTable.hide();
@@ -72,6 +153,104 @@
                         self.SelectedLeaguePlayersTally(json.PlayersTally);
                         self.AllGwTransfersInLeague(json.AllGwTransfers);
                         self.UserTeam(json.UserTeam);
+                        self.CurrentLeagueId(json.id);
+                        initialiseStandingsDatatable();
+                        initialiseTalliesDatatable();
+                        initialiseEntriesTable();
+                    }
+                },
+                complete: function (xhr, status) {
+                    searchedLoader.removeClass("active");
+                    leagueSearchButton.removeClass("disabled");
+                    leagueDropdown.removeClass("disabled");
+                    standingsTable.show();
+                    playerTallyTable.show();
+                    if (xhr.readyState === 4 && xhr.status !== 200) {
+                    }
+                }
+            });
+        } else {
+            return $.ajax({
+                url: "/Leagues/GetPlayerStandingsForClassicLeague",
+                type: "GET",
+                cache: false,
+                data: {
+                    leagueId: self.SearchedLeagueId(),
+                    gameweekId: self.CurrentGwId()
+                },
+                beforeSend: function () {
+                    searchedLoader.addClass("active");
+                    leagueDropdown.addClass("disabled");
+                    standingsTable.hide();
+                    playerTallyTable.hide();
+                },
+                success: function (json, status, xhr) {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        //self.HideLeagueUI(false);
+                        self.SelectedLeagueStandings(json.Standings.results);
+                        self.SelectedLeaguePlayersTally(json.PlayersTally);
+                        self.AllGwTransfersInLeague(json.AllGwTransfers);
+                        self.UserTeam(json.UserTeam);
+                        self.CurrentLeagueId(json.id);
+                        initialiseStandingsDatatable();
+                        initialiseTalliesDatatable();
+                        initialiseEntriesTable();
+                    }
+                },
+                complete: function (xhr, status) {
+                    searchedLoader.removeClass("active");
+                    leagueSearchButton.removeClass("disabled");
+                    leagueDropdown.removeClass("disabled");
+                    standingsTable.show();
+                    playerTallyTable.show();
+                    if (xhr.readyState === 4 && xhr.status !== 200) {
+                    }
+                }
+            });
+        }
+
+    }
+
+
+    self.reload = function () {
+        var leagueId = 0;
+        if (self.CurrentLeagueId() != undefined) {
+            leagueId = self.CurrentLeagueId();
+        } else {
+            leagueId = self.SelectedLeague().id;
+        }
+
+        if ($.fn.dataTable.isDataTable(standingsTable)) {
+            standingsTable.DataTable().clear().destroy();
+            playerTallyTable.DataTable().clear().destroy();
+
+            $.ajax({
+                url: "/Leagues/GetPlayerStandingsForClassicLeague",
+                type: "GET",
+                cache: false,
+                data: {
+                    leagueId: leagueId,
+                    gameweekId: self.CurrentGwId()
+                },
+                beforeSend: function () {
+                    if (self.CurrentLeagueId() != undefined) {
+                        searchedLoader.addClass("active");
+                    } else {
+                        standingsLoader.addClass("active");
+                        entriesLoader.addClass("active");
+                    }
+
+                    leagueDropdown.addClass("disabled");
+                    standingsTable.hide();
+                    playerTallyTable.hide();
+                },
+                success: function (json, status, xhr) {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        self.SelectedLeagueStandings(json.Standings.results);
+                        self.SelectedLeaguePlayersTally(json.PlayersTally);
+                        self.AllGwTransfersInLeague(json.AllGwTransfers);
+                        self.UserTeam(json.UserTeam);
+                        self.CurrentLeagueId(json.id);
                         initialiseStandingsDatatable();
                         initialiseTalliesDatatable();
                         initialiseEntriesTable();
@@ -79,6 +258,8 @@
                     }
                 },
                 complete: function (xhr, status) {
+                    searchedLoader.removeClass("active");
+                    leagueSearchButton.removeClass("disabled");
                     standingsLoader.removeClass("active");
                     entriesLoader.removeClass("active");
                     leagueDropdown.removeClass("disabled");
@@ -247,6 +428,20 @@
 
     self.SelectedLeague.subscribe(function (league) {
 
+        if (self.SelectedLeague() == self.SearchedLeague()) {
+            return;
+        }
+
+        //if 'get league by id' option selected, show league search input allowing user to enter id
+        if (league.id == -1) {
+            leagueSearchInput2.show()
+            self.HideLeagueUI(true);
+            return;
+        }
+
+        leagueSearchInput2.hide();
+        self.HideLeagueUI(false);
+
         if ($.fn.dataTable.isDataTable(standingsTable) || $.fn.dataTable.isDataTable(entriesTable)) {
             standingsTable.DataTable().clear().destroy();
             playerTallyTable.DataTable().clear().destroy();
@@ -269,6 +464,7 @@
                         self.SelectedLeaguePlayersTally(json.PlayersTally);
                         self.AllGwTransfersInLeague(json.AllGwTransfers);
                         self.UserTeam(json.UserTeam);
+                        self.CurrentLeagueId(json.id);
                         initialiseStandingsDatatable();
                         initialiseTalliesDatatable();
                         initialiseEntriesTable();
@@ -678,9 +874,12 @@
             }
         }
 
-        initialiseStandingsDatatable();
-        initialiseTalliesDatatable();
-        initialiseEntriesTable();
+        if (!self.HideLeagueUI()) {
+            self.ClassicLeagues().push({ name: "Get League By Id", id: -1, Standings: {results: []} });
+            initialiseStandingsDatatable();
+            initialiseTalliesDatatable();
+            initialiseEntriesTable();
+        }
 
         $("#th-bonus-points").attr('title', 'This is the hover-over text');
 
