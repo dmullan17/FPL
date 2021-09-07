@@ -1058,8 +1058,8 @@
                     order: [[$('th.default-sort').index(), "asc"]],
                     responsive: true,
                     fixedHeader: true,
-                    scrollX: true,
-                    scrollY: true
+                    //scrollX: true,
+                    //scrollY: true
                 });
 
             });
