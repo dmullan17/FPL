@@ -13,18 +13,50 @@
 }
 
 <div id="app">
-    <div id="div-login" class="ui middle aligned center aligned grid">
+    <div class="ui container">
+        <div class="ui middle aligned center aligned grid">
+            <div class="column" style="max-width: 700px;">
+                <h2 class="ui header">
+                    <div class="content">
+                        Log-in using your Official FPL login credentials
+                    </div>
+                </h2>
+                <form class="ui large form">
+                    <div class="ui stacked segment">
+                        <div class="field">
+                            <div class="ui left icon input">
+                                <i class="user icon"></i>
+                                <input id="password-input" type="text" name="email" placeholder="E-mail address" data-bind="textInput: $root.Email" />
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui left icon input">
+                                <i class="lock icon"></i>
+                                <input id="password-input" type="password" name="password" placeholder="Password" data-bind="textInput: $root.Password">
+                            </div>
+                        </div>
+                        <div class="ui error message"></div>
+                        <div id="button-login" class="ui fluid large submit button" style="background-color: #784818; color: white;">Login</div>
+                    </div>
+                </form>
+
+                @*<div class="ui message">
+                    New to us? <a href="#">Sign Up</a>
+                </div>*@
+            </div>
+        </div>
+        <!--<div id="div-login" class="ui middle aligned center aligned grid">
         <div class="column">
-            <form class="ui large form" id="form-login">
-                @*<a href="@Url.Action("Index", "Home")"><img src="~/Images/PCU/serveprotect.jpg" class="ui image" alt="Serve and Protect CU"></a>
-                <h3 class="ui top left aligned attached pcu header">
-                    Serve and Protect Credit Union
-                </h3>*@
-                <div class="ui attached segment">
-                    <h4 class="ui left aligned header">
-                        Login
-                        @*<div class="sub header">Sign in to continue</div>*@
-                    </h4>
+            <form class="ui large form" id="form-login">-->
+        @*<a href="@Url.Action("Index", "Home")"><img src="~/Images/PCU/serveprotect.jpg" class="ui image" alt="Serve and Protect CU"></a>
+        <h3 class="ui top left aligned attached pcu header">
+            Serve and Protect Credit Union
+        </h3>*@
+        <!--<div class="ui attached segment">
+        <h4 class="ui left aligned header">
+            Login-->
+        @*<div class="sub header">Sign in to continue</div>*@
+        <!--</h4>
                     <div class="field">
                         <div class="ui left icon input">
                             <i class="user icon"></i>
@@ -45,6 +77,7 @@
                 </div>
             </form>
         </div>
-    </div>
+    </div>-->
 
+    </div>
 </div>

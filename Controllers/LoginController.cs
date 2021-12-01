@@ -30,8 +30,12 @@ namespace FPL.Controllers
 
         public async Task<IActionResult> Index()
         {
+            ViewData["Title"] = "Login";
             //return await Index(new LoginViewModel { Email = "danny_99_mully@hotmail.com", Password = "Omaghabu1", Redirect = "Yes" });
-            return await Index(new LoginViewModel { Email = "dannymullan17@gmail.com", Password = "eRx%90zVSWQo", Redirect = "Yes" });
+            //return await Index(new LoginViewModel { Email = "dannymullan17@gmail.com", Password = "eRx%90zVSWQo", Redirect = "Yes" });
+
+            var viewModel = new LoginViewModel();
+            return View(viewModel);
         }
 
         //public IActionResult Index()
@@ -64,9 +68,9 @@ namespace FPL.Controllers
 
             var responseCookies = cookies.GetCookies(new Uri(GetFplLoginUrl())).Cast<Cookie>();
 
-            if (responseCookies.Count() < 5)
+            if (!responseCookies.Any(x => x.Name == "pl_profile"))
             {
-                Response.Cookies.Append("pl_profile", "eyJzIjogIld6SXNOalUyTWpVM04xMDoxbUJJVm06NTRUUW8tVWkzTHQ3SnJXVGthekFUTW8xUmw3V1pVcy1LMS0yQl9YLThZYyIsICJ1IjogeyJpZCI6IDY1NjI1NzcsICJmbiI6ICJEYW5ueSIsICJsbiI6ICJNdWxsYW4iLCAiZmMiOiA1N319");
+                return Unauthorized();
             }
 
             foreach (Cookie cookie in responseCookies)
