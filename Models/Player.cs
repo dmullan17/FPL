@@ -11,7 +11,7 @@ namespace FPL.Models
         //    GamesPlayed = 1;
         //}
         public PlayerHistory PlayerHistory { get; set; }
-        public Team Team { get; set; }
+        public Team Team { get; set; } = new Team();
         public List<PlayerFixture> Fixtures { get; set; }
         public int FplRank { get; set; }
         public int FplPositionRank { get; set; }

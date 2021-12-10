@@ -5,6 +5,9 @@
 @{ var data = JsonConvert.SerializeObject(Model); }
 
 @section PageScripts {
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.11.3/sorting/signed-num.js"></script>
     <script src="~/js/home/index.js"></script>
     <script type="text/javascript">
         const viewModel = new HomeViewModel(@Html.Raw(data));
@@ -14,22 +17,133 @@
 
 <partial name="_PartialLoading" />
 <div id="app" style="display: none;">
-    @*<div class="text-center">
-            <h1 class="display-4">Welcome</h1>
-            <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-        </div>*@
-    <h4 class="ui header">
-        <a data-bind="text: $root.CurrentGameweek().name"></a>
-        @*<div class="sub header" data-bind="text: moment(Published_Date__c).format('MMMM D, YYYY')"></div>*@
-    </h4>
-    @*<table class="ui very basic table">
-            <tbody data-bind="foreach: $root.Gameweeks">
-                <tr>
-                    <td>
-                        <a data-bind="text: name"></a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>*@
+    <div class="ui container">
+        @*<h4 class="ui header">
+                <a data-bind="text: $root.CurrentGameweek().name"></a>
+            </h4>*@
+        <div class="ui grid">
+            <div class="five wide column">
+
+            </div>
+            <div class="eleven wide column">
+                <table id="gw-player-table" class="ui table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Team</th>
+                            <th class="position no-sort">Pos</th>
+                            <th class="no-sort">Opposition</th>
+                            <th id="value">Val</th>
+                            <th>GW Price Change</th>
+                            <th class="special-sort-1">GW Net Transfers</th>
+                            <th class="default-sort">% Selected by</th>
+                            <th>Form</th>
+                            <th>PPG</th>
+                            <th class="center aligned">GW <span data-bind="text: $root.CurrentGameweek().id"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody class="single line" data-bind="foreach: $root.Players">
+                        <tr>
+                            <td>
+                                <a @*data-bind="click: $root.viewPlayer"*@><span data-bind="text: player.web_name"></span></a>
+                                <span data-bind="visible: stats.in_dreamteam"><i class="star icon"></i></span>
+                                <i class="ui icon" data-bind="visible: $root.DoesPlayerHaveStatus(player.status), class: $root.GetPlayerStatusIcon(player.status)@*, click: $root.ShowStatusPopup(player.status)*@"></i>
+                                <i class="yellow square icon" data-bind="visible: stats.yellow_cards > 0"></i>
+                                <i class="red square icon" data-bind="visible: stats.red_cards > 0"></i>
+                            </td>
+                            <td>
+                                <span data-bind="text: team.short_name"></span>
+                            </td>
+                            <td>
+                                <span data-bind="text: $root.GetPosition(player.element_type)"></span>
+                            </td>
+                            <td>
+                                <span data-bind="html: $root.GetOpposition($data)"></span>
+                            </td>
+                            <td>
+                                <span data-bind="text: $root.FormatValue(player.now_cost)"></span>
+                            </td>
+                            <td>
+                                <span data-bind="text: player.cost_change_event"></span>
+                            </td>
+                            <td>
+                                <span data-bind="text: $root.GetGWNetTransfersRaw($data), visible: false"></span>
+                                <span data-bind="text: $root.CreateGWNetTransfers($data)" @*data-order="value: $root.GetGWNetTransfersRaw($data)"*@></span>
+                            </td>
+                            <td>
+                                <span data-bind="text: player.selected_by_percent"></span>
+                            </td>
+                            <td>
+                                <span data-bind="text: player.form"></span>
+                            </td>
+                            <td>
+                                <span data-bind="text: player.points_per_game"></span>
+                            </td>
+                            <td class="clickable-cell center aligned" data-bind="click: $root.viewPlayerGwBreakdown.bind($data)">
+                                <span data-bind="text: stats.gw_points"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    <div id="player-gw-breakdown-popup" class="ui mini modal" data-bind="with: $root.SelectedPlayer()">
+        <i class="close icon"></i>
+        <h3 class="ui header">
+            <div class="content">
+                <span data-bind="text: player.web_name + ' in GW' + $root.CurrentGameweek().id"></span>
+                @*<i class="copyright icon" data-bind="visible: is_captain"></i>*@
+            </div>
+        </h3>
+        <div class="content" data-bind="visible: GWGames[0].started">
+            <div class="ui grid">
+                <div class="sixteen wide center aligned column">
+                    <div class="row">
+                        <div class="ui three small statistics" style="margin-bottom: 1rem;">
+                            <div class="statistic">
+                                <div class="value" data-bind="text: $root.GetPlayerGwPoints($data)"></div>
+                                <div class="label">
+                                    GW Points
+                                </div>
+                            </div>
+                            <div class="statistic" style="margin-top: 1em">
+                                <div class="text value">
+                                    <span style="font-size: 2.5rem !important;" data-bind="text: stats.bps"></span>
+                                    <span data-bind="text: stats.BpsRank"></span>
+                                </div>
+                                <div class="label">BPS (Rank)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-bind="foreach: { data: $root.SelectedPlayer().explain, as: 'game' }">
+                        <h3 class="ui center aligned header" data-bind="html: $root.GetFixtureScore($root.SelectedPlayer().GWGames, game.fixture)"></h3>
+                        <table class="ui unstackable collapsing compact table" style="margin-right: auto; margin-left: auto;" data-bind="visible: $root.IsGameStarted($root.SelectedPlayer().GWGames, game.fixture)">
+                            <thead>
+                                <tr>
+                                    <th>Statistic</th>
+                                    <th class="center aligned">Value</th>
+                                    <th class="center aligned">Points</th>
+                                </tr>
+                            </thead>
+                            <tbody data-bind="foreach: { data: game.stats, as: 'stats' }">
+                                <tr>
+                                    <td data-bind="text: stats.identifier"></td>
+                                    <td class="center aligned" data-bind="text: stats.value"></td>
+                                    <td class="center aligned" data-bind="text: stats.points"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content" data-bind="visible: !GWGames[0].started">
+            <div data-bind="foreach: { data: $root.SelectedPlayer().GWGames, as: 'game' }" style="margin-top: 1rem;">
+                <h3 class="ui center aligned header" data-bind="html: $root.GetFixtureScore($root.SelectedPlayer().GWGames, game.id)"></h3>
+            </div>
+        </div>
+    </div>
 </div>
 
