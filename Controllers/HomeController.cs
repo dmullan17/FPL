@@ -40,6 +40,7 @@ namespace FPL.Controllers
                 List<Player> allPlayers = await GetAllPlayers();
                 List<Team> allTeams = await GetAllTeams();
                 List<Game> allGames = await GetAllGames();
+                allGames = await PopulateGameListWithTeams(allGames);
                 EventStatus eventStatus = await GetEventStatus();
                 var currentGameweek = await GetCurrentGameWeek();
                 var gameweekId = currentGameweek.id;
@@ -57,6 +58,7 @@ namespace FPL.Controllers
 
                     viewModel.Players = allGwPlayers;
                     viewModel.GWGames = gwGames;
+                    viewModel.AllGames = allGames;
 
                 }
 

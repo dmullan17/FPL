@@ -22,21 +22,62 @@
                 <a data-bind="text: $root.CurrentGameweek().name"></a>
             </h4>*@
         <div class="ui grid">
-            <div class="five wide column">
-
+            <div class="six wide center aligned column">
+                <div class="row" style="margin-bottom: 0.5em;">
+                    <button class="ui icon mini left floated button" data-bind="click: $root.ShowPreviousFixtures">
+                        <i class="arrow left icon"></i>
+                    </button>
+                    <span style="margin: 0 !important; font-size: 14px; font-weight:bold;">GW</span>
+                    <span style="margin: 0 !important; font-size: 14px; font-weight:bold;" data-bind="text: $root.CurrentGameweekForFixtureList"></span>
+                    <button class="ui icon mini right floated button" data-bind="click: $root.ShowNextFixtures">
+                        <i class="arrow right icon"></i>
+                    </button>
+                </div>
+                <table class="ui single line table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th></th>
+                            <th class="center aligned">H</th>
+                            <th></th>
+                            <th class="center aligned">A</th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach: $root.GamesInFixtureList">
+                        <tr>
+                            @*<td data-bind="text: new Date(kickoff_time).toLocaleString()"></td>*@
+                            <td data-bind="html: $root.GetFixtureDate($data, kickoff_time)"></td>
+                            <td data-bind="visible: !started"></td>
+                            <td data-bind="visible: started">
+                                <span data-bind="visible: !finished && !finished_provisional && !is_half_time, text: minutes"></span>
+                                <span data-bind="visible: finished || finished_provisional && !is_half_time">FT</span>
+                                <span data-bind="visible: is_half_time">HT</span>
+                                <div data-bind="visible: !finished && !finished_provisional" class="ui green left pointing label">
+                                    Live
+                                </div>
+                            </td>
+                            <td class="center aligned" data-bind="text: HomeTeam.short_name, style: {'font-weight': did_team_h_win ? 'bold' : ''}"></td>
+                            <td class="center aligned">
+                                <a data-bind="click: $root.viewGame, visible: started, text: team_h_score + ' - ' + team_a_score"></a>
+                                <span data-bind="visible: !finished_provisional, text: 'vs'"></span>
+                            </td>
+                            <td class="center aligned" data-bind="text: AwayTeam.short_name, style: {'font-weight': did_team_a_win ? 'bold' : ''}"></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="eleven wide column">
+            <div class="ten wide column">
                 <table id="gw-player-table" class="ui table">
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Team</th>
-                            <th class="position no-sort">Pos</th>
+                            @*<th>Team</th>*@
+                            @*<th class="position no-sort">Pos</th>*@
                             <th class="no-sort">Opposition</th>
                             <th id="value">Val</th>
-                            <th>GW Price Change</th>
-                            <th class="special-sort-1">GW Net Transfers</th>
-                            <th class="default-sort">% Selected by</th>
+                            <th>GW PC</th>
+                            <th class="special-sort-1">GW NT</th>
+                            <th class="default-sort">TO (%)</th>
                             <th>Form</th>
                             <th>PPG</th>
                             <th class="center aligned">GW <span data-bind="text: $root.CurrentGameweek().id"></span></th>
@@ -51,12 +92,12 @@
                                 <i class="yellow square icon" data-bind="visible: stats.yellow_cards > 0"></i>
                                 <i class="red square icon" data-bind="visible: stats.red_cards > 0"></i>
                             </td>
-                            <td>
+                            @*<td>
                                 <span data-bind="text: team.short_name"></span>
-                            </td>
-                            <td>
+                            </td>*@
+                            @*<td>
                                 <span data-bind="text: $root.GetPosition(player.element_type)"></span>
-                            </td>
+                            </td>*@
                             <td>
                                 <span data-bind="html: $root.GetOpposition($data)"></span>
                             </td>

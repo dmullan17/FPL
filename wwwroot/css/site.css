@@ -519,6 +519,9 @@ table.dataTable.no-footer {
 	margin-bottom: 1px;
 }
 
+#gw-player-table_length{
+	margin-bottom: 0.5em;
+}
 
 /*#allPlayersTable_wrapper > div.DTFC_ScrollWrapper > div.DTFC_LeftWrapper > div.DTFC_LeftBodyWrapper > div > table {
 	border: none;

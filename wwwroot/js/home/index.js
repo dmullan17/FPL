@@ -5,10 +5,14 @@
         playersTable = $('#gw-player-table');
 
     self.GWGames = ko.observableArray(data.GWGames);
+    self.AllGames = ko.observableArray(data.AllGames);
     self.Players = ko.observableArray(data.Players);
     self.CurrentGameweek = ko.observable(data.CurrentGameweek);
     self.GameweekId = ko.observable(data.CurrentGameweek.id);
     self.SelectedPlayer = ko.observable();
+
+    self.GamesInFixtureList = ko.observableArray(self.AllGames().filter(x => x.Event == self.GameweekId()));
+    self.CurrentGameweekForFixtureList = ko.observable(data.CurrentGameweek.id);
 
     self.DoesPlayerHaveStatus = function (playerStatus) {
         if (playerStatus == "i" || playerStatus == "d" || playerStatus == "n" || playerStatus == "s" || playerStatus == "u") {
@@ -57,17 +61,35 @@
         }
     };
 
+    self.GetFixtureDate = function (game, kickoffTime) {
+        var html = "";
+        html += getDayOfWeek(game.kickoff_time) + " @ " + new Date(game.kickoff_time).toTimeString().split(' ')[0].slice(0, -3) + " <br/>";
+
+        return html;
+
+    }
+
+    self.ShowPreviousFixtures = function () {
+        self.CurrentGameweekForFixtureList(self.CurrentGameweekForFixtureList() - 1);
+        self.GamesInFixtureList(self.AllGames().filter(x => x.Event == self.CurrentGameweekForFixtureList()));       
+    }
+
+    self.ShowNextFixtures = function () {
+        self.CurrentGameweekForFixtureList(self.CurrentGameweekForFixtureList() + 1);
+        self.GamesInFixtureList(self.AllGames().filter(x => x.Event == self.CurrentGameweekForFixtureList()));
+    }
+
     self.GetOpposition = function (player) {
 
         var team = player.player.Team;
 
-        var fixtures = team.Fixtures.filter(x => x.Event == self.GameweekId());
-        var results = team.Results.filter(x => x.Event == self.GameweekId());
+        //var fixtures = team.Fixtures.filter(x => x.Event == self.GameweekId());
+        //var results = team.Results.filter(x => x.Event == self.GameweekId());
 
 
         var gwGames = self.GWGames().filter(x => x.Event == self.CurrentGameweek().id && (x.team_h == player.team.id || x.team_a == player.team.id));
-        fixtures = gwGames.filter(x => x.finished_provisional == false);
-        results = gwGames.filter(x => x.finished_provisional == true);
+        var fixtures = gwGames.filter(x => x.finished_provisional == false);
+        var results = gwGames.filter(x => x.finished_provisional == true);
 
 
         var html = "";

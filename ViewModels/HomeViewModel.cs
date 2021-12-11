@@ -12,6 +12,7 @@ namespace FPL.ViewModels
         public GameWeek CurrentGameweek { get; set; }
         public List<GWPlayer> Players { get; set; }
         public List<Game> GWGames { get; set; } = new List<Game>();
-    
+        public List<Game> AllGames { get; set; } = new List<Game>();
+
     }
 }
