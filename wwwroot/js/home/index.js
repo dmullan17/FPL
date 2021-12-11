@@ -252,7 +252,7 @@
 
 
     self.init = function () {
-        inititalisePlayerdDatatable();
+        inititalisePlayersDatatable();
     };
 
     self.init();
@@ -292,36 +292,67 @@
 
 
 
-    function inititalisePlayerdDatatable() {
-        $(document).ready(function () {
-            var table = playersTable.DataTable({
-                columnDefs: [
-                    {
-                        type: "sort-numbers-with-letters", targets: "special-sort-1"
-                    },
-                    {
-                        orderable: false, targets: "no-sort"
-                    }
-                ],
-                order: [[$('th.default-sort').index(), "desc"]],
-                responsive: true
+    function inititalisePlayersDatatable() {
+
+        // Size of browser viewport.
+        var browserH = $(window).height();
+        var browserW = $(window).width();
+
+        if (browserW > 1000) {
+            $(document).ready(function () {
+                var table = playersTable.DataTable({
+                    //language: {
+                    //    lengthMenu: "Show _MENU_ GW" + self.GameweekId() + " Players",
+                    //    info: "Showing _START_ to _END_ of _TOTAL_ GW" + self.GameweekId() + " Players",
+                    //    infoEmpty: "Showing 0 to 0 of 0 GW" + self.GameweekId() + " Players",
+                    //    infoFiltered: "(filtered from _MAX_ total GW" + self.GameweekId() + " Players)",
+                    //},
+                    //dom: 'l<"toolbar">frtip',
+                    columnDefs: [
+                        {
+                            type: "sort-numbers-with-letters", targets: "special-sort-1"
+                        },
+                        {
+                            orderable: false, targets: "no-sort"
+                        }
+                    ],
+                    order: [[$('th.default-sort').index(), "desc"]],
+                    responsive: true
+                });
             });
+        }
+        else {
+            $(document).ready(function () {
+                var table = playersTable.DataTable({
+                    columnDefs: [
+                        {
+                            type: "sort-numbers-with-letters", targets: "special-sort-1"
+                        },
+                        {
+                            orderable: false, targets: "no-sort"
+                        }
+                    ],
+                    order: [[$('th.default-sort').index(), "desc"]],
+                    responsive: true,
+                    scrollX: true,
+                    scrollY: true
+                });
 
-            //$('#sort-net-transfers-button').on('click', function () {
+            });
+        }
 
-            //    var sort = self.Players().sort(function (left, right) {
-            //        return left.player.transfers_in_event - left.player.transfers_out_event == right.player.transfers_in_event - right.player.transfers_out_event ? 0 : (left.player.transfers_in_event - left.player.transfers_out_event < right.player.transfers_in_event - right.player.transfers_out_event ? -1 : 1)
-            //    });
-
-            //    self.Players(sort);
-
-            //    table.clear().draw();
-            //    table.rows.add(self.Players()).draw(); // Add new data
-            //    //table.columns.adjust().draw(); // Redraw the DataTable
-            //});
-
-        });
+        //$("div.toolbar").html('Custom tool bar! Text/images etc.');
     }
+
+    //$(window).resize(function () {
+    //    //resize just happened, pixels changed
+
+    //    if ($.fn.dataTable.isDataTable(playersTable)) {
+    //        playersTable.DataTable().clear().destroy();
+    //    }
+
+    //    inititalisePlayersDatatable();
+    //});
 
     function nFormatter(num, digits) {
         var si = [

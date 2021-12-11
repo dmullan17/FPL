@@ -340,6 +340,12 @@ div.dt-buttons {
 	padding-bottom: 1rem;
 }
 
+#gw-player-table-desktop_wrapper {
+	width: 100%;
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .hide-scrollbar::-webkit-scrollbar {
 	display: none;

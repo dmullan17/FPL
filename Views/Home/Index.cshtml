@@ -24,16 +24,19 @@
         <div class="ui stackable grid">
             <div class="six wide center aligned column">
                 <div class="row" style="margin-bottom: 0.5em;">
+                    <div class="ui header">Fixtures and Results</div>
+                </div>
+                <div class="row" style="margin-bottom: 0.5em;">
                     <button class="ui icon mini left floated button" data-bind="click: $root.ShowPreviousFixtures">
                         <i class="arrow left icon"></i>
                     </button>
-                    <span style="margin: 0 !important; font-size: 14px; font-weight:bold;">GW</span>
-                    <span style="margin: 0 !important; font-size: 14px; font-weight:bold;" data-bind="text: $root.CurrentGameweekForFixtureList"></span>
+                    @*<span style="margin: 0 !important; font-size: 14px; font-weight:bold;">Fixtures and Results</span>*@
+                    <span style="margin: 0 !important; font-size: 14px; font-weight:bold;" data-bind="text: 'GW ' + $root.CurrentGameweekForFixtureList()"></span>
                     <button class="ui icon mini right floated button" data-bind="click: $root.ShowNextFixtures">
                         <i class="arrow right icon"></i>
                     </button>
                 </div>
-                <table class="ui single line stackable table">
+                <table class="ui single line unstackable table">
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -66,8 +69,11 @@
                     </tbody>
                 </table>
             </div>
-            <div class="ten wide column">
-                <table id="gw-player-table" class="ui stackable table">
+            <div class="ten wide center aligned column">
+                <div class="row" style="margin-bottom: 0.5em;">
+                    <div class="ui header">GW<span data-bind="text: $root.GameweekId()"></span> Players</div>
+                </div>
+                <table id="gw-player-table" class="ui unstackable table" width="100%">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -93,11 +99,11 @@
                                 <i class="red square icon" data-bind="visible: stats.red_cards > 0"></i>
                             </td>
                             @*<td>
-                                <span data-bind="text: team.short_name"></span>
-                            </td>*@
+                        <span data-bind="text: team.short_name"></span>
+                    </td>*@
                             @*<td>
-                                <span data-bind="text: $root.GetPosition(player.element_type)"></span>
-                            </td>*@
+                        <span data-bind="text: $root.GetPosition(player.element_type)"></span>
+                    </td>*@
                             <td>
                                 <span data-bind="html: $root.GetOpposition($data)"></span>
                             </td>
