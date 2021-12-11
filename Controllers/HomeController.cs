@@ -60,6 +60,8 @@ namespace FPL.Controllers
                     viewModel.GWGames = gwGames;
                     viewModel.AllGames = allGames;
 
+                    viewModel.AreGamesLive = gwGames.Any(x => x.started == true && x.finished_provisional == false);
+
                 }
 
                 //viewModel.Gameweeks = gws;

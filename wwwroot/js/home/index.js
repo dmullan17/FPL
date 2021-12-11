@@ -5,6 +5,7 @@
         playersTable = $('#gw-player-table');
 
     self.GWGames = ko.observableArray(data.GWGames);
+    self.AreGamesLive = ko.observable(data.AreGamesLive);
     self.AllGames = ko.observableArray(data.AllGames);
     self.Players = ko.observableArray(data.Players);
     self.CurrentGameweek = ko.observable(data.CurrentGameweek);
@@ -253,6 +254,23 @@
 
     self.init = function () {
         inititalisePlayersDatatable();
+
+        if (self.AreGamesLive()) {
+            //auto refresh after a minute of inactivity
+            var time = new Date().getTime();
+            $(document.body).on("mousemove keypress touchmove", function (e) {
+                time = new Date().getTime();
+            });
+
+            function refresh() {
+                if (new Date().getTime() - time >= 60000)
+                    window.location.reload(true);
+                else
+                    setTimeout(refresh, 10000);
+            }
+
+            setTimeout(refresh, 10000);
+        }
     };
 
     self.init();

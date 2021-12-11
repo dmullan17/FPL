@@ -747,7 +747,7 @@
         //if (self.IsLive()) {
         //    //auto refresh after a minute of inactivity
         //    var time = new Date().getTime();
-        //    $(document.body).bind("mousemove keypress", function (e) {
+        //    $(document.body).on("mousemove keypress touchmove", function (e) {
         //        time = new Date().getTime();
         //    });
 
