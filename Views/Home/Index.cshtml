@@ -21,7 +21,7 @@
         @*<h4 class="ui header">
                 <a data-bind="text: $root.CurrentGameweek().name"></a>
             </h4>*@
-        <div class="ui grid">
+        <div class="ui stackable grid">
             <div class="six wide center aligned column">
                 <div class="row" style="margin-bottom: 0.5em;">
                     <button class="ui icon mini left floated button" data-bind="click: $root.ShowPreviousFixtures">
@@ -33,7 +33,7 @@
                         <i class="arrow right icon"></i>
                     </button>
                 </div>
-                <table class="ui single line table">
+                <table class="ui single line stackable table">
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -48,18 +48,18 @@
                             @*<td data-bind="text: new Date(kickoff_time).toLocaleString()"></td>*@
                             <td data-bind="html: $root.GetFixtureDate($data, kickoff_time)"></td>
                             <td data-bind="visible: !started"></td>
-                            <td data-bind="visible: started">
-                                <span data-bind="visible: !finished && !finished_provisional && !is_half_time, text: minutes"></span>
+                            <td class="center aligned" data-bind="visible: started">
+                                @*<span data-bind="visible: !finished && !finished_provisional && !is_half_time, text: minutes"></span>*@
                                 <span data-bind="visible: finished || finished_provisional && !is_half_time">FT</span>
-                                <span data-bind="visible: is_half_time">HT</span>
-                                <div data-bind="visible: !finished && !finished_provisional" class="ui green left pointing label">
+                                @*<span data-bind="visible: is_half_time">HT</span>*@
+                                <div data-bind="visible: !finished && !finished_provisional" class="ui green label">
                                     Live
                                 </div>
                             </td>
                             <td class="center aligned" data-bind="text: HomeTeam.short_name, style: {'font-weight': did_team_h_win ? 'bold' : ''}"></td>
                             <td class="center aligned">
                                 <a data-bind="click: $root.viewGame, visible: started, text: team_h_score + ' - ' + team_a_score"></a>
-                                <span data-bind="visible: !finished_provisional, text: 'vs'"></span>
+                                <span data-bind="visible: !finished_provisional && !started, text: 'vs'"></span>
                             </td>
                             <td class="center aligned" data-bind="text: AwayTeam.short_name, style: {'font-weight': did_team_a_win ? 'bold' : ''}"></td>
                         </tr>
@@ -67,19 +67,19 @@
                 </table>
             </div>
             <div class="ten wide column">
-                <table id="gw-player-table" class="ui table">
+                <table id="gw-player-table" class="ui stackable table">
                     <thead>
                         <tr>
                             <th>Name</th>
                             @*<th>Team</th>*@
                             @*<th class="position no-sort">Pos</th>*@
-                            <th class="no-sort">Opposition</th>
-                            <th id="value">Val</th>
-                            <th>GW PC</th>
-                            <th class="special-sort-1">GW NT</th>
-                            <th class="default-sort">TO (%)</th>
-                            <th>Form</th>
-                            <th>PPG</th>
+                            <th class="no-sort">Vs</th>
+                            <th class="center aligned">Val</th>
+                            <th class="center aligned">GW PC</th>
+                            <th class="special-sort-1 center aligned">GW NT</th>
+                            <th class="default-sort center aligned">TO (%)</th>
+                            <th class="center aligned">Form</th>
+                            <th class="center aligned">PPG</th>
                             <th class="center aligned">GW <span data-bind="text: $root.CurrentGameweek().id"></span></th>
                         </tr>
                     </thead>
@@ -101,27 +101,27 @@
                             <td>
                                 <span data-bind="html: $root.GetOpposition($data)"></span>
                             </td>
-                            <td>
+                            <td class="center aligned">
                                 <span data-bind="text: $root.FormatValue(player.now_cost)"></span>
                             </td>
-                            <td>
+                            <td class="center aligned">
                                 <span data-bind="text: player.cost_change_event"></span>
                             </td>
-                            <td>
+                            <td class="center aligned">
                                 <span data-bind="text: $root.GetGWNetTransfersRaw($data), visible: false"></span>
                                 <span data-bind="text: $root.CreateGWNetTransfers($data)" @*data-order="value: $root.GetGWNetTransfersRaw($data)"*@></span>
                             </td>
-                            <td>
+                            <td class="center aligned">
                                 <span data-bind="text: player.selected_by_percent"></span>
                             </td>
-                            <td>
+                            <td class="center aligned">
                                 <span data-bind="text: player.form"></span>
                             </td>
-                            <td>
+                            <td class="center aligned">
                                 <span data-bind="text: player.points_per_game"></span>
                             </td>
                             <td class="clickable-cell center aligned" data-bind="click: $root.viewPlayerGwBreakdown.bind($data)">
-                                <span data-bind="text: stats.gw_points"></span>
+                                <a data-bind="text: stats.gw_points"></a>
                             </td>
                         </tr>
                     </tbody>
