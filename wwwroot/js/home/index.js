@@ -342,6 +342,10 @@
         else {
             $(document).ready(function () {
                 var table = playersTable.DataTable({
+                    fixedColumns: {
+                        leftColumns: 1
+                    },
+                    //fixedColumns: true,
                     columnDefs: [
                         {
                             type: "sort-numbers-with-letters", targets: "special-sort-1"
@@ -350,11 +354,20 @@
                             orderable: false, targets: "no-sort"
                         }
                     ],
-                    order: [[$('th.default-sort').index(), "desc"]],
+                    //order: [[$('th.default-sort').index(), "desc"]],
                     responsive: true,
                     scrollX: true,
-                    scrollY: true
-                });
+                    scrollY: true,
+                    pagingType: "simple",
+                    scrollCollapse: true
+                });    
+
+                //used to fix display issue on init
+                //needed when fixedColumns is used
+                playersTable.DataTable()
+                    .order([$('th.default-sort').index(), "desc"])
+                    .draw();
+
 
             });
         }

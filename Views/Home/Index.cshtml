@@ -7,7 +7,7 @@
 @section PageScripts {
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.11.3/sorting/signed-num.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/fc-3.3.1/datatables.min.js"></script>
     <script src="~/js/home/index.js"></script>
     <script type="text/javascript">
         const viewModel = new HomeViewModel(@Html.Raw(data));
@@ -99,11 +99,11 @@
                                 <i class="red square icon" data-bind="visible: stats.red_cards > 0"></i>
                             </td>
                             @*<td>
-                        <span data-bind="text: team.short_name"></span>
-                    </td>*@
+                                    <span data-bind="text: team.short_name"></span>
+                                </td>*@
                             @*<td>
-                        <span data-bind="text: $root.GetPosition(player.element_type)"></span>
-                    </td>*@
+                                    <span data-bind="text: $root.GetPosition(player.element_type)"></span>
+                                </td>*@
                             <td>
                                 <span data-bind="html: $root.GetOpposition($data)"></span>
                             </td>
