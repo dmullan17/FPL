@@ -326,6 +326,21 @@
                     //    infoFiltered: "(filtered from _MAX_ total GW" + self.GameweekId() + " Players)",
                     //},
                     //dom: 'l<"toolbar">frtip',
+                    dom:
+                        "<'ui unstackable grid'" +
+                        "<'row p-b-0-4'" +
+                        "<'five wide column'l>" +
+                        "<'#gw-player-table-heading-desktop.six wide center aligned column ui header'>" +
+                        "<'right aligned five wide column'f>" +
+                        ">" +
+                        "<'row dt-table padding-top-zero'" +
+                        "<'sixteen wide column'tr>" +
+                        ">" +
+                        "<'row padding-top-zero'" +
+                        "<'five wide column'i>" +
+                        "<'right aligned eleven wide column'p>" +
+                        ">" +
+                        ">",
                     columnDefs: [
                         {
                             type: "sort-numbers-with-letters", targets: "special-sort-1"
@@ -337,15 +352,38 @@
                     order: [[$('th.default-sort').index(), "desc"]],
                     responsive: true
                 });
+
+                $('#gw-player-table-heading-desktop').text("GW" + self.GameweekId() + " Players");
             });
         }
         else {
             $(document).ready(function () {
                 var table = playersTable.DataTable({
-                    fixedColumns: {
-                        leftColumns: 1
+                    dom:
+                        "<'ui unstackable grid'" +//1
+                        "<'row'" +//2
+                        "<'five wide column'l>" +
+                        "<'#gw-player-table-heading-mobile.six wide center aligned column ui header'>" +
+                        "<'right aligned five wide column'f>" +
+                        ">" +//2
+                        "<'row dt-table padding-top-zero'" +//3
+                        "<'sixteen wide column'tr>" +
+                        ">" +//3
+                        //"<'row'" +
+                        "<'row padding-top-zero'" +//4
+                        "<'sixteen wide column'i>" +
+                        "<'sixteen wide column'p>" +
+                        ">" +//4
+                        //">" +
+                        ">",//1
+                    //fixedColumns: {
+                    //    leftColumns: 1
+                    //},
+                    language: {
+                        search: '',
+                        searchPlaceholder: 'Search',
+                        lengthMenu: "_MENU_"
                     },
-                    //fixedColumns: true,
                     columnDefs: [
                         {
                             type: "sort-numbers-with-letters", targets: "special-sort-1"
@@ -354,23 +392,25 @@
                             orderable: false, targets: "no-sort"
                         }
                     ],
-                    //order: [[$('th.default-sort').index(), "desc"]],
-                    responsive: true,
-                    scrollX: true,
-                    scrollY: true,
+                    order: [[$('th.default-sort').index(), "desc"]],
+                    //responsive: true,
+                    //scrollX: true,
+                    //scrollY: true,
                     pagingType: "simple",
-                    scrollCollapse: true
+                    fnInitComplete: function (oSettings, json) {
+                        //alert('DataTables has finished its initialisation.');
+                        /*$('#gw-player-table').DataTable().columns.adjust().draw();*/
+                    }
+                    //fixedColumns: true
+                    //scrollCollapse: true
                 });    
 
-                //used to fix display issue on init
-                //needed when fixedColumns is used
-                playersTable.DataTable()
-                    .order([$('th.default-sort').index(), "desc"])
-                    .draw();
-
+                $('#gw-player-table-heading-mobile').text("GW" + self.GameweekId() + " Players");
 
             });
         }
+
+        //$('.gw-player-table-heading').text("GW" + self.GameweekId() + " Players");
 
         //$("div.toolbar").html('Custom tool bar! Text/images etc.');
     }
@@ -383,6 +423,10 @@
     //    }
 
     //    inititalisePlayersDatatable();
+    //});
+
+    //$(window).load(function () {
+    //    $('#gw-player-table').DataTable().columns.adjust();
     //});
 
     function nFormatter(num, digits) {

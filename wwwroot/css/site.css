@@ -441,6 +441,27 @@ div.dt-buttons {
 		margin-left: 0 !important;
 		font-size: 1rem !important;
 	}
+
+	#gw-player-table_filter > label > input[type=search] {
+		width: 80px !important;
+	}
+
+	#gw-player-table-heading-mobile {
+		padding-left: 0.5rem;
+		padding-right: 0.5rem;
+	}
+
+	#gw-player-table_filter {
+		margin-top: 0!important; 
+	}
+
+	#gw-player-table_length {
+		float: left;
+	}
+
+	#gw-player-table > tbody > tr > td.dtfc-fixed-left {
+		background-color: rgba(255, 255, 255, 1);
+	}
 }
 
 @media screen and (min-width: 992px) {
@@ -493,6 +514,14 @@ div.dt-buttons {
 		padding-left: 0 !important;
 		margin-left: 0 !important;
 	}
+
+	#gw-player-table_filter > label > input[type=search] {
+		width: 120px !important;
+	}
+
+	#gw-player-table_length {
+		margin-bottom: 0.5em;
+	}
 }
 
 .DTFC_LeftHeadWrapper {
@@ -525,8 +554,16 @@ table.dataTable.no-footer {
 	margin-bottom: 1px;
 }
 
-#gw-player-table_length{
-	margin-bottom: 0.5em;
+.padding-bottom-zero{
+	padding-bottom: 0!important;
+}
+
+.p-b-0-4 {
+	padding-bottom: 0.4em !important;
+}
+
+.padding-top-zero {
+	padding-top: 0 !important;
 }
 
 /*#allPlayersTable_wrapper > div.DTFC_ScrollWrapper > div.DTFC_LeftWrapper > div.DTFC_LeftBodyWrapper > div > table {

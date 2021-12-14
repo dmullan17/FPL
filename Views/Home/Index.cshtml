@@ -7,7 +7,9 @@
 @section PageScripts {
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/fc-3.3.1/datatables.min.js"></script>
+    @*<script type="text/javascript" src="https://cdn.datatables.net/v/dt/fc-3.3.1/datatables.min.js"></script>*@
+    @*<script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/dataTables.semanticui.min.js"></script>*@
+    <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/4.0.1/js/dataTables.fixedColumns.min.js"></script>
     <script src="~/js/home/index.js"></script>
     <script type="text/javascript">
         const viewModel = new HomeViewModel(@Html.Raw(data));
@@ -23,15 +25,15 @@
             </h4>*@
         <div class="ui stackable grid">
             <div class="six wide center aligned column">
-                <div class="row" style="margin-bottom: 0.5em;">
+                @*<div class="row" style="margin-bottom: 0.5em;">
                     <div class="ui header">Fixtures and Results</div>
-                </div>
-                <div class="row" style="margin-bottom: 0.5em;">
+                </div>*@
+                <div class="row" style="margin-bottom: 1em;">
                     <button class="ui icon mini left floated button" data-bind="click: $root.ShowPreviousFixtures">
                         <i class="arrow left icon"></i>
                     </button>
                     @*<span style="margin: 0 !important; font-size: 14px; font-weight:bold;">Fixtures and Results</span>*@
-                    <span style="margin: 0 !important; font-size: 14px; font-weight:bold;" data-bind="text: 'GW ' + $root.CurrentGameweekForFixtureList()"></span>
+                    <span class="ui header" @*style="margin: 0 !important; font-size: 14px; font-weight:bold;"*@ data-bind="text: 'Fixtures and Results (GW ' + $root.CurrentGameweekForFixtureList() + ')'"></span>
                     <button class="ui icon mini right floated button" data-bind="click: $root.ShowNextFixtures">
                         <i class="arrow right icon"></i>
                     </button>
@@ -41,9 +43,9 @@
                         <tr>
                             <th>Date</th>
                             <th></th>
-                            <th class="center aligned">H</th>
+                            <th class="center aligned">Home</th>
                             <th></th>
-                            <th class="center aligned">A</th>
+                            <th class="center aligned">Away</th>
                         </tr>
                     </thead>
                     <tbody data-bind="foreach: $root.GamesInFixtureList">
@@ -70,27 +72,27 @@
                 </table>
             </div>
             <div class="ten wide center aligned column">
-                <div class="row" style="margin-bottom: 0.5em;">
-                    <div class="ui header">GW<span data-bind="text: $root.GameweekId()"></span> Players</div>
-                </div>
+                @*<div class="row" style="margin-bottom: 0.5em;">
+                        <div class="ui header">GW<span data-bind="text: $root.GameweekId()"></span> Players</div>
+                    </div>*@
                 <table id="gw-player-table" class="ui unstackable table" width="100%">
                     <thead>
                         <tr>
                             <th>Name</th>
                             @*<th>Team</th>*@
                             @*<th class="position no-sort">Pos</th>*@
-                            <th class="no-sort">Vs</th>
+                            <th class="no-sort hide-on-mobile">Vs</th>
                             <th class="center aligned">Val</th>
-                            <th class="center aligned">GW PC</th>
+                            <th class="center aligned hide-on-mobile">GW PC</th>
                             <th class="special-sort-1 center aligned">GW NT</th>
                             <th class="default-sort center aligned">TO (%)</th>
-                            <th class="center aligned">Form</th>
-                            <th class="center aligned">PPG</th>
+                            <th class="center aligned hide-on-mobile">Form</th>
+                            <th class="center aligned hide-on-mobile">PPG</th>
                             <th class="center aligned">GW <span data-bind="text: $root.CurrentGameweek().id"></span></th>
                         </tr>
                     </thead>
-                    <tbody class="single line" data-bind="foreach: $root.Players">
-                        <tr>
+                    <tbody data-bind="foreach: $root.Players">
+                        <tr class="single line">
                             <td>
                                 <a @*data-bind="click: $root.viewPlayer"*@><span data-bind="text: player.web_name"></span></a>
                                 <span data-bind="visible: stats.in_dreamteam"><i class="star icon"></i></span>
@@ -104,26 +106,26 @@
                             @*<td>
                                     <span data-bind="text: $root.GetPosition(player.element_type)"></span>
                                 </td>*@
-                            <td>
+                            <td class="hide-on-mobile">
                                 <span data-bind="html: $root.GetOpposition($data)"></span>
                             </td>
                             <td class="center aligned">
                                 <span data-bind="text: $root.FormatValue(player.now_cost)"></span>
                             </td>
-                            <td class="center aligned">
+                            <td class="center aligned hide-on-mobile">
                                 <span data-bind="text: player.cost_change_event"></span>
                             </td>
                             <td class="center aligned">
-                                <span data-bind="text: $root.GetGWNetTransfersRaw($data), visible: false"></span>
+                                <span data-bind="text: $root.GetGWNetTransfersRaw($data), visible: false"></span> @*needed for sort*@
                                 <span data-bind="text: $root.CreateGWNetTransfers($data)" @*data-order="value: $root.GetGWNetTransfersRaw($data)"*@></span>
                             </td>
                             <td class="center aligned">
                                 <span data-bind="text: player.selected_by_percent"></span>
                             </td>
-                            <td class="center aligned">
+                            <td class="center aligned hide-on-mobile">
                                 <span data-bind="text: player.form"></span>
                             </td>
-                            <td class="center aligned">
+                            <td class="center aligned hide-on-mobile">
                                 <span data-bind="text: player.points_per_game"></span>
                             </td>
                             <td class="clickable-cell center aligned" data-bind="click: $root.viewPlayerGwBreakdown.bind($data)">

@@ -856,6 +856,8 @@
                 if (tabPath == "second") {
                     if ($.fn.dataTable.isDataTable(playerTallyTable)) {
                         // Sort by gw points and then re-draw
+                        //needed to fix th column width bug
+                        //https://datatables.net/forums/discussion/35868/scrollx-and-width-of-headers-problem
                         playerTallyTable.DataTable()
                             .order([8, 'desc'])
                             .draw();
