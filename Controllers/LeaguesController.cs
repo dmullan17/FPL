@@ -85,7 +85,7 @@ namespace FPL.Controllers
             }
 
             viewModel.IsEventLive = IsEventLive(eventStatus);
-            viewModel.IsGameLive = IsGameLive(eventStatus);
+            viewModel.IsGameLive = IsGameLive(eventStatus, gwGames);
             viewModel.EventStatus = eventStatus;
             viewModel.LastUpdated = GetLastTimeLeagueWasUpdated(gwGames);
             viewModel.CurrentGwId = currentGameweekId;
@@ -136,7 +136,7 @@ namespace FPL.Controllers
             viewModel.SelectedLeague = leagues.classic.FindAll(x => x.league_type == "x").OrderBy(i => i.PlayerCount).First();
             viewModel.SelectedLeague.UserTeam = viewModel.SelectedLeague.Standings.results.Find(x => x.entry == teamId);
             viewModel.IsEventLive = IsEventLive(eventStatus);
-            viewModel.IsGameLive = IsGameLive(eventStatus);
+            viewModel.IsGameLive = IsGameLive(eventStatus, gwGames);
             viewModel.ClassicLeagues = leagues.classic;
             viewModel.H2HLeagues = leagues.h2h;
             viewModel.Cup = leagues.cup;
@@ -227,16 +227,19 @@ namespace FPL.Controllers
             return lastUpdate;
         }
 
-        private bool IsGameLive(EventStatus eventStatus)
+        private bool IsGameLive(EventStatus eventStatus, List<Game> gwGames)
         {
-            if (eventStatus.status.Any(x => x.points == "l"))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+
+            return gwGames.Any(x => x.finished_provisional == false && x.started == true);
+
+            //if (eventStatus.status.Any(x => x.points == "l"))
+            //{
+            //    return true;
+            //}
+            //else
+            //{
+            //    return false;
+            //}
         }
 
         public async Task<Classic> GetBasicInfoForLeague(int leagueId)

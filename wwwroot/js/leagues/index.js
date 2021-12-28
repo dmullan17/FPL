@@ -14,7 +14,9 @@
         leagueDropdown = $('#league-dropdown'),
         leagueSearchInput = $("#league-search"),
         leagueSearchInput2 = $("#league-search-2"),
-        leagueSearchButton = $("#league-search-button");
+        leagueSearchButton = $("#league-search-button"),
+        searchedLeagueName = $("#searched-league-name"),
+        leagueSearchAgainButton = $("#league-search-again-button");
 
     self.ClassicLeagues = ko.observableArray(data.ClassicLeagues);
     self.H2HLeagues = ko.observableArray(data.H2HLeagues);
@@ -31,6 +33,7 @@
     self.SelectedPlayerFromTally = ko.observable();
     self.SelectedPlayer = ko.observable();
     self.SearchedLeagueId = ko.observable();
+    self.SearchedLeagueName = ko.observable();
     self.CurrentLeagueId = ko.observable();
     self.UserTeam = ko.observable();
     self.HideLeagueUI = ko.observable(false);
@@ -66,6 +69,14 @@
         } else {
             return "";
         }
+    }
+
+    self.SearchLeagueAgain = function () {
+
+        leagueSearchInput.show();
+        leagueSearchAgainButton.hide();
+        searchedLeagueName.hide();
+
     }
 
 
@@ -114,7 +125,7 @@
         });
     }
 
-    self.LastUpdated = function () {
+    self.LastUpdated = ko.computed(function () {
 
         if (self.IsGameLive()) {
             var lastUpdatedTime = new Date().toLocaleString("en-GB");
@@ -125,7 +136,7 @@
             var formattedTime = lastUpdatedTime.slice(0, -3);
             return "Last updated: " + formattedTime;
         }
-    }
+    });
 
     self.LoadSearchedLeague = function () {
 
@@ -149,6 +160,10 @@
                 },
                 success: function (json, status, xhr) {
                     if (xhr.readyState === 4 && xhr.status === 200) {
+                        self.SearchedLeagueName(json.name)
+                        searchedLeagueName.show();
+                        leagueSearchInput.hide();
+                        leagueSearchAgainButton.show();
                         self.SelectedLeagueStandings(json.Standings.results);
                         self.SelectedLeaguePlayersTally(json.PlayersTally);
                         self.AllGwTransfersInLeague(json.AllGwTransfers);
@@ -187,6 +202,9 @@
                 success: function (json, status, xhr) {
                     if (xhr.readyState === 4 && xhr.status === 200) {
                         //self.HideLeagueUI(false);
+                        self.SearchedLeagueName(json.name)
+                        leagueSearchInput.hide();
+                        leagueSearchAgainButton.show();
                         self.SelectedLeagueStandings(json.Standings.results);
                         self.SelectedLeaguePlayersTally(json.PlayersTally);
                         self.AllGwTransfersInLeague(json.AllGwTransfers);

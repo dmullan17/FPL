@@ -46,6 +46,12 @@
                         }
                         else
                         {
+                            <span id="searched-league-name" data-bind="text: $root.SearchedLeagueName" @*style="display:none"*@></span>
+                            @*<i id="search-league-icon" class="search icon" style="display: none"></i>*@
+                            <button id="league-search-again-button" class="ui mini button" style="display: none; font-size:0.75rem; vertical-align: middle; margin-left: 0.5rem" data-bind="click: $root.SearchLeagueAgain">
+                                @*<i class="search icon"></i>*@
+                                Search Again
+                            </button>
                             <div id="league-search" class="ui action input">
                                 <input type="text" placeholder="Enter League ID" data-bind="textInput: $root.SearchedLeagueId">
                                 <button id="league-search-button" class="ui button" data-bind="click: $root.SearchLeagues">Search</button>
@@ -55,14 +61,16 @@
                     @if (Model.CurrentGwId != 0)
                     {
                         <div id="standings-segment" class="ui attached segment" style="min-height:30rem;">
+                            <!-- ko ifnot: $root.HideLeagueUI -->
                             <div id="desktop-standings-last-updated" class="ui top right attached label" style="font-size: 0.9rem !important" data-bind="visible: IsGameLive">
                                 <i class="sync link icon" data-bind="click: $root.reload, visible: IsGameLive"></i>
-                                <span data-bind="text: LastUpdated()@*, hidden: IsGameLive*@"></span>
+                                <span data-bind="text: $root.LastUpdated()@*, hidden: IsGameLive*@"></span>
                             </div>
                             <div id="mobile-standings-last-updated" class="ui top right attached label" data-bind="visible: IsGameLive">
                                 <i class="sync link icon" data-bind="click: $root.reload, visible: IsGameLive"></i>
                                 <i class="clock outline icon" data-bind="hidden: IsGameLive"></i>
                             </div>
+                            <!-- /ko -->
                             <div id="standings-loader" class="ui inverted dimmer">
                                 <div class="ui text large loader">
                                     <h3 class="ui top attached header" data-bind="text: $root.GetSelectedLeagueStandingsLoaderText()"></h3>
@@ -72,6 +80,18 @@
                                 <div class="ui text large loader">
                                     <h3 class="ui top attached header" data-bind="text: $root.GetSearchedLeagueStandingsLoaderText()"></h3>
                                 </div>
+                            </div>
+                            <div data-bind="visible: $root.HideLeagueUI" style="min-height: 30rem;">
+                                <h3 class="ui center aligned header" style="margin-top:2rem;">
+                                    Use the above search input to enter the ID of the FPL league you would like to see.
+                                    <br />
+                                </h3>
+                                <img id="find-league-id-img" class="ui centered image" src="~/img/FindLeagueID.png" />
+                                <h3 class="ui center aligned header">
+                                    A league's ID can be found from the URL on the official FPL website (image above).
+                                    <br /><br />
+                                    Or alternatively, <a asp-controller="Login" asp-action="Index">login</a> using your Official FPL username and password to load all your leagues automatically.
+                                </h3>
                             </div>
                             <div data-bind="hidden: $root.HideLeagueUI">
                                 <div class="ui attached tabular menu">
@@ -83,77 +103,77 @@
                                     <a class="item" data-tab="third">Third</a>
                                 </div>
                                 <div class="ui bottom attached tab segment active" data-tab="first">
-                                        <table id="standings-table" class="ui unstackable table" style="width: 100%; border-collapse: collapse">
-                                            <thead>
-                                                <tr class="single line">
-                                                    <th class="no-sort" style="display:none"></th>
-                                                    <th class="no-sort hide-on-mobile"></th>
-                                                    <th class="default-sort">Rank</th>
-                                                    <th class="no-sort single line">Team & Manager</th>
-                                                    <th class="center aligned">Total</th>
-                                                    <th class="single line center aligned">GW<span data-bind="text: $root.CurrentGwId"></span></th>
-                                                    <th id="th-bonus-points" class="center aligned hide-on-mobile" data-tooltip="Gameweek Bonus Points">BP</th>
-                                                    <th class="center aligned hide-on-mobile" data-tooltip="Points on Bench">POB</th>
-                                                    <th>Captain</th>
-                                                    <th class="center aligned hide-on-mobile" data-tooltip="Auto Subs">AS</th>
-                                                    <th class="center aligned" data-tooltip="Players Yet to Play">PYTP</th>
-                                                    <th class="center aligned" data-tooltip="Points From First">PFF</th>
-                                                    <th class="center aligned" data-tooltip="Active Chips">AC</th>
-                                                    <th class="center aligned hide-on-mobile" data-tooltip="GameWeek Transfers (Cost)">GWT (C)</th>
-                                                    <th class="center aligned hide-on-mobile" data-tooltip="Total Transfers (Cost)">TT (C)</th>
-                                                    <th class="hide-on-mobile" data-tooltip="Used Chips (GameWeek)">UC (GW)</th>
-                                                    <th class="hide-on-mobile" data-bind="visible: $root.CurrentGwId > 1">Last <span data-bind="text: $root.CurrentGwId() < 6 ? $root.CurrentGwId() - 1 : 5"></span></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody data-bind="foreach: $root.SelectedLeagueStandings">
-                                                <tr class="single line" data-bind="class: $root.GetRowClass(entry)">
-                                                    <td style="display:none" data-bind="text: entry"></td>
-                                                    <td class="details-control hide-on-mobile"></td>
-                                                    <td class="single line center aligned">
-                                                        <i data-bind="class: $root.GetPointsMovement($data)"></i>
-                                                        <span data-bind="text: $root.GetRank($data)"></span>
-                                                    </td>
-                                                    <td style="font-weight:bold" data-bind="html: $root.FormatNames($data)"></td>
-                                                    <td class="center aligned" data-bind="text: total"></td>
-                                                    <td class="center aligned" data-bind="text: event_total"></td>
-                                                    <td class="center aligned hide-on-mobile" data-bind="text: $root.GetTeamBonusPoints($data.GWTeam.picks)"></td>
-                                                    <td class="center aligned hide-on-mobile" data-bind="text: $root.GetGWBenchPoints($data.GWTeam.picks)"></td>
-                                                    <td class="single line" data-bind="text: $root.GetCaptain($data.GWTeam.picks)"></td>
-                                                    <td class="center aligned hide-on-mobile" data-bind="text: GWTeam.automatic_subs.length"></td>
-                                                    <td class="center aligned" data-bind="text: GWTeam.PlayersYetToPlay"></td>
-                                                    <td class="center aligned" data-bind="text: PointsFromFirst"></td>
-                                                    <td class="center aligned" data-bind="html: $root.GetActiveChips($data.GWTeam.ActiveChips)"></td>
-                                                    <td class="center aligned hide-on-mobile" data-bind="text: $root.GetGwTransfers($data.GWTeam)"></td>
-                                                    <td class="center aligned hide-on-mobile" data-bind="text: CompleteEntryHistory.TotalTransfersMade + ' (' + CompleteEntryHistory.TotalTransfersCost + ')'"></td>
-                                                    <td class="single line hide-on-mobile" data-bind="html: $root.GetChipsUsed($data.CompleteEntryHistory.chips)"></td>
-                                                    <td class="single line hide-on-mobile" data-bind="text: $root.FormatLast5GwPoints(Last5GwPoints), visible: $root.CurrentGwId > 1"></td>
-                                                </tr>
-                                            </tbody>
-                                            <tfoot style="border-top: 1px solid black;" data-bind="visible: $root.SelectedLeagueStandings().length > 10@*, hidden: $root.UserTeam().entry == 0*@">
-                                                <tr class="active" data-bind="with: $root.UserTeam() ? $root.UserTeam() : null">
-                                                    <td style="display:none" data-bind="text: entry"></td>
-                                                    <td class="details-control hide-on-mobile"></td>
-                                                    <td class="single line center aligned">
-                                                        <i data-bind="class: $root.GetPointsMovement($data)"></i>
-                                                        <span data-bind="text: $root.GetRank($data)"></span>
-                                                    </td>
-                                                    <td style="font-weight:bold" data-bind="html: $root.FormatNames($data)"></td>
-                                                    <td class="center aligned" data-bind="text: total"></td>
-                                                    <td class="center aligned" data-bind="text: event_total"></td>
-                                                    <td class="center aligned hide-on-mobile" data-bind="text: $root.GetTeamBonusPoints($data.GWTeam.picks)"></td>
-                                                    <td class="center aligned hide-on-mobile" data-bind="text: $root.GetGWBenchPoints($data.GWTeam.picks)"></td>
-                                                    <td class="single line" data-bind="text: $root.GetCaptain($data.GWTeam.picks)"></td>
-                                                    <td class="center aligned hide-on-mobile" data-bind="text: GWTeam.automatic_subs.length"></td>
-                                                    <td class="center aligned" data-bind="text: GWTeam.PlayersYetToPlay"></td>
-                                                    <td class="center aligned" data-bind="text: PointsFromFirst"></td>
-                                                    <td class="center aligned" data-bind="html: $root.GetActiveChips($data.GWTeam.ActiveChips)"></td>
-                                                    <td class="center aligned hide-on-mobile" data-bind="text: $root.GetGwTransfers($data.GWTeam)"></td>
-                                                    <td class="center aligned hide-on-mobile" data-bind="text: CompleteEntryHistory.TotalTransfersMade + ' (' + CompleteEntryHistory.TotalTransfersCost + ')'"></td>
-                                                    <td class="single line hide-on-mobile" data-bind="html: $root.GetChipsUsed($data.CompleteEntryHistory.chips)"></td>
-                                                    <td class="single line hide-on-mobile" data-bind="text: $root.FormatLast5GwPoints(Last5GwPoints), visible: $root.CurrentGwId > 1"></td>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
+                                    <table id="standings-table" class="ui unstackable table" style="width: 100%; border-collapse: collapse">
+                                        <thead>
+                                            <tr class="single line">
+                                                <th class="no-sort" style="display:none"></th>
+                                                <th class="no-sort hide-on-mobile"></th>
+                                                <th class="default-sort">Rank</th>
+                                                <th class="no-sort single line">Team & Manager</th>
+                                                <th class="center aligned">Total</th>
+                                                <th class="single line center aligned">GW<span data-bind="text: $root.CurrentGwId"></span></th>
+                                                <th id="th-bonus-points" class="center aligned hide-on-mobile" data-tooltip="Gameweek Bonus Points">BP</th>
+                                                <th class="center aligned hide-on-mobile" data-tooltip="Points on Bench">POB</th>
+                                                <th>Captain</th>
+                                                <th class="center aligned hide-on-mobile" data-tooltip="Auto Subs">AS</th>
+                                                <th class="center aligned" data-tooltip="Players Yet to Play">PYTP</th>
+                                                <th class="center aligned" data-tooltip="Points From First">PFF</th>
+                                                <th class="center aligned" data-tooltip="Active Chips">AC</th>
+                                                <th class="center aligned hide-on-mobile" data-tooltip="GameWeek Transfers (Cost)">GWT (C)</th>
+                                                <th class="center aligned hide-on-mobile" data-tooltip="Total Transfers (Cost)">TT (C)</th>
+                                                <th class="hide-on-mobile" data-tooltip="Used Chips (GameWeek)">UC (GW)</th>
+                                                <th class="hide-on-mobile" data-bind="visible: $root.CurrentGwId > 1">Last <span data-bind="text: $root.CurrentGwId() < 6 ? $root.CurrentGwId() - 1 : 5"></span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-bind="foreach: $root.SelectedLeagueStandings">
+                                            <tr class="single line" data-bind="class: $root.GetRowClass(entry)">
+                                                <td style="display:none" data-bind="text: entry"></td>
+                                                <td class="details-control hide-on-mobile"></td>
+                                                <td class="single line center aligned">
+                                                    <i data-bind="class: $root.GetPointsMovement($data)"></i>
+                                                    <span data-bind="text: $root.GetRank($data)"></span>
+                                                </td>
+                                                <td style="font-weight:bold" data-bind="html: $root.FormatNames($data)"></td>
+                                                <td class="center aligned" data-bind="text: total"></td>
+                                                <td class="center aligned" data-bind="text: event_total"></td>
+                                                <td class="center aligned hide-on-mobile" data-bind="text: $root.GetTeamBonusPoints($data.GWTeam.picks)"></td>
+                                                <td class="center aligned hide-on-mobile" data-bind="text: $root.GetGWBenchPoints($data.GWTeam.picks)"></td>
+                                                <td class="single line" data-bind="text: $root.GetCaptain($data.GWTeam.picks)"></td>
+                                                <td class="center aligned hide-on-mobile" data-bind="text: GWTeam.automatic_subs.length"></td>
+                                                <td class="center aligned" data-bind="text: GWTeam.PlayersYetToPlay"></td>
+                                                <td class="center aligned" data-bind="text: PointsFromFirst"></td>
+                                                <td class="center aligned" data-bind="html: $root.GetActiveChips($data.GWTeam.ActiveChips)"></td>
+                                                <td class="center aligned hide-on-mobile" data-bind="text: $root.GetGwTransfers($data.GWTeam)"></td>
+                                                <td class="center aligned hide-on-mobile" data-bind="text: CompleteEntryHistory.TotalTransfersMade + ' (' + CompleteEntryHistory.TotalTransfersCost + ')'"></td>
+                                                <td class="single line hide-on-mobile" data-bind="html: $root.GetChipsUsed($data.CompleteEntryHistory.chips)"></td>
+                                                <td class="single line hide-on-mobile" data-bind="text: $root.FormatLast5GwPoints(Last5GwPoints), visible: $root.CurrentGwId > 1"></td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot style="border-top: 1px solid black;" data-bind="visible: $root.SelectedLeagueStandings().length > 10@*, hidden: $root.UserTeam().entry == 0*@">
+                                            <tr class="active" data-bind="with: $root.UserTeam() ? $root.UserTeam() : null">
+                                                <td style="display:none" data-bind="text: entry"></td>
+                                                <td class="details-control hide-on-mobile"></td>
+                                                <td class="single line center aligned">
+                                                    <i data-bind="class: $root.GetPointsMovement($data)"></i>
+                                                    <span data-bind="text: $root.GetRank($data)"></span>
+                                                </td>
+                                                <td style="font-weight:bold" data-bind="html: $root.FormatNames($data)"></td>
+                                                <td class="center aligned" data-bind="text: total"></td>
+                                                <td class="center aligned" data-bind="text: event_total"></td>
+                                                <td class="center aligned hide-on-mobile" data-bind="text: $root.GetTeamBonusPoints($data.GWTeam.picks)"></td>
+                                                <td class="center aligned hide-on-mobile" data-bind="text: $root.GetGWBenchPoints($data.GWTeam.picks)"></td>
+                                                <td class="single line" data-bind="text: $root.GetCaptain($data.GWTeam.picks)"></td>
+                                                <td class="center aligned hide-on-mobile" data-bind="text: GWTeam.automatic_subs.length"></td>
+                                                <td class="center aligned" data-bind="text: GWTeam.PlayersYetToPlay"></td>
+                                                <td class="center aligned" data-bind="text: PointsFromFirst"></td>
+                                                <td class="center aligned" data-bind="html: $root.GetActiveChips($data.GWTeam.ActiveChips)"></td>
+                                                <td class="center aligned hide-on-mobile" data-bind="text: $root.GetGwTransfers($data.GWTeam)"></td>
+                                                <td class="center aligned hide-on-mobile" data-bind="text: CompleteEntryHistory.TotalTransfersMade + ' (' + CompleteEntryHistory.TotalTransfersCost + ')'"></td>
+                                                <td class="single line hide-on-mobile" data-bind="html: $root.GetChipsUsed($data.CompleteEntryHistory.chips)"></td>
+                                                <td class="single line hide-on-mobile" data-bind="text: $root.FormatLast5GwPoints(Last5GwPoints), visible: $root.CurrentGwId > 1"></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
                                 </div>
                                 <div class="ui bottom attached tab segment" data-tab="second">
                                     <div class="ui grid">
