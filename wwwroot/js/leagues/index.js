@@ -1078,6 +1078,20 @@
                     order: [[$('th.default-sort').index(), "asc"]],
                     responsive: true,
                     fixedHeader: true,
+                    dom:
+                        "<'ui unstackable grid'" +
+                        "<'row p-b-0-4'" +
+                        "<'five wide column'l>" +
+                        "<'right floated five wide column'f>" +
+                        ">" +
+                        "<'row dt-table padding-top-zero'" +
+                        "<'sixteen wide column'tr>" +
+                        ">" +
+                        "<'row padding-top-zero'" +
+                        "<'five wide column'i>" +
+                        "<'right aligned eleven wide column'p>" +
+                        ">" +
+                        ">",
                     //scrollX: true,
                     //scrollY: true
                 });
@@ -1094,7 +1108,31 @@
                     responsive: true,
                     scrollX: true,
                     scrollY: true,
-                    searching: false
+                    searching: true,
+                    dom:
+                        "<'ui unstackable grid'" +//1
+                        "<'row'" +//2
+                        "<'five wide column'l>" +
+                        //"<'#gw-player-table-heading-mobile.six wide center aligned column ui header'>" +
+                        "<'right floated six wide column'f>" +
+                        ">" +//2
+                        "<'row dt-table padding-top-zero'" +//3
+                        "<'sixteen wide column'tr>" +
+                        ">" +//3
+                        //"<'row'" +
+                        "<'row padding-top-zero'" +//4
+                        "<'sixteen wide column'i>" +
+                        "<'sixteen wide column'p>" +
+                        ">" +//4
+                        //">" +
+                        ">",//1
+                    language: {
+                        search: '',
+                        searchPlaceholder: 'Search',
+                        lengthMenu: "_MENU_"
+                    },
+                    pagingType: "simple"
+
                 });
 
             });
@@ -1118,7 +1156,21 @@
 					    { orderable: false, targets: "no-sort" }
 				    ],
 				    responsive: true,
-				    scrollX: true
+                    scrollX: true,
+                    dom:
+                        "<'ui unstackable grid'" +
+                        "<'row p-b-0-4'" +
+                        "<'five wide column'l>" +
+                        "<'right floated five wide column'f>" +
+                        ">" +
+                        "<'row dt-table padding-top-zero'" +
+                        "<'sixteen wide column'tr>" +
+                        ">" +
+                        "<'row padding-top-zero'" +
+                        "<'five wide column'i>" +
+                        "<'right aligned eleven wide column'p>" +
+                        ">" +
+                        ">",
 				    //scrollY: true
 			    });
 
@@ -1135,7 +1187,29 @@
 				    ],
 				    responsive: true,
 				    scrollX: true,
-				    pagingType: "simple"
+                    dom:
+                        "<'ui unstackable grid'" +//1
+                        "<'row'" +//2
+                        "<'five wide column'l>" +
+                        //"<'#gw-player-table-heading-mobile.six wide center aligned column ui header'>" +
+                        "<'right floated six wide column'f>" +
+                        ">" +//2
+                        "<'row dt-table padding-top-zero'" +//3
+                        "<'sixteen wide column'tr>" +
+                        ">" +//3
+                        //"<'row'" +
+                        "<'row padding-top-zero'" +//4
+                        "<'sixteen wide column'i>" +
+                        "<'sixteen wide column'p>" +
+                        ">" +//4
+                        //">" +
+                        ">",//1
+                    language: {
+                        search: '',
+                        searchPlaceholder: 'Search',
+                        lengthMenu: "_MENU_"
+                    },
+                    pagingType: "simple"
 			    });
 
 		    });
@@ -1238,7 +1312,6 @@
             });
         }
     });
-
 
 };
 

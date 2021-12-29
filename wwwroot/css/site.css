@@ -442,7 +442,7 @@ div.dt-buttons {
 		font-size: 1rem !important;
 	}
 
-	#gw-player-table_filter > label > input[type=search] {
+	#gw-player-table_filter > label > input[type=search], #standings-table_filter > label > input[type=search], #player-tally-table_filter > label > input[type=search] {
 		width: 80px !important;
 	}
 
@@ -451,8 +451,8 @@ div.dt-buttons {
 		padding-right: 0.5rem;
 	}
 
-	#gw-player-table_filter {
-		margin-top: 0!important; 
+	#gw-player-table_filter, #standings-table_filter, #player-tally-table_filter {
+		margin-top: 0 !important;
 	}
 
 	#gw-player-table_length {

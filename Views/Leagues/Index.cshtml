@@ -37,12 +37,14 @@
                                        optionsText: 'name',
                                        value: $root.SelectedLeague">
                             </select>
-                            <div id="league-search-2" class="ui action input" style="display: none; height:38px !important;">
-                                <input type="text" placeholder="Enter League ID" data-bind="textInput: $root.SearchedLeagueId" style="max-width: 175px !important">
-                                <button id="league-search-button" class="ui button" data-bind="click: $root.SearchLeagues">
-                                    Search
-                                </button>
-                            </div>
+                            <form style="display: inline-block;">
+                                <div id="league-search-2" class="ui action input" style="display: none; height:38px !important;">
+                                    <input type="text" placeholder="Enter League ID" data-bind="textInput: $root.SearchedLeagueId" style="max-width: 175px !important">
+                                    <button id="league-search-button" class="ui button" data-bind="click: $root.SearchLeagues">
+                                        Search
+                                    </button>
+                                </div>
+                            </form>
                         }
                         else
                         {
@@ -52,10 +54,12 @@
                                 @*<i class="search icon"></i>*@
                                 Search Again
                             </button>
-                            <div id="league-search" class="ui action input">
-                                <input type="text" placeholder="Enter League ID" data-bind="textInput: $root.SearchedLeagueId">
-                                <button id="league-search-button" class="ui button" data-bind="click: $root.SearchLeagues">Search</button>
-                            </div>
+                            <form>
+                                <div id="league-search" class="ui action input">
+                                    <input type="text" placeholder="Enter League ID" data-bind="textInput: $root.SearchedLeagueId">
+                                    <button id="league-search-button" class="ui button" type="submit" data-bind="click: $root.SearchLeagues">Search</button>
+                                </div>
+                            </form>
                         }
                     </h3>
                     @if (Model.CurrentGwId != 0)
@@ -182,8 +186,8 @@
                                             <thead>
                                                 <tr>
                                                     <th>Player</th>
-                                                    <th>Position</th>
-                                                    <th>Team</th>
+                                                    <th class="hide-on-mobile">Position</th>
+                                                    <th class="hide-on-mobile">Team</th>
                                                     <th class="center aligned">Starting %</th>
                                                     <th class="center aligned">Bench %</th>
                                                     <th class="center aligned">Captain %</th>
@@ -196,8 +200,8 @@
                                             <tbody data-bind="foreach: $root.SelectedLeaguePlayersTally">
                                                 <tr>
                                                     <td data-bind="text: Pick.player.web_name"></td>
-                                                    <td data-bind="text: $root.GetPosition(Pick.player.element_type)"></td>
-                                                    <td data-bind="text: Pick.player.Team.name"></td>
+                                                    <td class="hide-on-mobile" data-bind="text: $root.GetPosition(Pick.player.element_type)"></td>
+                                                    <td class="hide-on-mobile" data-bind="text: Pick.player.Team.name"></td>
                                                     <td class="clickable-cell center aligned" data-bind="text: StartingSelection, click: $root.FireStartingSelectionModal.bind($data)"></td>
                                                     <td class="clickable-cell center aligned" data-bind="text: BenchSelection, click: $root.FireBenchSelectionModal.bind($data)"></td>
                                                     <td class="clickable-cell center aligned" data-bind="text: CaptainSelection, click: $root.FireCaptainSelectionModal.bind($data)"></td>
