@@ -37,8 +37,8 @@
                                        optionsText: 'name',
                                        value: $root.SelectedLeague">
                             </select>
-                            <form style="display: inline-block;">
-                                <div id="league-search-2" class="ui action input" style="display: none; height:38px !important;">
+                            <form id="league-search-2-form" style="display: none;">
+                                <div id="league-search-2" class="ui action input" style="height:38px !important;">
                                     <input type="text" placeholder="Enter League ID" data-bind="textInput: $root.SearchedLeagueId" style="max-width: 175px !important">
                                     <button id="league-search-button" class="ui button" data-bind="click: $root.SearchLeagues">
                                         Search
@@ -94,7 +94,11 @@
                                 <h3 class="ui center aligned header">
                                     A league's ID can be found from the URL on the official FPL website (image above).
                                     <br /><br />
-                                    Or alternatively, <a asp-controller="Login" asp-action="Index">login</a> using your Official FPL username and password to load all your leagues automatically.
+                                    @if (User.Identity.IsAuthenticated)
+                                    {
+                                    } else {
+                                    <span>Or alternatively, <a asp-controller="Login" asp-action="Index">login</a> using your Official FPL username and password to load all your leagues automatically.</span>
+                                    }
                                 </h3>
                             </div>
                             <div data-bind="hidden: $root.HideLeagueUI">
@@ -181,7 +185,7 @@
                                 </div>
                                 <div class="ui bottom attached tab segment" data-tab="second">
                                     <div class="ui grid">
-                                        @*<div style="width: 100%; overflow-x: auto;">*@
+                                    @*<div style="width: 100%; overflow-x: auto;">*@
                                         <table id="player-tally-table" class="ui unstackable table" style="width: 100%;">
                                             <thead>
                                                 <tr>
@@ -212,7 +216,7 @@
                                                 </tr>
                                             </tbody>
                                         </table>
-                                        @*</div>*@
+                                    @*</div>*@
                                     </div>
                                 </div>
                                 <div class="ui bottom attached tab segment" data-tab="third">
@@ -220,45 +224,45 @@
                                 </div>
                             </div>
                         </div>
-                    }
-                    else
-                    {
-                        <div id="entries-segment" class="ui attached segment" style="min-height:30rem;">
-                            <div class="ui attached tabular menu">
-                                <a class="item active" data-tab="first">
-                                    Entries
-                                </a>
-                            </div>
-                            <div class="ui bottom attached tab segment active" data-tab="first">
-                                <div id="entries-loader" class="ui inverted dimmer">
-                                    <div class="ui text large loader">
-                                        <h3 class="ui top attached header" data-bind="text: $root.GetSelectedLeagueStandingsLoaderText($root)"></h3>
-                                    </div>
-                                </div>
-                                <div class="ui inverted dimmer searched-loader">
-                                    <div class="ui text large loader">
-                                        <h3 class="ui top attached header" data-bind="text: $root.GetSearchedLeagueStandingsLoaderText($root)"></h3>
-                                    </div>
-                                </div>
-                                <table id="entries-table" class="ui unstackable table" style="width: 100%;">
-                                    <thead>
-                                        <tr class="single line">
-                                            <th class="no-sort" style="display:none"></th>
-                                            <th class="no-sort single line">Team & Manager</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody data-bind="foreach: $root.SelectedLeagueStandings">
-                                        <tr class="single line" data-bind="class: $root.GetRowClass(entry)">
-                                            <td style="display:none" data-bind="text: entry"></td>
-                                            <td style="font-weight:bold" data-bind="html: $root.FormatNames($data)"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                                    }
+                                    else
+                                    {
+                                    <div id="entries-segment" class="ui attached segment" style="min-height:30rem;">
+                                        <div class="ui attached tabular menu">
+                                            <a class="item active" data-tab="first">
+                                                Entries
+                                            </a>
+                                        </div>
+                                        <div class="ui bottom attached tab segment active" data-tab="first">
+                                            <div id="entries-loader" class="ui inverted dimmer">
+                                                <div class="ui text large loader">
+                                                    <h3 class="ui top attached header" data-bind="text: $root.GetSelectedLeagueStandingsLoaderText($root)"></h3>
+                                                </div>
+                                            </div>
+                                            <div class="ui inverted dimmer searched-loader">
+                                                <div class="ui text large loader">
+                                                    <h3 class="ui top attached header" data-bind="text: $root.GetSearchedLeagueStandingsLoaderText($root)"></h3>
+                                                </div>
+                                            </div>
+                                            <table id="entries-table" class="ui unstackable table" style="width: 100%;">
+                                                <thead>
+                                                    <tr class="single line">
+                                                        <th class="no-sort" style="display:none"></th>
+                                                        <th class="no-sort single line">Team & Manager</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody data-bind="foreach: $root.SelectedLeagueStandings">
+                                                    <tr class="single line" data-bind="class: $root.GetRowClass(entry)">
+                                                        <td style="display:none" data-bind="text: entry"></td>
+                                                        <td style="font-weight:bold" data-bind="html: $root.FormatNames($data)"></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
 
-                        </div>
-                    }
-                </div>
+                                    </div>
+                                    }
+</div>
             </div>
         </div>
     </div>

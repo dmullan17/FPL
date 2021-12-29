@@ -14,6 +14,7 @@
         leagueDropdown = $('#league-dropdown'),
         leagueSearchInput = $("#league-search"),
         leagueSearchInput2 = $("#league-search-2"),
+        leagueSearchForm2 = $("#league-search-2-form"),
         leagueSearchButton = $("#league-search-button"),
         searchedLeagueName = $("#searched-league-name"),
         leagueSearchAgainButton = $("#league-search-again-button");
@@ -452,12 +453,15 @@
 
         //if 'get league by id' option selected, show league search input allowing user to enter id
         if (league.id == -1) {
-            leagueSearchInput2.show()
+            leagueSearchForm2.show();
+            leagueSearchForm2.css("display", "inline-block");
+            //leagueSearchInput2.show()
             self.HideLeagueUI(true);
             return;
         }
 
-        leagueSearchInput2.hide();
+        leagueSearchForm2.hide();
+        //leagueSearchInput2.hide();
         self.HideLeagueUI(false);
 
         if ($.fn.dataTable.isDataTable(standingsTable) || $.fn.dataTable.isDataTable(entriesTable)) {
