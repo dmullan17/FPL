@@ -31,5 +31,7 @@ namespace FPL.Models.FPL
         public CompleteEntryHistory CompleteEntryHistory { get; set; } = new CompleteEntryHistory();
 
         public int PlayersYetToPlay { get; set; } = 0;
+
+        public int OverallRank { get; set; } = 0;
     }
 }

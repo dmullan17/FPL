@@ -350,6 +350,7 @@ namespace FPL.Controllers
                 player.CompleteEntryHistory = await PointsController.GetCompleteEntryHistory(player.CompleteEntryHistory, player.entry);
                 gwTeam.picks = PointsController.AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
                 var teamDetails = await PointsController.GetTeamInfo(player.entry);
+                gwTeam.OverallRank = (int)teamDetails.summary_overall_rank;
 
                 foreach (var transfer in gwTeam.GWTransfers)
                 {
@@ -455,6 +456,7 @@ namespace FPL.Controllers
                 player.CompleteEntryHistory = await PointsController.GetCompleteEntryHistory(player.CompleteEntryHistory, player.entry);
                 gwTeam.picks = PointsController.AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
                 var teamDetails = await PointsController.GetTeamInfo(player.entry);
+                gwTeam.OverallRank = (int)teamDetails.summary_overall_rank;
 
                 foreach (var p in gwTeam.picks)
                 {
@@ -524,6 +526,7 @@ namespace FPL.Controllers
                 userTeam.CompleteEntryHistory = await pointsController.GetCompleteEntryHistory(userTeam.CompleteEntryHistory, teamId);
                 gwTeam.picks = pointsController.AddEstimatedBonusToTeamPicks(gwTeam.picks, eventStatus);
                 var teamDetails = await pointsController.GetTeamInfo(teamId);
+                gwTeam.OverallRank = (int)teamDetails.summary_overall_rank;
 
                 foreach (var p in gwTeam.picks)
                 {

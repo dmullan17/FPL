@@ -577,7 +577,12 @@
         //    return manager.rank;
         //}
 
-        return manager.rank;
+        return nFormatter(manager.rank, 1);
+    }
+
+    self.GetOverallRank = function (manager) {
+
+        return nFormatter(manager.GWTeam.OverallRank, 1);
     }
 
     self.GetPlayersYetToPlay = function (manager) {
@@ -916,6 +921,39 @@
 
     self.init();
 
+    jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+        "sort-numbers-with-letters-asc": function (a, b) {
+            var el1 = $('<div></div>');
+            el1.html(a);
+
+            var el2 = $('<div></div>');
+            el2.html(b);
+
+            var aHtml = $('span', el1);
+            var bHtml = $('span', el2);
+
+            var first = parseInt(aHtml[0].innerHTML, 10);
+            var second = parseInt(bHtml[0].innerHTML, 10);
+
+            return ((first > second) ? 0 : ((first < second) ? -1 : 1));
+        },
+        "sort-numbers-with-letters-desc": function (a, b) {
+            var el1 = $('<div></div>');
+            el1.html(a);
+
+            var el2 = $('<div></div>');
+            el2.html(b);
+
+            var aHtml = $('span', el1);
+            var bHtml = $('span', el2);
+
+            var first = parseInt(aHtml[0].innerHTML, 10);
+            var second = parseInt(bHtml[0].innerHTML, 10);
+
+            return ((first < second) ? 0 : ((first > second) ? -1 : 1));
+        }
+    });
+
     /* Formatting function for row details - modify as you need */
     function FormatChildRow(gwTeam) {
 
@@ -1096,6 +1134,14 @@
                         "<'right aligned eleven wide column'p>" +
                         ">" +
                         ">",
+                    columnDefs: [
+                        {
+                            type: "sort-numbers-with-letters", targets: "special-sort-1"
+                        },
+                        {
+                            orderable: false, targets: "no-sort"
+                        }
+                    ],
                     //scrollX: true,
                     //scrollY: true
                 });
@@ -1135,7 +1181,15 @@
                         searchPlaceholder: 'Search',
                         lengthMenu: "_MENU_"
                     },
-                    pagingType: "simple"
+                    pagingType: "simple",
+                    columnDefs: [
+                        {
+                            type: "sort-numbers-with-letters", targets: "special-sort-1"
+                        },
+                        {
+                            orderable: false, targets: "no-sort"
+                        }
+                    ],
 
                 });
 
@@ -1231,6 +1285,26 @@
         const dayOfWeek = new Date(date).getDay();
         return isNaN(dayOfWeek) ? null :
             ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][dayOfWeek];
+    }
+
+    function nFormatter(num, digits) {
+        var si = [
+            { value: 1, symbol: "" },
+            { value: 1E3, symbol: "k" },
+            { value: 1E6, symbol: "M" },
+            { value: 1E9, symbol: "G" },
+            { value: 1E12, symbol: "T" },
+            { value: 1E15, symbol: "P" },
+            { value: 1E18, symbol: "E" }
+        ];
+        var rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+        var i;
+        for (i = si.length - 1; i > 0; i--) {
+            if (Math.abs(num) >= si[i].value) {
+                break;
+            }
+        }
+        return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
     }
 
     // Add event listener for opening and closing details

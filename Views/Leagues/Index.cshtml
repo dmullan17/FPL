@@ -116,10 +116,11 @@
                                             <tr class="single line">
                                                 <th class="no-sort" style="display:none"></th>
                                                 <th class="no-sort hide-on-mobile"></th>
-                                                <th class="default-sort">Rank</th>
+                                                <th class="default-sort center aligned">Rank</th>
                                                 <th class="no-sort single line">Team & Manager</th>
                                                 <th class="center aligned">Total</th>
                                                 <th class="single line center aligned">GW<span data-bind="text: $root.CurrentGwId"></span></th>
+                                                <th class="single line special-sort-1 center aligned" data-tooltip="Overall Rank">OR</th>
                                                 <th id="th-bonus-points" class="center aligned hide-on-mobile" data-tooltip="Gameweek Bonus Points">BP</th>
                                                 <th class="center aligned hide-on-mobile" data-tooltip="Points on Bench">POB</th>
                                                 <th>Captain</th>
@@ -144,6 +145,10 @@
                                                 <td style="font-weight:bold" data-bind="html: $root.FormatNames($data)"></td>
                                                 <td class="center aligned" data-bind="text: total"></td>
                                                 <td class="center aligned" data-bind="text: event_total"></td>
+                                                <td class="center aligned">
+                                                    <span data-bind="text: GWTeam.OverallRank, visible: false"></span> @*needed for sort*@
+                                                    <span data-bind="text: $root.GetOverallRank($data)"></span>
+                                                </td>
                                                 <td class="center aligned hide-on-mobile" data-bind="text: $root.GetTeamBonusPoints($data.GWTeam.picks)"></td>
                                                 <td class="center aligned hide-on-mobile" data-bind="text: $root.GetGWBenchPoints($data.GWTeam.picks)"></td>
                                                 <td class="single line" data-bind="text: $root.GetCaptain($data.GWTeam.picks)"></td>
@@ -168,6 +173,7 @@
                                                 <td style="font-weight:bold" data-bind="html: $root.FormatNames($data)"></td>
                                                 <td class="center aligned" data-bind="text: total"></td>
                                                 <td class="center aligned" data-bind="text: event_total"></td>
+                                                <td class="center aligned" data-bind="text: $root.GetOverallRank($data)"></td>
                                                 <td class="center aligned hide-on-mobile" data-bind="text: $root.GetTeamBonusPoints($data.GWTeam.picks)"></td>
                                                 <td class="center aligned hide-on-mobile" data-bind="text: $root.GetGWBenchPoints($data.GWTeam.picks)"></td>
                                                 <td class="single line" data-bind="text: $root.GetCaptain($data.GWTeam.picks)"></td>
