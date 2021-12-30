@@ -115,7 +115,7 @@
                                         <thead>
                                             <tr class="single line">
                                                 <th class="no-sort" style="display:none"></th>
-                                                <th class="no-sort hide-on-mobile"></th>
+                                                <th class="no-sort"></th>
                                                 <th class="default-sort center aligned">Rank</th>
                                                 <th class="no-sort single line">Team & Manager</th>
                                                 <th class="center aligned">Total</th>
@@ -137,7 +137,7 @@
                                         <tbody data-bind="foreach: $root.SelectedLeagueStandings">
                                             <tr class="single line" data-bind="class: $root.GetRowClass(entry)">
                                                 <td style="display:none" data-bind="text: entry"></td>
-                                                <td class="details-control hide-on-mobile"></td>
+                                                <td class="details-control"></td>
                                                 <td class="single line center aligned">
                                                     <i data-bind="class: $root.GetPointsMovement($data)"></i>
                                                     <span data-bind="text: $root.GetRank($data)"></span>
@@ -165,7 +165,7 @@
                                         <tfoot style="border-top: 1px solid black;" data-bind="visible: $root.SelectedLeagueStandings().length > 10@*, hidden: $root.UserTeam().entry == 0*@">
                                             <tr class="active" data-bind="with: $root.UserTeam() ? $root.UserTeam() : null">
                                                 <td style="display:none" data-bind="text: entry"></td>
-                                                <td class="details-control hide-on-mobile"></td>
+                                                <td class="details-control"></td>
                                                 <td class="single line center aligned">
                                                     <i data-bind="class: $root.GetPointsMovement($data)"></i>
                                                     <span data-bind="text: $root.GetRank($data)"></span>

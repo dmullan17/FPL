@@ -962,14 +962,59 @@
         var autoSubs = gwTeam.automatic_subs;
         var gwTransfers = gwTeam.GWTransfers;
 
-        var startersHtml = CreateHtmlForPicks(starters, autoSubs);
-        var subHtml = CreateHtmlForPicks(subs, autoSubs);
+        var transfersHtml = CreateHtmlForTransfers(gwTransfers);
+        var autoSubsHtml = CreateHtmlForAutoSubs(autoSubs, gwTeam);
 
+        var browserW = $(window).width();
+
+        if (browserW > 992) {
+            var startersHtml = CreateHtmlForPicksDesktop(starters, autoSubs);
+            var subHtml = CreateHtmlForPicksDesktop(subs, autoSubs);        
+
+            return '<div class="ui grid">' +
+                '<div class="thirteen wide column">' +
+                '<div class="ui horizontal list">' + startersHtml + '</div>' +
+                '</br>' +
+                '<div class="ui horizontal list">' + subHtml + '</div>' +
+                '</div>' +
+                '<div class="two wide column" style="padding-left: 0; width: 14% !important">' +
+                transfersHtml +
+                autoSubsHtml +
+                '</div>' +
+                '</div>';
+        } else {
+
+            var startersHtml = CreateHtmlForPicksMobile(starters, autoSubs);
+            var subHtml = CreateHtmlForPicksMobile(subs, autoSubs);
+
+            return  '<div class="ui grid">' +
+                        '<div class="three wide column">' +
+                            '<h4 class="ui header" style="margin-bottom: 0!important;">Starters</h4>' +
+                            '<div class="ui list" style="margin-top: 0.5rem!important;">' + startersHtml + '</div>' +
+                            '</br>' +
+                        '</div>' +
+                        '<div class="three wide column">' +
+                            '<h4 class="ui header" style="margin-bottom: 0!important;">Subs</h4>' +
+                            '<div class="ui list" style="margin-top: 0.5rem!important;">' + subHtml + '</div>' +
+                            '</br>' +
+                        '</div>' +
+                        '<div class="four wide column" style="width: 22% !important">' +
+                            transfersHtml +
+                        '</div>' +
+                        '<div class="four wide column" style="width: 22% !important">' +
+                            autoSubsHtml +
+                        '</div>' +
+                    '</div>';
+        }
+
+    }
+
+    function CreateHtmlForTransfers(gwTransfers) {
         var transfersHtml = "";
 
         if (gwTransfers.length > 0) {
             transfersHtml += '<h4 class="ui header" style="margin-bottom: 0.5rem">GW Transfers (' + gwTransfers.length + ')</h4>' +
-                '<div class="ui list" style="margin-top: 0rem">' 
+                '<div class="ui list" style="margin-top: 0rem">'
 
             for (var i = 0; i < gwTransfers.length; i++) {
                 if (gwTransfers[i].PlayerIn != null && gwTransfers[i].PlayerOut != null) {
@@ -983,6 +1028,10 @@
             transfersHtml += '</div>'
         }
 
+        return transfersHtml;
+    }
+
+    function CreateHtmlForAutoSubs(autoSubs, gwTeam) {
         var autoSubsHtml = "";
 
         if (autoSubs.length > 0) {
@@ -998,27 +1047,17 @@
                 autoSubsHtml +=
                     '<div class="item">' +
                     '<span>' + playerIn + ' for ' + playerOut + '</span>' +
-                    '</div>';             
+                    '</div>';
             }
 
             autoSubsHtml += '</div>'
 
         }
 
-        return '<div class="ui grid">' +
-            '<div class="thirteen wide column">' +
-            '<div class="ui horizontal list">' + startersHtml + '</div>' +
-            '</br>' +
-            '<div class="ui horizontal list">' + subHtml + '</div>' +
-                '</div>' +
-            '<div class="two wide column" style="padding-left: 0; width: 14% !important">' +
-            transfersHtml +
-            autoSubsHtml +
-                '</div>' +
-                '</div>';
+        return autoSubsHtml;
     }
 
-    function CreateHtmlForPicks(picks, autoSubs) {
+    function CreateHtmlForPicksDesktop(picks, autoSubs) {
 
         var html = "";
 
@@ -1104,6 +1143,78 @@
 
         return html;
 
+    }
+
+    function CreateHtmlForPicksMobile(picks, autoSubs) {
+        var html = "";
+
+        for (var i = 0; i < picks.length; i++) {
+
+            var subIcon = "";
+            var subIcon2 = "";
+            var subIcon3 = "";
+            var captain = "";
+
+            if (picks[i].is_captain) {
+                captain += "<i class='copyright icon' style='display: inline-block'></i>";
+            }
+
+            for (var j = 0; j < autoSubs.length; j++) {
+                if (autoSubs[j].element_in == picks[i].player.id || autoSubs[j].element_out == picks[i].player.id) {
+                    subIcon += "<i class='sync icon' style='display: inline-block'></i>";
+                }
+            }
+
+            if (picks[i].player.status != "a") {
+                //injured
+                if (picks[i].player.status == "i") {
+                    subIcon2 += "<i class='sync circle icon' style='display: inline-block'></i>";
+                }
+                //doubtful
+                else if (picks[i].player.status == "d") {
+                    subIcon2 += "<i class='help circle icon' style='display: inline-block'></i>";
+                }
+                //not available or suspended
+                else if (picks[i].player.status == "n" || picks[i].player.status == "s") {
+                    subIcon2 += "<i class='warning circle icon' style='display: inline-block'></i>";
+                }
+                //unavailable - left the club
+                else if (picks[i].player.status == "u") {
+                    subIcon2 += "<i class='warning sign icon' style='display: inline-block'></i>";
+                }
+            }
+
+
+            var isAllGwGamesFinished = self.IsAllGwGamesFinished(picks[i].GWGames);
+
+            if (isAllGwGamesFinished) {
+                subIcon3 += "<i class='green check circle icon' style='display: inline-block'></i>";
+            }
+
+            var name = truncateText(picks[i].player.web_name, 12);
+
+            html +=
+                '<div class="item">' +
+
+            name +
+            ' (' + picks[i].GWPlayer.stats.gw_points + ')' +
+            captain +
+            subIcon +
+            subIcon2 +
+            subIcon3 +
+                '</div>'
+
+        }
+
+        return html;
+
+    }
+
+    function truncateText(string, cutoff) {
+        if (string.length > cutoff) {
+            return string.substring(0, cutoff) + '...';
+        }
+        return string;
     }
 
     function initialiseStandingsDatatable() {
