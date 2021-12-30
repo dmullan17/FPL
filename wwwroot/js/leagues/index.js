@@ -1087,7 +1087,7 @@
             html +=
                 '<div class="item">' +
                 '<div class="content">' +
-                '<h4 class="ui icon header">' +
+                '<h4 class="ui icon header truncate-text">' +
                 '<i class="small icons">' +
                 '  <i class="' + icon + '"></i>' +
                 '  <i class="' + subIcon + '"></i>' +

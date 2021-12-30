@@ -385,6 +385,14 @@ div.dt-buttons {
 	z-index: 100;
 }
 
+.truncate-text {
+	white-space: nowrap;
+	width: 100%; /* IE6 needs any width */
+	overflow: hidden; /* "overflow" value must be different from  visible"*/
+	-o-text-overflow: ellipsis; /* Opera < 11*/
+	text-overflow: ellipsis; /* IE, Safari (WebKit), Opera >= 11, FF > 6 */
+}
+
 /* On screens that are 992px or less, set the background color to blue */
 @media screen and (max-width: 992px) {
 	#mobile-header {
