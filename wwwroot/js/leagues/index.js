@@ -995,15 +995,16 @@
                         '</div>' +
                         '<div class="three wide column">' +
                             '<h4 class="ui header" style="margin-bottom: 0!important;">Subs</h4>' +
-                            '<div class="ui list" style="margin-top: 0.5rem!important;">' + subHtml + '</div>' +
+                '<div class="ui list" style="margin-top: 0.5rem!important;">' + subHtml + '</div>' +
+                autoSubsHtml +
                             '</br>' +
                         '</div>' +
                         '<div class="four wide column" style="width: 22% !important">' +
                             transfersHtml +
                         '</div>' +
-                        '<div class="four wide column" style="width: 22% !important">' +
-                            autoSubsHtml +
-                        '</div>' +
+                        //'<div class="four wide column" style="width: 22% !important">' +
+                        //    autoSubsHtml +
+                        //'</div>' +
                     '</div>';
         }
 
@@ -1159,30 +1160,30 @@
                 captain += "<i class='copyright icon' style='display: inline-block'></i>";
             }
 
-            for (var j = 0; j < autoSubs.length; j++) {
-                if (autoSubs[j].element_in == picks[i].player.id || autoSubs[j].element_out == picks[i].player.id) {
-                    subIcon += "<i class='sync icon' style='display: inline-block'></i>";
-                }
-            }
+            //for (var j = 0; j < autoSubs.length; j++) {
+            //    if (autoSubs[j].element_in == picks[i].player.id || autoSubs[j].element_out == picks[i].player.id) {
+            //        subIcon += "<i class='sync icon' style='display: inline-block'></i>";
+            //    }
+            //}
 
-            if (picks[i].player.status != "a") {
-                //injured
-                if (picks[i].player.status == "i") {
-                    subIcon2 += "<i class='sync circle icon' style='display: inline-block'></i>";
-                }
-                //doubtful
-                else if (picks[i].player.status == "d") {
-                    subIcon2 += "<i class='help circle icon' style='display: inline-block'></i>";
-                }
-                //not available or suspended
-                else if (picks[i].player.status == "n" || picks[i].player.status == "s") {
-                    subIcon2 += "<i class='warning circle icon' style='display: inline-block'></i>";
-                }
-                //unavailable - left the club
-                else if (picks[i].player.status == "u") {
-                    subIcon2 += "<i class='warning sign icon' style='display: inline-block'></i>";
-                }
-            }
+            //if (picks[i].player.status != "a") {
+            //    //injured
+            //    if (picks[i].player.status == "i") {
+            //        subIcon2 += "<i class='sync circle icon' style='display: inline-block'></i>";
+            //    }
+            //    //doubtful
+            //    else if (picks[i].player.status == "d") {
+            //        subIcon2 += "<i class='help circle icon' style='display: inline-block'></i>";
+            //    }
+            //    //not available or suspended
+            //    else if (picks[i].player.status == "n" || picks[i].player.status == "s") {
+            //        subIcon2 += "<i class='warning circle icon' style='display: inline-block'></i>";
+            //    }
+            //    //unavailable - left the club
+            //    else if (picks[i].player.status == "u") {
+            //        subIcon2 += "<i class='warning sign icon' style='display: inline-block'></i>";
+            //    }
+            //}
 
 
             var isAllGwGamesFinished = self.IsAllGwGamesFinished(picks[i].GWGames);
@@ -1199,8 +1200,8 @@
             name +
             ' (' + picks[i].GWPlayer.stats.gw_points + ')' +
             captain +
-            subIcon +
-            subIcon2 +
+            //subIcon +
+            //subIcon2 +
             subIcon3 +
                 '</div>'
 
