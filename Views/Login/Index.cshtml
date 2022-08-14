@@ -18,6 +18,38 @@
             <div class="column" style="max-width: 700px;">
                 <h2 class="ui header">
                     <div class="content">
+                        Enter your FPL Team ID below.
+                    </div>
+                </h2>
+
+                <form class="ui large team-id form">
+                    <div class="ui stacked segment">
+                        <div class="field">
+                            <div class="ui left icon input">
+                                <i class="user icon"></i>
+                                <input id="team-id-input" type="number" name="teamid" placeholder="Team ID" data-bind="textInput: $root.TeamId" />
+                            </div>
+                        </div>
+                        <div class="ui error message"></div>
+                        <div id="button-set-team-id" class="ui fluid large submit button" style="background-color: #784818; color: white;">Login</div>
+                    </div>
+                </form>
+                <br />
+                <br />
+
+                <h3 class="ui header">
+                    <div class="content">
+                        A team's ID can be found from the URL on the official FPL website.
+                    </div>
+                </h3>
+
+                <img class="ui centered image" src="~/img/FindTeamID.png" />
+            </div>
+        </div>
+        @*<div class="ui middle aligned center aligned grid">
+            <div class="column" style="max-width: 700px;">
+                <h2 class="ui header">
+                    <div class="content">
                         Log-in using your Official FPL login credentials
                     </div>
                 </h2>
@@ -39,22 +71,18 @@
                         <div id="button-login" class="ui fluid large submit button" style="background-color: #784818; color: white;">Login</div>
                     </div>
                 </form>
-
-                @*<div class="ui message">
-                    New to us? <a href="#">Sign Up</a>
-                </div>*@
             </div>
-        </div>
+        </div>*@
         <!--<div id="div-login" class="ui middle aligned center aligned grid">
-        <div class="column">
-            <form class="ui large form" id="form-login">-->
+    <div class="column">
+        <form class="ui large form" id="form-login">-->
         @*<a href="@Url.Action("Index", "Home")"><img src="~/Images/PCU/serveprotect.jpg" class="ui image" alt="Serve and Protect CU"></a>
         <h3 class="ui top left aligned attached pcu header">
             Serve and Protect Credit Union
         </h3>*@
         <!--<div class="ui attached segment">
-        <h4 class="ui left aligned header">
-            Login-->
+    <h4 class="ui left aligned header">
+        Login-->
         @*<div class="sub header">Sign in to continue</div>*@
         <!--</h4>
                     <div class="field">

@@ -36,7 +36,6 @@
 
         if (self.SearchedTeamId() != null) {
             urlParams.set('entry', self.SearchedTeamId());
-            document.cookie = "teamId=" + self.SearchedTeamId();
             window.location.search = urlParams;
         }
         else {

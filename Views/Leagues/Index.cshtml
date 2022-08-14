@@ -31,36 +31,49 @@
             <div class="sixteen wide column">
                 <div class="row">
                     <h3 class="ui top attached header">
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <select id="league-dropdown" class="ui header scrolling dropdown" style="font-size: 1em!important; padding: 0.3em!important; margin-bottom: 0 !important;" data-bind="options: $root.ClassicLeagues,
+                        @*@if (User.Identity.IsAuthenticated)
+        {
+            <select id="league-dropdown" class="ui header scrolling dropdown" style="font-size: 1em!important; padding: 0.3em!important; margin-bottom: 0 !important;" data-bind="options: $root.ClassicLeagues,
+                       optionsText: 'name',
+                       value: $root.SelectedLeague">
+            </select>
+            <form id="league-search-2-form" style="display: none;">
+                <div id="league-search-2" class="ui action input" style="height:38px !important;">
+                    <input type="text" placeholder="Enter League ID" data-bind="textInput: $root.SearchedLeagueId" style="max-width: 175px !important">
+                    <button id="league-search-button" class="ui button" data-bind="click: $root.SearchLeagues">
+                        Search
+                    </button>
+                </div>
+            </form>
+        }
+        else
+        {
+            <span id="searched-league-name" data-bind="text: $root.SearchedLeagueName"></span>
+            <button id="league-search-again-button" class="ui mini button" style="display: none; font-size:0.75rem; vertical-align: middle; margin-left: 0.5rem" data-bind="click: $root.SearchLeagueAgain">
+                Search Again
+            </button>
+            <form>
+                <div id="league-search" class="ui action input">
+                    <input type="text" placeholder="Enter League ID" data-bind="textInput: $root.SearchedLeagueId">
+                    <button id="league-search-button" class="ui button" type="submit" data-bind="click: $root.SearchLeagues">Search</button>
+                </div>
+            </form>
+        }*@
+
+
+                        <select id="league-dropdown" class="ui header scrolling dropdown" style="font-size: 1em!important; padding: 0.3em!important; margin-bottom: 0 !important;" data-bind="options: $root.ClassicLeagues,
                                        optionsText: 'name',
                                        value: $root.SelectedLeague">
-                            </select>
-                            <form id="league-search-2-form" style="display: none;">
-                                <div id="league-search-2" class="ui action input" style="height:38px !important;">
-                                    <input type="text" placeholder="Enter League ID" data-bind="textInput: $root.SearchedLeagueId" style="max-width: 175px !important">
-                                    <button id="league-search-button" class="ui button" data-bind="click: $root.SearchLeagues">
-                                        Search
-                                    </button>
-                                </div>
-                            </form>
-                        }
-                        else
-                        {
-                            <span id="searched-league-name" data-bind="text: $root.SearchedLeagueName" @*style="display:none"*@></span>
-                            @*<i id="search-league-icon" class="search icon" style="display: none"></i>*@
-                            <button id="league-search-again-button" class="ui mini button" style="display: none; font-size:0.75rem; vertical-align: middle; margin-left: 0.5rem" data-bind="click: $root.SearchLeagueAgain">
-                                @*<i class="search icon"></i>*@
-                                Search Again
-                            </button>
-                            <form>
-                                <div id="league-search" class="ui action input">
-                                    <input type="text" placeholder="Enter League ID" data-bind="textInput: $root.SearchedLeagueId">
-                                    <button id="league-search-button" class="ui button" type="submit" data-bind="click: $root.SearchLeagues">Search</button>
-                                </div>
-                            </form>
-                        }
+                        </select>
+                        <form id="league-search-2-form" style="display: none;">
+                            <div id="league-search-2" class="ui action input" style="height:38px !important;">
+                                <input type="text" placeholder="Enter League ID" data-bind="textInput: $root.SearchedLeagueId" style="max-width: 175px !important">
+                                <button id="league-search-button" class="ui button" data-bind="click: $root.SearchLeagues">
+                                    Search
+                                </button>
+                            </div>
+                        </form>
+
                     </h3>
                     @if (Model.CurrentGwId != 0)
                     {
