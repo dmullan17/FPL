@@ -29,9 +29,9 @@
                 <a class="@Html.IsSelected(actions: "Index", controllers: "Points") item" asp-controller="Points" asp-action="Index">
                     <h3>Points</h3>
                 </a>
-                <a class="@Html.IsSelected(actions: "Index", controllers: "MyTeam") item" asp-controller="MyTeam" asp-action="Index">
+                @*<a class="@Html.IsSelected(actions: "Index", controllers: "MyTeam") item" asp-controller="MyTeam" asp-action="Index">
                     <h3>My Team</h3>
-                </a>
+                </a>*@
                 <a class="@Html.IsSelected(actions: "Index", controllers: "Leagues") item" asp-controller="Leagues" asp-action="Index">
                     <h3>Leagues</h3>
                 </a>
@@ -94,7 +94,7 @@
                 <div class="ui vertical navbar menu" style="background-color: #F0A848; width: 100% !important; border-radius: 0 !important; margin-top: 0; display:none;">
                     <a class="@Html.IsSelected(actions: "Index", controllers: "Home") item" asp-controller="Home" asp-action="Index">Home</a>
                     <a class="@Html.IsSelected(actions: "Index", controllers: "Points") item" asp-controller="Points" asp-action="Index">Points</a>
-                    <a class="@Html.IsSelected(actions: "Index", controllers: "MyTeam") item" asp-controller="MyTeam" asp-action="Index">My Team</a>
+                    @*<a class="@Html.IsSelected(actions: "Index", controllers: "MyTeam") item" asp-controller="MyTeam" asp-action="Index">My Team</a>*@
                     <a class="@Html.IsSelected(actions: "Index", controllers: "Leagues") item" asp-controller="Leagues" asp-action="Index">Leagues</a>
                     <a class="@Html.IsSelected(actions: "Index", controllers: "Players") item" asp-controller="Players" asp-action="Index">All Players</a>
                 </div>
