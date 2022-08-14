@@ -266,35 +266,51 @@ namespace FPL.Controllers
 
         public async Task<int> GetTeamId()
         {
-            HttpClientHandler handler = new HttpClientHandler();
+            var teamId = "";
 
-            var response = await _httpClient.GetAuthAsync(CreateHandler(handler), "me/");
-
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-
-            //if teamId not found from api call
-            if (JObject.Parse(content).SelectToken("player").Type == JTokenType.Null)
+            if (Request.Cookies["teamId"] == null)
             {
-                return 0;
+                teamId = "5589912";
+                SetCookie("teamId", teamId, null);
+            } 
+            else
+            {
+                teamId = Request.Cookies["teamId"];
             }
 
-            var userDetailsJson = AllChildren(JObject.Parse(content))
-                .First(c => c.Type == JTokenType.Object && c.Path.Contains("player"));
+            return int.Parse(teamId);
 
-            FplPlayer fplPlayer = new FplPlayer();
 
-            fplPlayer = userDetailsJson.ToObject<FplPlayer>();
+            //HttpClientHandler handler = new HttpClientHandler();
 
-            string cookie = Request.Cookies["teamId"];
+            //var response = await _httpClient.GetAuthAsync(CreateHandler(handler), "me/");
 
-            if (cookie == null)
-            {
-                SetCookie("teamId", fplPlayer.entry.ToString(), null);
-            }
+            //response.EnsureSuccessStatusCode();
 
-            return fplPlayer.entry;
+            //var content = await response.Content.ReadAsStringAsync();
+
+            ////if teamId not found from api call
+            //if (JObject.Parse(content).SelectToken("player").Type == JTokenType.Null)
+            //{
+            //    return 0;
+            //    //return 5589912;
+            //}
+
+            //var userDetailsJson = AllChildren(JObject.Parse(content))
+            //    .First(c => c.Type == JTokenType.Object && c.Path.Contains("player"));
+
+            //FplPlayer fplPlayer = new FplPlayer();
+
+            //fplPlayer = userDetailsJson.ToObject<FplPlayer>();
+
+            //string cookie = Request.Cookies["teamId"];
+
+            //if (cookie == null)
+            //{
+            //    SetCookie("teamId", fplPlayer.entry.ToString(), null);
+            //}
+
+            //return fplPlayer.entry;
             //return 666471;
         }
 

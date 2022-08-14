@@ -333,6 +333,7 @@ namespace FPL.Controllers
             if (smallestLeague == null)
             {
                 //return;
+                throw new Exception("User has no private leagues");
             }
 
             int leagueCount = Convert.ToInt32(smallestLeague.Standings.results.Count);

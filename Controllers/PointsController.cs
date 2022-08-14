@@ -21,7 +21,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace FPL.Controllers
 {
     //[AllowAnonymous]
-    [FPLCookie]
+    //[FPLCookie]
     public class PointsController : BaseController
     {
         private static int teamId;

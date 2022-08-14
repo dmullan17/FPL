@@ -3,6 +3,7 @@
 
     var self = this;
 
+    self.SearchedTeamId = ko.observable();
     self.GWTeam = ko.observable(data.GWTeam);
     self.Team = ko.observable(data.Team);
     self.TotalPoints = ko.observable(data.TotalPoints);
@@ -23,6 +24,43 @@
     self.reload = function () {
         $(".sync.icon").addClass("green loading");
         location.reload();
+    }
+
+
+
+    self.SearchTeams = function () {
+
+        $("#team-search-button").addClass("loading");
+
+        const urlParams = new URLSearchParams(window.location.search);
+
+        if (self.SearchedTeamId() != null) {
+            urlParams.set('entry', self.SearchedTeamId());
+            document.cookie = "teamId=" + self.SearchedTeamId();
+            window.location.search = urlParams;
+        }
+        else {
+
+        }
+
+        //TODO, check if team exists first before loading page
+        //window.location.href = window.location.href + "?entry=" + self.SearchedTeamId();
+        //get basic info about searched league
+        //$.when(self.GetBasicInfoForLeague()).done(function (a1, a2, a3, a4) {
+        //    //if successful load entire searched league
+        //    if (a2 == "success") {
+        //        self.HideLeagueUI(false);
+        //        $.when(self.LoadSearchedLeague()).done(function (b1, b2, b3, b4) {
+        //            if (b2 == "success") {
+        //            }
+        //        });
+        //    }
+        //});
+
+    }
+
+    self.OpenSearchTeamsModal = function () {
+        $('#search-team-popup').modal().modal('show');
     }
 
     self.IsPicksGwFinished = function (pick) {
