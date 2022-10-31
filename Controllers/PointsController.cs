@@ -1113,7 +1113,7 @@ namespace FPL.Controllers
 
                         if (vc.GWPlayer.stats.minutes > 0)
                         {
-                            vc.GWPlayer.stats.gw_points = vc.GWPlayer.stats.gw_points * pick.multiplier;
+                            vc.GWPlayer.stats.gw_points = vc.GWPlayer.stats.gw_points * vc.multiplier;
                         }
                         else if (vc.GWGames.Any(x => x.minutes != 0))
                         {
